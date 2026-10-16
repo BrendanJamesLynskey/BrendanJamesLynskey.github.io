@@ -1,10 +1,11 @@
 """Check every link and image on the built pages (and the profile README, if given) returns 200.
 
-    python3 tools/check_links.py [../BrendanJamesLynskey/README.md]
+    python3 tools/check_links.py [--live] [../BrendanJamesLynskey/README.md]
 
 Root-relative links are checked against the files in this repo. Absolute links are fetched (GET, redirects
 followed, a browser user agent). Links to this site and to its own repositories cannot exist before the
-first publish; they are listed as "after publish" and checked by the owner script once it is live.
+first publish; they are listed as "after publish", and checked too with --live (the owner script runs that
+once the site is up).
 """
 import concurrent.futures
 import os
@@ -42,7 +43,8 @@ def fetch(url):
 
 def main():
     urls, local = set(), set()
-    files = [os.path.join(ROOT, p) for p in PAGES] + sys.argv[1:]
+    live = "--live" in sys.argv
+    files = [os.path.join(ROOT, p) for p in PAGES] + [a for a in sys.argv[1:] if a != "--live"]
     for f in files:
         for u in links_in(f):
             (local if u.startswith("/") else urls).add(u)
@@ -53,7 +55,7 @@ def main():
         ok = os.path.isfile(p.rstrip("/"))
         bad += not ok
         print(("ok    " if ok else "MISS  ") + u)
-    pending = sorted(u for u in urls if PENDING.match(u))
+    pending = [] if live else sorted(u for u in urls if PENDING.match(u))
     ext = sorted(urls - set(pending))
     with concurrent.futures.ThreadPoolExecutor(8) as ex:
         for u, code in ex.map(fetch, ext):
