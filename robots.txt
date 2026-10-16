@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://brendanjameslynskey.github.io/sitemap.xml

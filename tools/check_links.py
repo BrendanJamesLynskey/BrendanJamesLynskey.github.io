@@ -1,0 +1,70 @@
+"""Check every link and image on the built pages (and the profile README, if given) returns 200.
+
+    python3 tools/check_links.py [../BrendanJamesLynskey/README.md]
+
+Root-relative links are checked against the files in this repo. Absolute links are fetched (GET, redirects
+followed, a browser user agent). Links to this site and to its own repositories cannot exist before the
+first publish; they are listed as "after publish" and checked by the owner script once it is live.
+"""
+import concurrent.futures
+import os
+import re
+import sys
+import urllib.error
+import urllib.request
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PAGES = ["index.html", "checks/index.html", "404.html"]
+SELF = ("https://brendanjameslynskey.github.io/", "https://github.com/BrendanJamesLynskey/BrendanJamesLynskey.github.io",
+        "https://github.com/BrendanJamesLynskey/BrendanJamesLynskey")
+# the site's own pages and repositories: exist only once published
+PENDING = re.compile(r"^https://brendanjameslynskey\.github\.io/(checks/|og\.png|sitemap\.xml|#[\w-]+)?$"
+                     r"|^https://github\.com/BrendanJamesLynskey/BrendanJamesLynskey(\.github\.io)?$")
+
+
+def links_in(path):
+    s = open(path).read()
+    if path.endswith(".md"):
+        return set(re.findall(r"\]\((https?://[^)\s]+)\)", s))
+    return set(re.findall(r'(?:href|src|content)="((?:https?://|/)[^"]*)"', s))
+
+
+def fetch(url):
+    req = urllib.request.Request(url.split("#")[0], headers={"User-Agent": "Mozilla/5.0"})
+    try:
+        with urllib.request.urlopen(req, timeout=60) as r:
+            return url, r.status
+    except urllib.error.HTTPError as e:
+        return url, e.code
+    except Exception as e:  # noqa: BLE001
+        return url, str(e)
+
+
+def main():
+    urls, local = set(), set()
+    files = [os.path.join(ROOT, p) for p in PAGES] + sys.argv[1:]
+    for f in files:
+        for u in links_in(f):
+            (local if u.startswith("/") else urls).add(u)
+    bad = 0
+    for u in sorted(local):
+        p = u.split("#")[0].split("?")[0]
+        p = os.path.join(ROOT, p.lstrip("/"), "index.html" if p.endswith("/") else "")
+        ok = os.path.isfile(p.rstrip("/"))
+        bad += not ok
+        print(("ok    " if ok else "MISS  ") + u)
+    pending = sorted(u for u in urls if PENDING.match(u))
+    ext = sorted(urls - set(pending))
+    with concurrent.futures.ThreadPoolExecutor(8) as ex:
+        for u, code in ex.map(fetch, ext):
+            ok = code == 200
+            bad += not ok
+            print(f"{'ok  ' if ok else 'FAIL'}  {code} {u}")
+    for u in pending:
+        print("after publish  " + u)
+    print(f"{len(local)} local, {len(ext)} external checked, {len(pending)} after publish; {bad} failures")
+    return 1 if bad else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

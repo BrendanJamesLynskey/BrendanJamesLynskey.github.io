@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How I check the numbers · Brendan Lynskey</title>
+<meta name="description" content="How the numbers on Brendan Lynskey&#x27;s sixteen interactive sites are checked: RTL in Verilator, real LangGraph, the official MCP and A2A SDKs, PyTorch, exact ports with fixtures in CI, and validation bands that show where the models miss.">
+<link rel="canonical" href="https://brendanjameslynskey.github.io/checks/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Brendan Lynskey">
+<meta property="og:title" content="How I check the numbers · Brendan Lynskey">
+<meta property="og:description" content="How the numbers on Brendan Lynskey&#x27;s sixteen interactive sites are checked: RTL in Verilator, real LangGraph, the official MCP and A2A SDKs, PyTorch, exact ports with fixtures in CI, and validation bands that show where the models miss.">
+<meta property="og:url" content="https://brendanjameslynskey.github.io/checks/">
+<meta property="og:image" content="https://brendanjameslynskey.github.io/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Brendan Lynskey: hardware and agentic AI. Sixteen interactive sites, each checked against a reference.">
+<meta property="og:locale" content="en_GB">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How I check the numbers · Brendan Lynskey">
+<meta name="twitter:description" content="How the numbers on Brendan Lynskey&#x27;s sixteen interactive sites are checked: RTL in Verilator, real LangGraph, the official MCP and A2A SDKs, PyTorch, exact ports with fixtures in CI, and validation bands that show where the models miss.">
+<meta name="twitter:image" content="https://brendanjameslynskey.github.io/og.png">
+<style>:root{color-scheme:light dark;
+ --bg:#ffffff;--surface:#fafafa;--raised:#ffffff;--border:#e5e5e5;--text:#171717;--muted:#525252;--faint:#6b6b6b;
+ --accent:#4f46e5;--accent-fg:#ffffff;--accent-text:#4338ca;--accent-line:#4f46e5;--accent-soft:#eef2ff;
+ --hw:#0284c7;--hw2:#ea580c;--ok:#15803d;
+ --t-foundations:#0891b2;--t-hardware:#0284c7;--t-inference:#4f46e5;--t-agents:#dc2626;
+ --sans:Inter,"Noto Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+ --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root{
+ --bg:#0a0a0a;--surface:#171717;--raised:#121212;--border:#2a2a2a;--text:#f5f5f5;--muted:#d4d4d4;--faint:#a3a3a3;
+ --accent:#4f46e5;--accent-fg:#ffffff;--accent-text:#a5b4fc;--accent-line:#818cf8;--accent-soft:#1e1b4b;
+ --hw:#38bdf8;--hw2:#fb923c;--ok:#4ade80;
+ --t-foundations:#22d3ee;--t-hardware:#38bdf8;--t-inference:#a5b4fc;--t-agents:#f87171}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;scroll-padding-top:4.5rem}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 var(--sans)}
+a{color:inherit}
+img{max-width:100%;height:auto;display:block}
+.wrap{max-width:68rem;margin:0 auto;padding:0 1.5rem}
+@media (max-width:480px){.wrap{padding:0 1rem}}
+.skip{position:absolute;left:-999px;top:0;background:var(--accent);color:var(--accent-fg);padding:.5rem 1rem;z-index:10}
+.skip:focus{left:1rem;top:.5rem}
+:focus-visible{outline:2px solid var(--accent-line);outline-offset:2px;border-radius:4px}
+header.site{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);
+ backdrop-filter:saturate(1.4) blur(8px);-webkit-backdrop-filter:saturate(1.4) blur(8px);border-bottom:1px solid var(--border)}
+header.site .wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:3.75rem}
+.brand{display:flex;align-items:center;gap:.6rem;text-decoration:none;font-weight:600;font-size:.95rem;white-space:nowrap}
+.brand img{width:24px;height:24px}
+nav.top{display:flex;gap:1.25rem;font-size:.9rem}
+nav.top a{text-decoration:none;color:var(--muted);padding:.4rem 0}
+nav.top a:hover{color:var(--text)}
+@media (max-width:520px){nav.top{gap:.9rem}nav.top .wide{display:none}}
+.eyebrow{font:500 .75rem/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-text);margin:0}
+h1,h2,h3,h4{line-height:1.2;letter-spacing:-.015em;margin:0}
+h1{font-size:clamp(2.4rem,6vw,3.5rem);font-weight:650;margin-top:.75rem}
+h2{font-size:clamp(1.5rem,3vw,1.9rem);font-weight:650}
+h3{font-size:1.1rem;font-weight:600}
+p{margin:0}
+.lede{font-size:clamp(1.15rem,2.2vw,1.35rem);line-height:1.5;color:var(--text);max-width:40rem;margin-top:1rem}
+.sub{color:var(--muted);max-width:40rem;margin-top:.9rem}
+.hero{padding:3.5rem 0 1rem}
+.hero-grid{display:grid;gap:1.75rem 2.5rem;grid-template-columns:minmax(0,1fr)}
+.rest{display:flex;flex-direction:column}
+@media (min-width:900px){.hero-grid{grid-template-columns:minmax(0,1fr) minmax(0,30rem);grid-template-areas:"intro fig" "rest fig";row-gap:0}
+ .intro{grid-area:intro}.hero-fig{grid-area:fig;align-self:center}.rest{grid-area:rest}}
+@media (max-width:899px){.rest .btns{order:-1;margin-top:0}.rest .sub{margin-top:1.25rem}}
+.btns{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.5rem}
+.btn{display:inline-flex;align-items:center;min-height:44px;padding:.55rem 1.15rem;border-radius:.4rem;font-size:.92rem;font-weight:550;text-decoration:none;border:1px solid var(--border);background:var(--raised);color:var(--text)}
+.btn:hover{border-color:var(--faint)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.btn.primary:hover{opacity:.92}
+figure{margin:0}
+.hero-fig{border:1px solid var(--border);border-radius:.6rem;padding:.75rem;background:var(--raised);position:relative}
+.hero-fig canvas{width:100%;aspect-ratio:560/300;display:block}
+.hero-fig figcaption{font-size:.8rem;color:var(--faint);margin-top:.4rem;padding-right:4.5rem}
+.hero-fig button{position:absolute;right:.75rem;bottom:.6rem;font:500 .75rem var(--mono);color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:.3rem;padding:.3rem .6rem;min-height:32px;cursor:pointer}
+.facts{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;margin-top:2rem;padding:1rem 0 0;border-top:1px solid var(--border);font-size:.88rem;color:var(--muted)}
+.facts b{color:var(--text);font-weight:650}
+section.block{padding:3.5rem 0 0}
+.block-head{margin-bottom:1.25rem}
+.block-head h2{margin-top:.35rem}
+.block-head>p{color:var(--muted);max-width:44rem;margin-top:.6rem}
+.grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(min(100%,19rem),1fr))}
+.card{position:relative;display:flex;flex-direction:column;border:1px solid var(--border);border-radius:.6rem;background:var(--raised);overflow:hidden;transition:border-color .15s,transform .15s}
+.card:hover{border-color:var(--faint)}
+.card .thumb{aspect-ratio:1200/630;width:100%;object-fit:cover;background:var(--surface);border-bottom:1px solid var(--border)}
+.card .thumb.wide{aspect-ratio:16/9;object-position:top}
+.hgrid .card .thumb.wide{aspect-ratio:2/1}
+.card .body{padding:.9rem 1rem 1rem;display:flex;flex-direction:column;gap:.5rem;flex:1}
+.card h3 a{text-decoration:none}
+.card h3 a::after{content:"";position:absolute;inset:0;z-index:1}
+.card .title{display:flex;align-items:center;gap:.55rem}
+.card .title img{width:22px;height:22px;flex:none}
+.card .place{font:500 .7rem/1.3 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.card .blurb{color:var(--muted);font-size:.93rem}
+.card .fact{font-size:.86rem;color:var(--text)}
+.card .checked{font-size:.82rem;line-height:1.5;color:var(--muted);border-left:2px solid var(--border);padding-left:.6rem}
+.card .checked b{font:500 .68rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);display:block}
+.card .more{margin-top:auto;padding-top:.4rem;display:flex;flex-wrap:wrap;gap:.25rem .9rem;font-size:.85rem;position:relative;z-index:2}
+.card .more a{color:var(--accent-text);text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--accent-text) 35%,transparent);text-underline-offset:3px}
+.card .more a:hover{text-decoration-color:currentColor}
+.track{margin-top:2.25rem}
+@media (min-width:760px){.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.hgrid{display:grid;gap:1rem;grid-template-columns:minmax(0,1fr)}
+@media (min-width:980px){.hgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:560px){.card.h{display:grid;grid-template-columns:minmax(0,38%) minmax(0,1fr)}
+ .card.h .thumb{height:100%;aspect-ratio:auto;min-height:11rem;border-bottom:0;border-right:1px solid var(--border)}}
+.textlink{display:inline-flex;align-items:center;min-height:44px;color:var(--accent-text);font-size:.92rem;font-weight:550}
+.track-head{display:flex;align-items:center;gap:.65rem;margin-bottom:.9rem}
+.track-head svg{width:22px;height:22px;flex:none}
+.track-head p{color:var(--muted);font-size:.95rem}
+.checks4{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(min(100%,15rem),1fr))}
+.stat{border:1px solid var(--border);border-radius:.6rem;padding:1rem;background:var(--raised);display:flex;flex-direction:column;gap:.35rem}
+.stat .n{font-size:1.65rem;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat .k{font:500 .7rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.stat p{font-size:.88rem;color:var(--muted)}
+.stat a{font-size:.85rem;color:var(--accent-text);margin-top:auto}
+.list{border-top:1px solid var(--border)}
+.row{display:grid;grid-template-columns:minmax(0,12rem) minmax(0,1fr) auto;gap:.4rem 1.25rem;padding:.9rem 0;border-bottom:1px solid var(--border);align-items:baseline}
+.row h3 a{text-decoration:none}
+.row h3 a:hover{text-decoration:underline}
+.row p{color:var(--muted);font-size:.93rem}
+.row .count{font:500 .85rem var(--mono);color:var(--text);white-space:nowrap;text-align:right}
+@media (max-width:700px){.row{grid-template-columns:minmax(0,1fr) auto}.row p{grid-column:1/-1;grid-row:2}}
+.note{font-size:.82rem;color:var(--faint);margin-top:.75rem}
+.built{border:1px solid var(--border);border-radius:.6rem;padding:1.25rem 1.25rem;background:var(--surface);max-width:48rem}
+.built p+p{margin-top:.75rem}
+.built p{color:var(--muted)}
+code{font:.88em var(--mono);background:var(--surface);border:1px solid var(--border);border-radius:.25rem;padding:.05rem .3rem;overflow-wrap:anywhere}
+footer.site{margin-top:4.5rem;border-top:1px solid var(--border);padding:1.5rem 0 2.5rem;font-size:.85rem;color:var(--faint)}
+footer.site .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.5rem 1.5rem}
+footer.site a{color:var(--muted)}
+.prose{max-width:46rem}
+.prose p{color:var(--muted);margin-top:.9rem}
+.big4{display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fill,minmax(min(100%,30rem),1fr));margin-top:1.25rem}
+.check{border:1px solid var(--border);border-radius:.6rem;background:var(--raised);padding:1.1rem 1.15rem;display:flex;flex-direction:column;gap:.6rem}
+.check svg{width:100%;height:auto}
+.check svg.dv{display:none;max-width:19rem;margin:0 auto}
+@media (max-width:600px){.check svg.dh{display:none}.check svg.dv{display:block}}
+.check blockquote{margin:0;border-left:2px solid var(--accent-line);padding-left:.75rem;color:var(--text);font-size:.93rem}
+.check .src{font-size:.82rem;color:var(--faint)}
+.check .src a{color:var(--accent-text)}
+.check .k{font:500 .7rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.tbl{width:100%;border-collapse:collapse;font-size:.9rem}
+.tbl th,.tbl td{text-align:left;vertical-align:top;padding:.7rem .6rem;border-bottom:1px solid var(--border)}
+.tbl th{font:500 .72rem var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.tbl td:first-child{white-space:nowrap}
+.tbl td a{color:var(--accent-text)}
+.tbl .site{display:flex;align-items:center;gap:.5rem;font-weight:550}
+.tbl .site img{width:18px;height:18px}
+@media (max-width:700px){.tbl thead{display:none}.tbl tr{display:block;padding:.7rem 0;border-bottom:1px solid var(--border)}
+ .tbl td{display:block;border:0;padding:.15rem 0}.tbl td:first-child{white-space:normal}}
+.qt{border-collapse:collapse;font-size:.82rem;margin:.4rem 0;width:100%}
+.qt th,.qt td{border:1px solid var(--border);padding:.3rem .45rem;text-align:left;vertical-align:top}
+.qt th{font:500 .68rem var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--faint);background:var(--surface)}
+.miss{border:1px solid var(--border);border-radius:.6rem;padding:1rem 1.15rem;background:var(--raised)}
+.miss ul{margin:.5rem 0 0;padding-left:1.1rem;color:var(--muted)}
+.miss li{margin:.45rem 0}
+.miss li a{color:var(--accent-text)}
+svg text{font-family:var(--mono)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="wrap">
+<a class="brand" href="/"><img src="/favicon.svg" alt="" width="24" height="24">Brendan Lynskey</a>
+<nav class="top" aria-label="Main">
+<a href="/#hardware" class="wide">Hardware</a>
+<a href="/#sites">Sites</a>
+<a href="/checks/">Checks</a>
+<a href="https://github.com/BrendanJamesLynskey">GitHub</a>
+</nav>
+</div></header>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="var(--ok)"/></marker>
+<marker id="ah2" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10 0 0 5 10 10z" fill="var(--ok)"/></marker>
+</defs></svg><main id="main"><div class="wrap">
+<section class="hero">
+<p class="eyebrow">Verification</p>
+<h1>How I check the numbers</h1>
+<p class="lede">Every number on the sites comes from tested code, and every model is checked against something independent of it: RTL, a real framework, an official SDK, PyTorch or a published figure.</p>
+<p class="sub">The quotes below are copied from each site's About page, its README or its <code>results.md</code>, and a script checks that every quote still appears, word for word, on the page it links to.</p>
+</section>
+
+<section class="block" aria-labelledby="four-h">
+<h2 id="four-h">Four checks, in pictures</h2>
+<div class="big4">
+<article class="check">
+<span class="k">Against RTL</span>
+<h3>Systolic Arrays Explained: the model against SystemVerilog</h3>
+<svg class="dh" viewBox="0 0 540 110" role="img" aria-label="The model compared with the SystemVerilog array after every clock edge">
+<rect x="4" y="25" width="164" height="60" rx="8" fill="none" stroke="var(--hw)" stroke-width="2"/>
+<text x="86" y="50" text-anchor="middle" font-size="12" fill="var(--text)">cycle-accurate model</text>
+<text x="86" y="69" text-anchor="middle" font-size="10.5" fill="var(--faint)">Python, TS port</text>
+<rect x="372" y="25" width="164" height="60" rx="8" fill="none" stroke="var(--accent-line)" stroke-width="2"/>
+<text x="454" y="50" text-anchor="middle" font-size="12" fill="var(--text)">SV systolic array</text>
+<text x="454" y="69" text-anchor="middle" font-size="10.5" fill="var(--faint)">Verilator 5.020</text>
+<path d="M178 55h184" stroke="var(--ok)" stroke-width="2" marker-end="url(#ah)" marker-start="url(#ah2)"/>
+<text x="270" y="44" text-anchor="middle" font-size="12" fill="var(--ok)">= every edge</text>
+<text x="270" y="74" text-anchor="middle" font-size="10.5" fill="var(--faint)">613 values, 0 mismatches</text>
+</svg><svg class="dv" viewBox="0 0 300 236" role="img" aria-label="The model compared with the SystemVerilog array after every clock edge">
+<rect x="50" y="4" width="200" height="56" rx="8" fill="none" stroke="var(--hw)" stroke-width="2"/>
+<text x="150" y="28" text-anchor="middle" font-size="14" fill="var(--text)">cycle-accurate model</text>
+<text x="150" y="47" text-anchor="middle" font-size="12" fill="var(--faint)">Python, TS port</text>
+<path d="M64 70v96" stroke="var(--ok)" stroke-width="2" marker-end="url(#ah)" marker-start="url(#ah2)"/>
+<text x="80" y="112" font-size="14" fill="var(--ok)">= every edge</text>
+<text x="80" y="131" font-size="12" fill="var(--faint)">613 values, 0 mismatches</text>
+<rect x="50" y="176" width="200" height="56" rx="8" fill="none" stroke="var(--accent-line)" stroke-width="2"/>
+<text x="150" y="200" text-anchor="middle" font-size="14" fill="var(--text)">SV systolic array</text>
+<text x="150" y="219" text-anchor="middle" font-size="12" fill="var(--faint)">Verilator 5.020</text>
+</svg>
+<blockquote>“compares every accumulator after every clock edge with the model: 613 values, 0 mismatches”</blockquote><blockquote>“compares every pipeline register after every edge: 11,079 values, 0 mismatches”</blockquote>
+
+<p class="src">Source: <a href="https://systolic-arrays-explained.vercel.app/about#checked">systolic-arrays-explained.vercel.app/about#checked</a></p>
+</article><article class="check">
+<span class="k">Against LangGraph</span>
+<h3>Agent Orchestration Explained: the engine against real LangGraph</h3>
+<svg class="dh" viewBox="0 0 540 110" role="img" aria-label="The engine&#x27;s checkpoint history compared with LangGraph&#x27;s after every operation">
+<rect x="4" y="25" width="164" height="60" rx="8" fill="none" stroke="var(--hw)" stroke-width="2"/>
+<text x="86" y="50" text-anchor="middle" font-size="12" fill="var(--text)">engine graph runtime</text>
+<text x="86" y="69" text-anchor="middle" font-size="10.5" fill="var(--faint)">Agent_Loop_Sim</text>
+<rect x="372" y="25" width="164" height="60" rx="8" fill="none" stroke="var(--accent-line)" stroke-width="2"/>
+<text x="454" y="50" text-anchor="middle" font-size="12" fill="var(--text)">LangGraph 1.2.14</text>
+<text x="454" y="69" text-anchor="middle" font-size="10.5" fill="var(--faint)">StateGraph</text>
+<path d="M178 55h184" stroke="var(--ok)" stroke-width="2" marker-end="url(#ah)" marker-start="url(#ah2)"/>
+<text x="270" y="44" text-anchor="middle" font-size="12" fill="var(--ok)">= checkpoints</text>
+<text x="270" y="74" text-anchor="middle" font-size="10.5" fill="var(--faint)">39 sessions, 71 ops</text>
+</svg><svg class="dv" viewBox="0 0 300 236" role="img" aria-label="The engine&#x27;s checkpoint history compared with LangGraph&#x27;s after every operation">
+<rect x="50" y="4" width="200" height="56" rx="8" fill="none" stroke="var(--hw)" stroke-width="2"/>
+<text x="150" y="28" text-anchor="middle" font-size="14" fill="var(--text)">engine graph runtime</text>
+<text x="150" y="47" text-anchor="middle" font-size="12" fill="var(--faint)">Agent_Loop_Sim</text>
+<path d="M64 70v96" stroke="var(--ok)" stroke-width="2" marker-end="url(#ah)" marker-start="url(#ah2)"/>
+<text x="80" y="112" font-size="14" fill="var(--ok)">= checkpoints</text>
+<text x="80" y="131" font-size="12" fill="var(--faint)">39 sessions, 71 ops</text>
+<rect x="50" y="176" width="200" height="56" rx="8" fill="none" stroke="var(--accent-line)" stroke-width="2"/>
+<text x="150" y="200" text-anchor="middle" font-size="14" fill="var(--text)">LangGraph 1.2.14</text>
+<text x="150" y="219" text-anchor="middle" font-size="12" fill="var(--faint)">StateGraph</text>
+</svg>
+<blockquote>“every one of 39 sessions is built as a real StateGraph”</blockquote><blockquote>“After each of the 71 operations”</blockquote><blockquote>“the whole checkpoint history is compared with the engine&#x27;s”</blockquote>
+<p class="src">Where it is not exact, the site says so: “One LangGraph detail turned out not to be deterministic”; that one field is left out on both sides.</p>
+<p class="src">Source: <a href="https://agent-orchestration-explained.vercel.app/about#langgraph">agent-orchestration-explained.vercel.app/about#langgraph</a></p>
+</article><article class="check">
+<span class="k">Against the official SDKs</span>
+<h3>Agent Protocols Explained: the engine against the MCP and A2A SDKs</h3>
+<svg class="dh" viewBox="0 0 540 110" role="img" aria-label="The engine&#x27;s messages compared with recordings of the official SDKs">
+<rect x="4" y="25" width="164" height="60" rx="8" fill="none" stroke="var(--hw)" stroke-width="2"/>
+<text x="86" y="50" text-anchor="middle" font-size="12" fill="var(--text)">engine protocol</text>
+<text x="86" y="69" text-anchor="middle" font-size="10.5" fill="var(--faint)">state machines</text>
+<rect x="372" y="25" width="164" height="60" rx="8" fill="none" stroke="var(--accent-line)" stroke-width="2"/>
+<text x="454" y="50" text-anchor="middle" font-size="12" fill="var(--text)">official SDKs</text>
+<text x="454" y="69" text-anchor="middle" font-size="10.5" fill="var(--faint)">mcp 2.3.0, a2a-sdk 1.2.2</text>
+<path d="M178 55h184" stroke="var(--ok)" stroke-width="2" marker-end="url(#ah)" marker-start="url(#ah2)"/>
+<text x="270" y="44" text-anchor="middle" font-size="12" fill="var(--ok)">= messages</text>
+<text x="270" y="74" text-anchor="middle" font-size="10.5" fill="var(--faint)">160 MCP, 56 A2A</text>
+</svg><svg class="dv" viewBox="0 0 300 236" role="img" aria-label="The engine&#x27;s messages compared with recordings of the official SDKs">
+<rect x="50" y="4" width="200" height="56" rx="8" fill="none" stroke="var(--hw)" stroke-width="2"/>
+<text x="150" y="28" text-anchor="middle" font-size="14" fill="var(--text)">engine protocol</text>
+<text x="150" y="47" text-anchor="middle" font-size="12" fill="var(--faint)">state machines</text>
+<path d="M64 70v96" stroke="var(--ok)" stroke-width="2" marker-end="url(#ah)" marker-start="url(#ah2)"/>
+<text x="80" y="112" font-size="14" fill="var(--ok)">= messages</text>
+<text x="80" y="131" font-size="12" fill="var(--faint)">160 MCP, 56 A2A</text>
+<rect x="50" y="176" width="200" height="56" rx="8" fill="none" stroke="var(--accent-line)" stroke-width="2"/>
+<text x="150" y="200" text-anchor="middle" font-size="14" fill="var(--text)">official SDKs</text>
+<text x="150" y="219" text-anchor="middle" font-size="12" fill="var(--faint)">mcp 2.3.0, a2a-sdk 1.2.2</text>
+</svg>
+<blockquote>“A small server written with the official MCP Python SDK (mcp 2.3.0) and the SDK&#x27;s own client play 18 sessions over stdio while a tee records every line”</blockquote><blockquote>“the engine must produce the same 160 messages, compared as JSON with request IDs renumbered”</blockquote><blockquote>“the engine&#x27;s agent must send the same 56 messages once IDs and timestamps are normalised”</blockquote>
+
+<p class="src">Source: <a href="https://agent-protocols-explained.vercel.app/about#sdk">agent-protocols-explained.vercel.app/about#sdk</a></p>
+</article><article class="check">
+<span class="k">Against PyTorch</span>
+<h3>Transformer Decoder and Training: TypeScript against PyTorch</h3>
+<svg class="dh" viewBox="0 0 540 110" role="img" aria-label="The browser&#x27;s transformer compared with PyTorch operation by operation">
+<rect x="4" y="25" width="164" height="60" rx="8" fill="none" stroke="var(--hw)" stroke-width="2"/>
+<text x="86" y="50" text-anchor="middle" font-size="12" fill="var(--text)">TS transformer</text>
+<text x="86" y="69" text-anchor="middle" font-size="10.5" fill="var(--faint)">in your browser</text>
+<rect x="372" y="25" width="164" height="60" rx="8" fill="none" stroke="var(--accent-line)" stroke-width="2"/>
+<text x="454" y="50" text-anchor="middle" font-size="12" fill="var(--text)">PyTorch</text>
+<text x="454" y="69" text-anchor="middle" font-size="10.5" fill="var(--faint)">fixtures, float64 run</text>
+<path d="M178 55h184" stroke="var(--ok)" stroke-width="2" marker-end="url(#ah)" marker-start="url(#ah2)"/>
+<text x="270" y="44" text-anchor="middle" font-size="12" fill="var(--ok)">≤ 1e-5</text>
+<text x="270" y="74" text-anchor="middle" font-size="10.5" fill="var(--faint)">op by op</text>
+</svg><svg class="dv" viewBox="0 0 300 236" role="img" aria-label="The browser&#x27;s transformer compared with PyTorch operation by operation">
+<rect x="50" y="4" width="200" height="56" rx="8" fill="none" stroke="var(--hw)" stroke-width="2"/>
+<text x="150" y="28" text-anchor="middle" font-size="14" fill="var(--text)">TS transformer</text>
+<text x="150" y="47" text-anchor="middle" font-size="12" fill="var(--faint)">in your browser</text>
+<path d="M64 70v96" stroke="var(--ok)" stroke-width="2" marker-end="url(#ah)" marker-start="url(#ah2)"/>
+<text x="80" y="112" font-size="14" fill="var(--ok)">≤ 1e-5</text>
+<text x="80" y="131" font-size="12" fill="var(--faint)">op by op</text>
+<rect x="50" y="176" width="200" height="56" rx="8" fill="none" stroke="var(--accent-line)" stroke-width="2"/>
+<text x="150" y="200" text-anchor="middle" font-size="14" fill="var(--text)">PyTorch</text>
+<text x="150" y="219" text-anchor="middle" font-size="12" fill="var(--faint)">fixtures, float64 run</text>
+</svg>
+<blockquote>“checked against PyTorch fixtures, operation by operation, to within 1e-5”</blockquote><table class="qt"><thead><tr><th scope="col">Check</th><th scope="col">Measured</th><th scope="col">Tolerance</th></tr></thead><tbody><tr><td>Backward = PyTorch autograd, at initialisation</td><td>max err / (1 + max abs grad) 4.4e-17; loss diff 0.0e+00</td><td>1e-12</td></tr><tr><td>adamw = torch.optim over 25 steps</td><td>max abs err 1.1e-16</td><td>1e-12</td></tr></tbody></table>
+<p class="src">Training: two rows of the correctness table in <a href="https://github.com/BrendanJamesLynskey/transformer-explainer/blob/main/results.md">results.md</a> (all its checks and tolerances are there).</p>
+<p class="src">Source: <a href="https://transformer-decoder-explained.vercel.app/about#checked">transformer-decoder-explained.vercel.app/about#checked</a></p>
+</article>
+</div>
+</section>
+
+<section class="block" aria-labelledby="ports-h">
+<h2 id="ports-h">Exact ports, with fixtures in CI</h2>
+<div class="prose">
+<p>Each site's browser code is a TypeScript port of a Python reference. The reference writes JSON fixtures, and the site's unit tests require the port to reproduce them; for most sites exactly, with no tolerance. On GPU Kernels Explained, for example, “CI fails if the fixtures are out of date.” (<a href="https://gpu-kernels-explained.vercel.app/about#checked">source</a>).</p>
+</div>
+<div class="miss" style="margin-top:1rem"><ul>
+<li><b>GPU Kernels Explained</b>: “the unit tests require the port to reproduce all of them exactly, with no tolerance”. <a href="https://gpu-kernels-explained.vercel.app/about#checked">Source</a></li><li><b>Numerics Explained</b>: “decodes every code of every format up to 16 bits and compares it with numpy (FP16) and ml_dtypes (BF16, FP8, FP6, FP4)”. <a href="https://numerics-explained.vercel.app/about#checked">Source</a></li><li><b>Inference Trade-offs Explained</b>: “For every one of the 350 points, the vendored engine on the recorded workload reproduces the point&#x27;s TTFT, TPOT and ITL percentiles exactly”. <a href="https://inference-tradeoffs-explained.vercel.app/about#checks">Source</a></li><li><b>LLM Inference Explained</b>: “copied byte for byte from a pinned commit by a script that records the commit and the file’s SHA-256”. <a href="https://llm-inference-explained.vercel.app/about#numbers">Source</a></li><li><b>Agent Evals Explained</b>: “the TS port reproduces every fixture exactly, with no tolerance”. <a href="https://agent-evals-explained.vercel.app/about#engine">Source</a></li>
+</ul></div>
+</section>
+
+<section class="block" aria-labelledby="bands-h">
+<h2 id="bands-h">Sourced specs, validation bands, and where the models miss</h2>
+<div class="prose"><p>The hardware sites take every specification from a dated source and never use vendor claims as inputs. Their models are then checked against published figures that they do not take as inputs, and the misses are reported, not hidden.</p></div>
+<div class="miss" style="margin-top:1rem"><ul>
+<li><b>AI Accelerators Explained</b>: “The model is checked against 8 published figures it does not take as inputs” <a href="https://ai-accelerators-explained.vercel.app/about#validation">Source</a></li><li><b>AI Accelerators Explained</b>: “MLPerf&#x27;s eight H100s reached 19% of the compute ceiling” <a href="https://ai-accelerators-explained.vercel.app/about#validation">Source</a></li><li><b>AI Accelerators Explained</b>: “The SRAM designs reached 0.13% to 8.2%. That miss is the model&#x27;s main limit, and the chapters say so” <a href="https://ai-accelerators-explained.vercel.app/about#validation">Source</a></li><li><b>AI Racks Explained</b>: “Across 27 checks the model is between 0.9874 and 1.0368 of the published value.” <a href="https://ai-racks-explained.vercel.app/about#validation">Source</a></li><li><b>LLM Architectures Explained</b>: “is within 0.5% of the number of parameters in those weights, at the pinned commit” <a href="https://llm-architectures-explained.vercel.app/about#checks">Source</a></li><li><b>LLM Architectures Explained</b>: “Some parts are approximated and say so on their model pages” <a href="https://llm-architectures-explained.vercel.app/about#checks">Source</a></li><li><b>Signal Integrity (an internal check: time domain against frequency domain)</b>: <table class="qt"><thead><tr><th scope="col">Quantity</th><th scope="col">This series</th><th scope="col">Reference value</th><th scope="col">Difference</th></tr></thead><tbody><tr><td>droop vs zpeak</td><td>23.241</td><td>24.876</td><td>-6.57 %</td></tr></tbody></table> <a href="https://github.com/BrendanJamesLynskey/Signal_Integrity#verified">Source</a></li><li><b>Compute in Transit (the experiment&#x27;s result)</b>: “a fixed band, which the module could compute, ends more than a nat above DeMo&#x27;s top-k, so it is no substitute at this scale” <a href="https://github.com/BrendanJamesLynskey/LLMs">Source</a></li>
+</ul></div>
+</section>
+
+<section class="block" aria-labelledby="hw-h">
+<h2 id="hw-h">The hardware decks</h2>
+<div class="prose">
+<p><b>Signal Integrity.</b> 20 of the series' results are cross-checked against independently published values (Cohn 1955, Hall &amp; Heck, Johnson &amp; Graham); the largest difference is 2.44 %. Its README lists every check, internal ones included (<a href="https://github.com/BrendanJamesLynskey/Signal_Integrity#verified">the table</a>).</p>
+<p><b>RTL challenges.</b> Parsing is not simulating: “Nineteen challenges: six did not compile, eleven compiled but failed when first run”. Today: “All nineteen pass (nine in Verilator, ten in xsim)” (<a href="https://github.com/BrendanJamesLynskey/SystemVerilog_Simulators">source</a>).</p>
+</div>
+</section>
+
+<section class="block" aria-labelledby="all-h">
+<h2 id="all-h">Every site's check</h2>
+<p class="sub">Each site's “How this is checked” line, as it appears on its landing page, with the link to the evidence.</p>
+<table class="tbl" style="margin-top:1rem">
+<thead><tr><th scope="col">Site</th><th scope="col">How it is checked</th><th scope="col">Evidence</th></tr></thead>
+<tbody>
+<tr><td><span class="site"><img src="/assets/icons/decoder.svg" alt="" width="18" height="18"><a href="https://transformer-decoder-explained.vercel.app/">Transformer Decoder Explained</a></span></td>
+<td>The TypeScript transformer in your browser is checked against PyTorch, operation by operation, to within 1e-5, and the animations&#x27; frames against a float64 PyTorch run of the same seeded weights.</td><td><a href="https://transformer-decoder-explained.vercel.app/about#checked">Evidence<span class="sr"> for Transformer Decoder Explained</span></a></td></tr><tr><td><span class="site"><img src="/assets/icons/training.svg" alt="" width="18" height="18"><a href="https://transformer-training-explained.vercel.app/training">Transformer Training Explained</a></span></td>
+<td>A NumPy reference of the trainer matches PyTorch autograd (to 1e-12) and torch.optim, and the trainer in your browser matches that reference step for step.</td><td><a href="https://transformer-decoder-explained.vercel.app/about#checked">Evidence<span class="sr"> for Transformer Training Explained</span></a></td></tr><tr><td><span class="site"><img src="/assets/icons/kernels.svg" alt="" width="18" height="18"><a href="https://gpu-kernels-explained.vercel.app/">GPU Kernels Explained</a></span></td>
+<td>The GPU model is checked against the CUDA Programming Guide&#x27;s worked examples (coalescing, bank conflicts, occupancy), and its TypeScript port reproduces the Python reference exactly.</td><td><a href="https://gpu-kernels-explained.vercel.app/about#checked">Evidence<span class="sr"> for GPU Kernels Explained</span></a></td></tr><tr><td><span class="site"><img src="/assets/icons/silicon.svg" alt="" width="18" height="18"><a href="https://systolic-arrays-explained.vercel.app/">Systolic Arrays Explained</a></span></td>
+<td>The cycle-accurate model&#x27;s output-stationary frames match a SystemVerilog array simulated in Verilator 5.020 on every accumulator after every clock edge: 613 values, 0 mismatches.</td><td><a href="https://systolic-arrays-explained.vercel.app/about#checked">Evidence<span class="sr"> for Systolic Arrays Explained</span></a></td></tr><tr><td><span class="site"><img src="/assets/icons/accelerators.svg" alt="" width="18" height="18"><a href="https://ai-accelerators-explained.vercel.app/">AI Accelerators Explained</a></span></td>
+<td>Every specification carries its source and the date it was read, vendor claims are never used as inputs, and the model is checked against published capacity, throughput and latency figures.</td><td><a href="https://ai-accelerators-explained.vercel.app/about#validation">Evidence<span class="sr"> for AI Accelerators Explained</span></a></td></tr><tr><td><span class="site"><img src="/assets/icons/racks.svg" alt="" width="18" height="18"><a href="https://ai-racks-explained.vercel.app/">AI Racks Explained</a></span></td>
+<td>Every hardware figure carries its source and the date it was read, and the model is checked against published rack, switch and fabric totals that it does not take as inputs.</td><td><a href="https://ai-racks-explained.vercel.app/about#validation">Evidence<span class="sr"> for AI Racks Explained</span></a></td></tr><tr><td><span class="site"><img src="/assets/icons/inference.svg" alt="" width="18" height="18"><a href="https://llm-inference-explained.vercel.app/">LLM Inference Explained</a></span></td>
+<td>The serving simulator in chapters 11–14 is Disaggregated_Inference_Sim&#x27;s own engine, copied byte for byte from a pinned commit, and CI requires every request&#x27;s timestamps to match its Python original; the tiny model&#x27;s cached logits are bit-identical to full recomputation.</td><td><a href="https://llm-inference-explained.vercel.app/about#numbers">Evidence<span class="sr"> for LLM Inference Explained</span></a></td></tr><tr><td><span class="site"><img src="/assets/icons/architectures.svg" alt="" width="18" height="18"><a href="https://llm-architectures-explained.vercel.app/">LLM Architectures Explained</a></span></td>
+<td>Every value links to its source, and the modelled parameter count of 80 of the 86 open models whose published weights can be counted is within 0.5% of those weights at a pinned commit.</td><td><a href="https://llm-architectures-explained.vercel.app/about#checks">Evidence<span class="sr"> for LLM Architectures Explained</span></a></td></tr><tr><td><span class="site"><img src="/assets/icons/numerics.svg" alt="" width="18" height="18"><a href="https://numerics-explained.vercel.app/">Numerics Explained</a></span></td>
+<td>Every code of every format up to 16 bits is checked against numpy and ml_dtypes, and the TypeScript port in your browser reproduces the Python reference exactly.</td><td><a href="https://numerics-explained.vercel.app/about#checked">Evidence<span class="sr"> for Numerics Explained</span></a></td></tr><tr><td><span class="site"><img src="/assets/icons/tradeoffs.svg" alt="" width="18" height="18"><a href="https://inference-tradeoffs-explained.vercel.app/">Inference Trade-offs Explained</a></span></td>
+<td>For every one of the 350 sweep points, the simulator&#x27;s JavaScript engine (the one the what-if runs in your browser) reproduces the recorded TTFT, TPOT and ITL percentiles of the Python run exactly.</td><td><a href="https://inference-tradeoffs-explained.vercel.app/about#checks">Evidence<span class="sr"> for Inference Trade-offs Explained</span></a></td></tr><tr><td><span class="site"><img src="/assets/icons/harnesses.svg" alt="" width="18" height="18"><a href="https://agent-harnesses-explained.vercel.app/">Agent Harnesses Explained</a></span></td>
+<td>Agent_Loop_Sim&#x27;s Python reference and the TypeScript port in your browser produce the same events, token for token and float for float, and three recorded runs of a small open-weights model are replayed token for token.</td><td><a href="https://agent-harnesses-explained.vercel.app/about#engine">Evidence<span class="sr"> for Agent Harnesses Explained</span></a></td></tr><tr><td><span class="site"><img src="/assets/icons/protocols.svg" alt="" width="18" height="18"><a href="https://agent-protocols-explained.vercel.app/">Agent Protocols Explained</a></span></td>
+<td>The engine sends the same 160 messages as the official MCP Python SDK (mcp 2.3.0) over 18 recorded sessions, and the same 56 as the official A2A SDK (a2a-sdk 1.2.2), compared as JSON.</td><td><a href="https://agent-protocols-explained.vercel.app/about#sdk">Evidence<span class="sr"> for Agent Protocols Explained</span></a></td></tr><tr><td><span class="site"><img src="/assets/icons/context.svg" alt="" width="18" height="18"><a href="https://agent-context-explained.vercel.app/">Agent Context Explained</a></span></td>
+<td>Every retrieval number is measured on 200 SQuAD questions with real MiniLM embeddings and recorded reranker scores, and the TypeScript engine in your browser reproduces the Python reference exactly, with no tolerance.</td><td><a href="https://agent-context-explained.vercel.app/about#measured">Evidence<span class="sr"> for Agent Context Explained</span></a></td></tr><tr><td><span class="site"><img src="/assets/icons/orchestration.svg" alt="" width="18" height="18"><a href="https://agent-orchestration-explained.vercel.app/">Agent Orchestration Explained</a></span></td>
+<td>Each of 39 sessions also runs in real LangGraph 1.2.14, and after every one of 71 operations its whole checkpoint history equals the engine&#x27;s.</td><td><a href="https://agent-orchestration-explained.vercel.app/about#langgraph">Evidence<span class="sr"> for Agent Orchestration Explained</span></a></td></tr><tr><td><span class="site"><img src="/assets/icons/evals.svg" alt="" width="18" height="18"><a href="https://agent-evals-explained.vercel.app/">Agent Evals Explained</a></span></td>
+<td>The estimators are tested against scipy and statsmodels on a synthetic benchmark whose truth is known, and the TypeScript engine in your browser reproduces every Python fixture bit for bit.</td><td><a href="https://agent-evals-explained.vercel.app/about#engine">Evidence<span class="sr"> for Agent Evals Explained</span></a></td></tr><tr><td><span class="site"><img src="/assets/icons/security.svg" alt="" width="18" height="18"><a href="https://agent-security-explained.vercel.app/">Agent Security Explained</a></span></td>
+<td>The trifecta check agrees with an exhaustive search on all 256 tool subsets, and the TypeScript engine in your browser reproduces the Python reference&#x27;s fixtures exactly.</td><td><a href="https://agent-security-explained.vercel.app/about#engine">Evidence<span class="sr"> for Agent Security Explained</span></a></td></tr><tr><td><span class="site"><img src="/assets/icons/transit.svg" alt="" width="18" height="18"><a href="https://compute-in-transit-results.vercel.app/">Compute in Transit</a></span></td>
+<td>Every vendored file is its source byte for byte at a pinned commit, the TypeScript port reproduces every cell of the simulation&#x27;s results.md that it can, character for character, and the loss curves are recomputed from the run logs.</td><td><a href="https://compute-in-transit-results.vercel.app/method#checks">Evidence<span class="sr"> for Compute in Transit</span></a></td></tr><tr><td><span class="site"><img src="/assets/icons/dse.svg" alt="" width="18" height="18"><a href="https://hw-design-space-agent.vercel.app/">HW Design-Space Agent</a></span></td>
+<td>Every number comes from a recorded run of the agent, vendored byte for byte with its hashes; the TypeScript ports of its golden model and cost model match the Python reference exactly, and CI fails if anything drifts.</td><td><a href="https://hw-design-space-agent.vercel.app/about#site">Evidence<span class="sr"> for HW Design-Space Agent</span></a></td></tr>
+</tbody></table>
+</section>
+</div></main>
+<footer class="site"><div class="wrap">
+<span>Brendan Lynskey · <a href="https://github.com/BrendanJamesLynskey">GitHub</a> · <a href="/checks/">How I check the numbers</a></span>
+<span>A static page, built 2026-10-16 from its <a href="https://github.com/BrendanJamesLynskey/BrendanJamesLynskey.github.io">source</a>.</span>
+</div></footer>
+</body>
+</html>

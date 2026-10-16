@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brendan Lynskey: hardware and agentic AI</title>
+<meta name="description" content="Brendan Lynskey: a staff-level engineer across hardware (RTL and FPGA, DSP, signal integrity) and agentic AI. Sixteen interactive explainer sites, deck series from signal integrity to agents, and how every number is checked.">
+<link rel="canonical" href="https://brendanjameslynskey.github.io/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Brendan Lynskey">
+<meta property="og:title" content="Brendan Lynskey: hardware and agentic AI">
+<meta property="og:description" content="Brendan Lynskey: a staff-level engineer across hardware (RTL and FPGA, DSP, signal integrity) and agentic AI. Sixteen interactive explainer sites, deck series from signal integrity to agents, and how every number is checked.">
+<meta property="og:url" content="https://brendanjameslynskey.github.io/">
+<meta property="og:image" content="https://brendanjameslynskey.github.io/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Brendan Lynskey: hardware and agentic AI. Sixteen interactive sites, each checked against a reference.">
+<meta property="og:locale" content="en_GB">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Brendan Lynskey: hardware and agentic AI">
+<meta name="twitter:description" content="Brendan Lynskey: a staff-level engineer across hardware (RTL and FPGA, DSP, signal integrity) and agentic AI. Sixteen interactive explainer sites, deck series from signal integrity to agents, and how every number is checked.">
+<meta name="twitter:image" content="https://brendanjameslynskey.github.io/og.png">
+<style>:root{color-scheme:light dark;
+ --bg:#ffffff;--surface:#fafafa;--raised:#ffffff;--border:#e5e5e5;--text:#171717;--muted:#525252;--faint:#6b6b6b;
+ --accent:#4f46e5;--accent-fg:#ffffff;--accent-text:#4338ca;--accent-line:#4f46e5;--accent-soft:#eef2ff;
+ --hw:#0284c7;--hw2:#ea580c;--ok:#15803d;
+ --t-foundations:#0891b2;--t-hardware:#0284c7;--t-inference:#4f46e5;--t-agents:#dc2626;
+ --sans:Inter,"Noto Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+ --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root{
+ --bg:#0a0a0a;--surface:#171717;--raised:#121212;--border:#2a2a2a;--text:#f5f5f5;--muted:#d4d4d4;--faint:#a3a3a3;
+ --accent:#4f46e5;--accent-fg:#ffffff;--accent-text:#a5b4fc;--accent-line:#818cf8;--accent-soft:#1e1b4b;
+ --hw:#38bdf8;--hw2:#fb923c;--ok:#4ade80;
+ --t-foundations:#22d3ee;--t-hardware:#38bdf8;--t-inference:#a5b4fc;--t-agents:#f87171}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;scroll-padding-top:4.5rem}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 var(--sans)}
+a{color:inherit}
+img{max-width:100%;height:auto;display:block}
+.wrap{max-width:68rem;margin:0 auto;padding:0 1.5rem}
+@media (max-width:480px){.wrap{padding:0 1rem}}
+.skip{position:absolute;left:-999px;top:0;background:var(--accent);color:var(--accent-fg);padding:.5rem 1rem;z-index:10}
+.skip:focus{left:1rem;top:.5rem}
+:focus-visible{outline:2px solid var(--accent-line);outline-offset:2px;border-radius:4px}
+header.site{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);
+ backdrop-filter:saturate(1.4) blur(8px);-webkit-backdrop-filter:saturate(1.4) blur(8px);border-bottom:1px solid var(--border)}
+header.site .wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:3.75rem}
+.brand{display:flex;align-items:center;gap:.6rem;text-decoration:none;font-weight:600;font-size:.95rem;white-space:nowrap}
+.brand img{width:24px;height:24px}
+nav.top{display:flex;gap:1.25rem;font-size:.9rem}
+nav.top a{text-decoration:none;color:var(--muted);padding:.4rem 0}
+nav.top a:hover{color:var(--text)}
+@media (max-width:520px){nav.top{gap:.9rem}nav.top .wide{display:none}}
+.eyebrow{font:500 .75rem/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-text);margin:0}
+h1,h2,h3,h4{line-height:1.2;letter-spacing:-.015em;margin:0}
+h1{font-size:clamp(2.4rem,6vw,3.5rem);font-weight:650;margin-top:.75rem}
+h2{font-size:clamp(1.5rem,3vw,1.9rem);font-weight:650}
+h3{font-size:1.1rem;font-weight:600}
+p{margin:0}
+.lede{font-size:clamp(1.15rem,2.2vw,1.35rem);line-height:1.5;color:var(--text);max-width:40rem;margin-top:1rem}
+.sub{color:var(--muted);max-width:40rem;margin-top:.9rem}
+.hero{padding:3.5rem 0 1rem}
+.hero-grid{display:grid;gap:1.75rem 2.5rem;grid-template-columns:minmax(0,1fr)}
+.rest{display:flex;flex-direction:column}
+@media (min-width:900px){.hero-grid{grid-template-columns:minmax(0,1fr) minmax(0,30rem);grid-template-areas:"intro fig" "rest fig";row-gap:0}
+ .intro{grid-area:intro}.hero-fig{grid-area:fig;align-self:center}.rest{grid-area:rest}}
+@media (max-width:899px){.rest .btns{order:-1;margin-top:0}.rest .sub{margin-top:1.25rem}}
+.btns{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.5rem}
+.btn{display:inline-flex;align-items:center;min-height:44px;padding:.55rem 1.15rem;border-radius:.4rem;font-size:.92rem;font-weight:550;text-decoration:none;border:1px solid var(--border);background:var(--raised);color:var(--text)}
+.btn:hover{border-color:var(--faint)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.btn.primary:hover{opacity:.92}
+figure{margin:0}
+.hero-fig{border:1px solid var(--border);border-radius:.6rem;padding:.75rem;background:var(--raised);position:relative}
+.hero-fig canvas{width:100%;aspect-ratio:560/300;display:block}
+.hero-fig figcaption{font-size:.8rem;color:var(--faint);margin-top:.4rem;padding-right:4.5rem}
+.hero-fig button{position:absolute;right:.75rem;bottom:.6rem;font:500 .75rem var(--mono);color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:.3rem;padding:.3rem .6rem;min-height:32px;cursor:pointer}
+.facts{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;margin-top:2rem;padding:1rem 0 0;border-top:1px solid var(--border);font-size:.88rem;color:var(--muted)}
+.facts b{color:var(--text);font-weight:650}
+section.block{padding:3.5rem 0 0}
+.block-head{margin-bottom:1.25rem}
+.block-head h2{margin-top:.35rem}
+.block-head>p{color:var(--muted);max-width:44rem;margin-top:.6rem}
+.grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(min(100%,19rem),1fr))}
+.card{position:relative;display:flex;flex-direction:column;border:1px solid var(--border);border-radius:.6rem;background:var(--raised);overflow:hidden;transition:border-color .15s,transform .15s}
+.card:hover{border-color:var(--faint)}
+.card .thumb{aspect-ratio:1200/630;width:100%;object-fit:cover;background:var(--surface);border-bottom:1px solid var(--border)}
+.card .thumb.wide{aspect-ratio:16/9;object-position:top}
+.hgrid .card .thumb.wide{aspect-ratio:2/1}
+.card .body{padding:.9rem 1rem 1rem;display:flex;flex-direction:column;gap:.5rem;flex:1}
+.card h3 a{text-decoration:none}
+.card h3 a::after{content:"";position:absolute;inset:0;z-index:1}
+.card .title{display:flex;align-items:center;gap:.55rem}
+.card .title img{width:22px;height:22px;flex:none}
+.card .place{font:500 .7rem/1.3 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.card .blurb{color:var(--muted);font-size:.93rem}
+.card .fact{font-size:.86rem;color:var(--text)}
+.card .checked{font-size:.82rem;line-height:1.5;color:var(--muted);border-left:2px solid var(--border);padding-left:.6rem}
+.card .checked b{font:500 .68rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);display:block}
+.card .more{margin-top:auto;padding-top:.4rem;display:flex;flex-wrap:wrap;gap:.25rem .9rem;font-size:.85rem;position:relative;z-index:2}
+.card .more a{color:var(--accent-text);text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--accent-text) 35%,transparent);text-underline-offset:3px}
+.card .more a:hover{text-decoration-color:currentColor}
+.track{margin-top:2.25rem}
+@media (min-width:760px){.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.hgrid{display:grid;gap:1rem;grid-template-columns:minmax(0,1fr)}
+@media (min-width:980px){.hgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:560px){.card.h{display:grid;grid-template-columns:minmax(0,38%) minmax(0,1fr)}
+ .card.h .thumb{height:100%;aspect-ratio:auto;min-height:11rem;border-bottom:0;border-right:1px solid var(--border)}}
+.textlink{display:inline-flex;align-items:center;min-height:44px;color:var(--accent-text);font-size:.92rem;font-weight:550}
+.track-head{display:flex;align-items:center;gap:.65rem;margin-bottom:.9rem}
+.track-head svg{width:22px;height:22px;flex:none}
+.track-head p{color:var(--muted);font-size:.95rem}
+.checks4{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(min(100%,15rem),1fr))}
+.stat{border:1px solid var(--border);border-radius:.6rem;padding:1rem;background:var(--raised);display:flex;flex-direction:column;gap:.35rem}
+.stat .n{font-size:1.65rem;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat .k{font:500 .7rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.stat p{font-size:.88rem;color:var(--muted)}
+.stat a{font-size:.85rem;color:var(--accent-text);margin-top:auto}
+.list{border-top:1px solid var(--border)}
+.row{display:grid;grid-template-columns:minmax(0,12rem) minmax(0,1fr) auto;gap:.4rem 1.25rem;padding:.9rem 0;border-bottom:1px solid var(--border);align-items:baseline}
+.row h3 a{text-decoration:none}
+.row h3 a:hover{text-decoration:underline}
+.row p{color:var(--muted);font-size:.93rem}
+.row .count{font:500 .85rem var(--mono);color:var(--text);white-space:nowrap;text-align:right}
+@media (max-width:700px){.row{grid-template-columns:minmax(0,1fr) auto}.row p{grid-column:1/-1;grid-row:2}}
+.note{font-size:.82rem;color:var(--faint);margin-top:.75rem}
+.built{border:1px solid var(--border);border-radius:.6rem;padding:1.25rem 1.25rem;background:var(--surface);max-width:48rem}
+.built p+p{margin-top:.75rem}
+.built p{color:var(--muted)}
+code{font:.88em var(--mono);background:var(--surface);border:1px solid var(--border);border-radius:.25rem;padding:.05rem .3rem;overflow-wrap:anywhere}
+footer.site{margin-top:4.5rem;border-top:1px solid var(--border);padding:1.5rem 0 2.5rem;font-size:.85rem;color:var(--faint)}
+footer.site .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.5rem 1.5rem}
+footer.site a{color:var(--muted)}
+.prose{max-width:46rem}
+.prose p{color:var(--muted);margin-top:.9rem}
+.big4{display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fill,minmax(min(100%,30rem),1fr));margin-top:1.25rem}
+.check{border:1px solid var(--border);border-radius:.6rem;background:var(--raised);padding:1.1rem 1.15rem;display:flex;flex-direction:column;gap:.6rem}
+.check svg{width:100%;height:auto}
+.check svg.dv{display:none;max-width:19rem;margin:0 auto}
+@media (max-width:600px){.check svg.dh{display:none}.check svg.dv{display:block}}
+.check blockquote{margin:0;border-left:2px solid var(--accent-line);padding-left:.75rem;color:var(--text);font-size:.93rem}
+.check .src{font-size:.82rem;color:var(--faint)}
+.check .src a{color:var(--accent-text)}
+.check .k{font:500 .7rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.tbl{width:100%;border-collapse:collapse;font-size:.9rem}
+.tbl th,.tbl td{text-align:left;vertical-align:top;padding:.7rem .6rem;border-bottom:1px solid var(--border)}
+.tbl th{font:500 .72rem var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.tbl td:first-child{white-space:nowrap}
+.tbl td a{color:var(--accent-text)}
+.tbl .site{display:flex;align-items:center;gap:.5rem;font-weight:550}
+.tbl .site img{width:18px;height:18px}
+@media (max-width:700px){.tbl thead{display:none}.tbl tr{display:block;padding:.7rem 0;border-bottom:1px solid var(--border)}
+ .tbl td{display:block;border:0;padding:.15rem 0}.tbl td:first-child{white-space:normal}}
+.qt{border-collapse:collapse;font-size:.82rem;margin:.4rem 0;width:100%}
+.qt th,.qt td{border:1px solid var(--border);padding:.3rem .45rem;text-align:left;vertical-align:top}
+.qt th{font:500 .68rem var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--faint);background:var(--surface)}
+.miss{border:1px solid var(--border);border-radius:.6rem;padding:1rem 1.15rem;background:var(--raised)}
+.miss ul{margin:.5rem 0 0;padding-left:1.1rem;color:var(--muted)}
+.miss li{margin:.45rem 0}
+.miss li a{color:var(--accent-text)}
+svg text{font-family:var(--mono)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="wrap">
+<a class="brand" href="/"><img src="/favicon.svg" alt="" width="24" height="24">Brendan Lynskey</a>
+<nav class="top" aria-label="Main">
+<a href="/#hardware" class="wide">Hardware</a>
+<a href="/#sites">Sites</a>
+<a href="/checks/">Checks</a>
+<a href="https://github.com/BrendanJamesLynskey">GitHub</a>
+</nav>
+</div></header>
+<main id="main">
+<section class="hero"><div class="wrap">
+<div class="hero-grid">
+<div class="intro">
+<p class="eyebrow">Portfolio</p>
+<h1>Brendan Lynskey</h1>
+<p class="lede">A staff-level engineer across hardware (RTL and FPGA, DSP, signal integrity) and agentic AI.</p>
+</div>
+<figure class="hero-fig">
+<canvas id="hero-canvas" width="560" height="300" role="img" aria-label="Animation: an agent loop sends operands into a four-by-four systolic array; the operands move one cell per cycle and each cell fills as it accumulates; the results drain back to the loop, which checks them against a reference before planning the next step."></canvas>
+<figcaption>Illustration: an agent loop drives a 4×4 output-stationary systolic array and checks every result against a reference.</figcaption>
+<button type="button" id="hero-pause">Pause</button>
+</figure>
+<div class="rest">
+<p class="sub">More than 25 years in hardware, and I write the software too. Here are sixteen interactive explainer sites in four tracks, deck series from signal integrity to agents, and the simulators and RTL behind them. Every number comes from tested code that is checked against a reference.</p>
+<div class="btns">
+<a class="btn primary" href="#sites">Explore the sites ↓</a>
+<a class="btn" href="/checks/">How I check the numbers →</a>
+<a class="textlink" href="#hardware">Hardware, DSP and SI ↓</a>
+</div>
+</div>
+</div>
+<p class="facts"><span><b>16</b> interactive sites</span><span><b>4</b> tracks</span><span><b>41</b> LLM sub-hubs, <b>275</b> decks</span><span><b>17</b> signal-integrity decks</span><span>Every number from a recorded run</span></p>
+</div></section>
+
+<section class="block" id="hardware" aria-labelledby="hardware-h"><div class="wrap">
+<div class="block-head"><div><p class="eyebrow">Home ground</p><h2 id="hardware-h">Hardware, DSP and signal integrity</h2></div>
+<p>Where most of my career has been: channels and equalisers, RTL and its verification, accelerator simulators and the DSP behind audio. Each card links a series hub; the hubs link the decks.</p></div>
+<div class="hgrid">
+<article class="card">
+<img class="thumb wide" src="/assets/shots/si.webp" alt="" width="640" height="360" loading="lazy" decoding="async">
+<div class="body">
+<h3><a href="https://brendanjameslynskey.github.io/Signal_Integrity/">Signal Integrity &amp; High-Speed Digital Design</a></h3>
+<p class="blurb">Getting a signal from one chip to another intact: transmission lines, return paths, materials, vias, crosstalk, jitter, power integrity, timing budgets, de-embedding and channel operating margin. Every number is computed by a model and checked against published worked examples.</p>
+<p class="fact">17 decks, 188 slides; 20 cross-checks against published results, the largest difference 2.44 %.</p>
+<p class="more"><a href="https://github.com/BrendanJamesLynskey/Matrix_Articles">Code and models</a><a href="https://github.com/BrendanJamesLynskey/Interview_SI_PI">Interview notes</a></p>
+</div>
+</article><article class="card">
+<img class="thumb wide" src="/assets/shots/serdes.webp" alt="" width="640" height="360" loading="lazy" decoding="async">
+<div class="body">
+<h3><a href="https://brendanjameslynskey.github.io/SerDes_Equalisation/">SerDes, SoC and Matrix Methods</a></h3>
+<p class="blurb">One 28 GBd backplane channel taken end to end, from S-parameters through CTLE, FFE and DFE to a closed link budget; the S-, Z- and Y-parameter and filter theory underneath it; and a Modern SoC Design series on packaging, chiplets, NoCs and memory.</p>
+<p class="fact">The noise budget lands 1.36 dB short of 10⁻¹², and seven remedies are priced in dB.</p>
+<p class="more"><a href="https://brendanjameslynskey.github.io/Matrix_Methods_Network_Parameters/">Matrix Methods in Network Parameters</a><a href="https://brendanjameslynskey.github.io/Matrix_Concepts_Digital_Filters/">Matrix Concepts in Digital Filters</a><a href="https://brendanjameslynskey.github.io/SoC/">Modern SoC Design</a></p>
+</div>
+</article><article class="card">
+<img class="thumb wide" src="/assets/shots/svsim.webp" alt="" width="640" height="360" loading="lazy" decoding="async">
+<div class="body">
+<h3><a href="https://brendanjameslynskey.github.io/SystemVerilog_Simulators/">RTL: interview challenges and free SystemVerilog simulators</a></h3>
+<p class="blurb">Nineteen RTL interview challenges put through Icarus Verilog, Verilator, the Vivado simulator and slang, construct by construct, with every error message recorded; plus synthesisable RTL with its own verification suites.</p>
+<p class="fact">All nineteen challenges pass (nine in Verilator, ten in xsim).</p>
+<p class="more"><a href="https://github.com/BrendanJamesLynskey/Interview_RTL_LLM_Accelerators">RTL / LLM accelerator challenges</a><a href="https://github.com/BrendanJamesLynskey/Interview_FPGA">FPGA challenges</a><a href="https://github.com/BrendanJamesLynskey/LLM_Transformer_Decoder_RTL">Transformer decoder in RTL</a><a href="https://github.com/BrendanJamesLynskey/AI_MMUL_Unit">Matrix multiplier units</a><a href="https://github.com/BrendanJamesLynskey/RISCV_SoC">RISC-V SoC</a></p>
+</div>
+</article><article class="card">
+<img class="thumb wide" src="/assets/shots/fhe.webp" alt="" width="640" height="360" loading="lazy" decoding="async">
+<div class="body">
+<h3><a href="https://brendanjameslynskey.github.io/FHE_Hub_Accelerator_Simulators/">FHE Accelerator Simulators</a></h3>
+<p class="blurb">Simulating a fully homomorphic encryption accelerator running CKKS bootstrapping: the workload, the anatomy of bootstrapping, a SimPy accelerator model with a live in-browser simulator, optical NTT engines and the design space.</p>
+<p class="fact">Five decks; the simulator has a bit-exact JavaScript port and replays OpenFHE traces.</p>
+<p class="more"><a href="https://github.com/BrendanJamesLynskey/FHE_Accelerator_Sim">FHE_Accelerator_Sim (code)</a><a href="https://github.com/BrendanJamesLynskey/RTL_CoSim_NTT">NTT RTL co-simulation</a></p>
+</div>
+</article><article class="card">
+<img class="thumb wide" src="/assets/shots/simeng.webp" alt="" width="640" height="360" loading="lazy" decoding="async">
+<div class="body">
+<h3><a href="https://brendanjameslynskey.github.io/SimEng_Hub_Toolkit/">Simulation Engineering Toolkit</a></h3>
+<p class="blurb">The engineering around a hardware-architecture simulator: Rust and PyO3, SystemC TLM-2.0, DRAM/HBM modelling, a cocotb/Verilator verification bridge, Jenkins, specifications and test plans, PyTorch and ONNX front ends, measurement tools and power, performance and area.</p>
+<p class="fact">Fourteen decks, with five code repositories behind them.</p>
+<p class="more"><a href="https://github.com/BrendanJamesLynskey/Rust_DES_Kernel">Rust_DES_Kernel</a><a href="https://github.com/BrendanJamesLynskey/SystemC_Accelerator_Model">SystemC_Accelerator_Model</a><a href="https://github.com/BrendanJamesLynskey/Torch_Sim_Frontend">Torch_Sim_Frontend</a></p>
+</div>
+</article><article class="card">
+<img class="thumb wide" src="/assets/shots/nss.webp" alt="" width="640" height="360" loading="lazy" decoding="async">
+<div class="body">
+<h3><a href="https://brendanjameslynskey.github.io/Neural_Sound_Synthesis/">DSP, neural sound synthesis and audio plugins</a></h3>
+<p class="blurb">A twelve-part interactive series on how machine learning makes sound, an audio plugins hub with a JUCE tutorial and seven example plugins, and browser synthesisers, analysers and guides to the transforms. Every sound is synthesised live in the browser.</p>
+<p class="fact">Twelve parts; the DSP &amp; Music index lists 50 projects in 8 areas.</p>
+<p class="more"><a href="https://brendanjameslynskey.github.io/Audio_Plugins/">Audio Plugins</a><a href="https://github.com/BrendanJamesLynskey/DSP_and_Music">DSP &amp; Music index</a></p>
+</div>
+</article><article class="card">
+<img class="thumb wide" src="/assets/shots/cithub.webp" alt="" width="640" height="360" loading="lazy" decoding="async">
+<div class="body">
+<h3><a href="https://brendanjameslynskey.github.io/LLM_Hub_Compute_in_Transit/">Compute in Transit</a></h3>
+<p class="blurb">Can useful work be done on LLM training and inference traffic while it crosses a link? Five decks on a photonic link module (arXiv:2608.21536), its operations-per-byte budget, frequency-domain gradient compression and a fixed-band experiment, with a results site.</p>
+<p class="fact">The answer at this scale is negative, and the series says so.</p>
+<p class="more"><a href="https://compute-in-transit-results.vercel.app/">Results site</a></p>
+</div>
+</article><article class="card">
+<img class="thumb wide" src="/assets/shots/hardware.webp" alt="" width="640" height="360" loading="lazy" decoding="async">
+<div class="body">
+<h3><a href="https://brendanjameslynskey.github.io/Hardware/">Hardware index: RTL, RISC-V, Arm and more</a></h3>
+<p class="blurb">Everything else in hardware: a RISC-V SoC built from separately verified subsystems, Arm Cortex-M, Cortex-A, Neoverse, AMBA and system IP series, dividers, CORDIC and NN number formats in SystemVerilog, Galois fields, optical technology and power electronics.</p>
+<p class="fact">The Hardware index lists 52 projects.</p>
+<p class="more"><a href="https://github.com/BrendanJamesLynskey/RISCV_SoC">RISC-V SoC</a><a href="https://brendanjameslynskey.github.io/Optical_Hub_Silicon_Photonics/">Optical technology</a></p>
+</div>
+</article>
+</div>
+</div></section>
+
+<section class="block" id="sites" aria-labelledby="sites-h"><div class="wrap">
+<div class="block-head"><div><p class="eyebrow">Interactive sites</p><h2 id="sites-h">Sixteen sites, four tracks</h2></div>
+<p>Each site is a computed, animated reading experience: the animations are drawn from a tested model, not hand-made. Every site's header has a menu to all the others, and every repository ships its models, fixtures and CI.</p></div>
+<div class="track" id="track-foundations">
+<div class="track-head" style="color:var(--t-foundations)"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="currentColor"/></svg>
+<h3 style="color:var(--text)">Foundations</h3><p>One small model, end to end</p></div>
+<div class="grid two">
+<article class="card">
+<img class="thumb" src="/assets/cards/decoder.webp" alt="" width="600" height="315" loading="lazy" decoding="async">
+<div class="body">
+<p class="place">Foundations › Decoder</p>
+<div class="title"><img src="/assets/icons/decoder.svg" alt="" width="22" height="22"><h3><a href="https://transformer-decoder-explained.vercel.app/">Transformer Decoder Explained</a></h3></div>
+<p class="blurb">How it runs, one forward pass</p>
+<p class="checked"><b>How this is checked</b>The TypeScript transformer in your browser is checked against PyTorch, operation by operation, to within 1e-5, and the animations&#x27; frames against a float64 PyTorch run of the same seeded weights.</p>
+<p class="more"><a href="https://transformer-decoder-explained.vercel.app/about#checked">How it is tested<span class="sr"> (Transformer Decoder Explained)</span></a></p>
+</div>
+</article>
+<article class="card">
+<img class="thumb" src="/assets/cards/training.webp" alt="" width="600" height="315" loading="lazy" decoding="async">
+<div class="body">
+<p class="place">Foundations › Training</p>
+<div class="title"><img src="/assets/icons/training.svg" alt="" width="22" height="22"><h3><a href="https://transformer-training-explained.vercel.app/training">Transformer Training Explained</a></h3></div>
+<p class="blurb">How it learns, from one step to many GPUs</p>
+<p class="checked"><b>How this is checked</b>A NumPy reference of the trainer matches PyTorch autograd (to 1e-12) and torch.optim, and the trainer in your browser matches that reference step for step.</p>
+<p class="more"><a href="https://transformer-decoder-explained.vercel.app/about#checked">How it is tested<span class="sr"> (Transformer Training Explained)</span></a></p>
+</div>
+</article>
+</div>
+</div><div class="track" id="track-hardware">
+<div class="track-head" style="color:var(--t-hardware)"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3.5" y="3.5" width="25" height="25" rx="2.5" fill="currentColor"/><path d="M9 0h3v4h-3zM20 0h3v4h-3zM9 28h3v4h-3zM20 28h3v4h-3zM0 9h4v3h-4zM0 20h4v3h-4zM28 9h4v3h-4zM28 20h4v3h-4z" fill="currentColor"/></svg>
+<h3 style="color:var(--text)">Hardware</h3><p>The machines underneath, chip to rack</p></div>
+<div class="grid two">
+<article class="card">
+<img class="thumb" src="/assets/cards/kernels.webp" alt="" width="600" height="315" loading="lazy" decoding="async">
+<div class="body">
+<p class="place">Hardware › Kernels</p>
+<div class="title"><img src="/assets/icons/kernels.svg" alt="" width="22" height="22"><h3><a href="https://gpu-kernels-explained.vercel.app/">GPU Kernels Explained</a></h3></div>
+<p class="blurb">How a GPU executes the maths</p>
+<p class="checked"><b>How this is checked</b>The GPU model is checked against the CUDA Programming Guide&#x27;s worked examples (coalescing, bank conflicts, occupancy), and its TypeScript port reproduces the Python reference exactly.</p>
+<p class="more"><a href="https://gpu-kernels-explained.vercel.app/about#checked">How it is tested<span class="sr"> (GPU Kernels Explained)</span></a></p>
+</div>
+</article>
+<article class="card">
+<img class="thumb" src="/assets/cards/silicon.webp" alt="" width="600" height="315" loading="lazy" decoding="async">
+<div class="body">
+<p class="place">Hardware › Systolic</p>
+<div class="title"><img src="/assets/icons/silicon.svg" alt="" width="22" height="22"><h3><a href="https://systolic-arrays-explained.vercel.app/">Systolic Arrays Explained</a></h3></div>
+<p class="blurb">Inside a matrix engine</p>
+<p class="checked"><b>How this is checked</b>The cycle-accurate model&#x27;s output-stationary frames match a SystemVerilog array simulated in Verilator 5.020 on every accumulator after every clock edge: 613 values, 0 mismatches.</p>
+<p class="more"><a href="https://systolic-arrays-explained.vercel.app/about#checked">How it is tested<span class="sr"> (Systolic Arrays Explained)</span></a></p>
+</div>
+</article>
+<article class="card">
+<img class="thumb" src="/assets/cards/accelerators.webp" alt="" width="600" height="315" loading="lazy" decoding="async">
+<div class="body">
+<p class="place">Hardware › Accelerators</p>
+<div class="title"><img src="/assets/icons/accelerators.svg" alt="" width="22" height="22"><h3><a href="https://ai-accelerators-explained.vercel.app/">AI Accelerators Explained</a></h3></div>
+<p class="blurb">The families of AI chips</p>
+<p class="checked"><b>How this is checked</b>Every specification carries its source and the date it was read, vendor claims are never used as inputs, and the model is checked against published capacity, throughput and latency figures.</p>
+<p class="more"><a href="https://ai-accelerators-explained.vercel.app/about#validation">How it is tested<span class="sr"> (AI Accelerators Explained)</span></a></p>
+</div>
+</article>
+<article class="card">
+<img class="thumb" src="/assets/cards/racks.webp" alt="" width="600" height="315" loading="lazy" decoding="async">
+<div class="body">
+<p class="place">Hardware › Racks</p>
+<div class="title"><img src="/assets/icons/racks.svg" alt="" width="22" height="22"><h3><a href="https://ai-racks-explained.vercel.app/">AI Racks Explained</a></h3></div>
+<p class="blurb">GPUs, networks, power, cooling at scale</p>
+<p class="checked"><b>How this is checked</b>Every hardware figure carries its source and the date it was read, and the model is checked against published rack, switch and fabric totals that it does not take as inputs.</p>
+<p class="more"><a href="https://ai-racks-explained.vercel.app/about#validation">How it is tested<span class="sr"> (AI Racks Explained)</span></a></p>
+</div>
+</article>
+</div>
+</div><div class="track" id="track-inference">
+<div class="track-head" style="color:var(--t-inference)"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 0.5 29.5 8.25v15.5L16 31.5 2.5 23.75V8.25z" fill="currentColor"/></svg>
+<h3 style="color:var(--text)">Inference</h3><p>Serving models at scale</p></div>
+<div class="grid two">
+<article class="card">
+<img class="thumb" src="/assets/cards/inference.webp" alt="" width="600" height="315" loading="lazy" decoding="async">
+<div class="body">
+<p class="place">Inference › Serving</p>
+<div class="title"><img src="/assets/icons/inference.svg" alt="" width="22" height="22"><h3><a href="https://llm-inference-explained.vercel.app/">LLM Inference Explained</a></h3></div>
+<p class="blurb">How real systems generate text</p>
+<p class="checked"><b>How this is checked</b>The serving simulator in chapters 11–14 is Disaggregated_Inference_Sim&#x27;s own engine, copied byte for byte from a pinned commit, and CI requires every request&#x27;s timestamps to match its Python original; the tiny model&#x27;s cached logits are bit-identical to full recomputation.</p>
+<p class="more"><a href="https://llm-inference-explained.vercel.app/about#numbers">How it is tested<span class="sr"> (LLM Inference Explained)</span></a></p>
+</div>
+</article>
+<article class="card">
+<img class="thumb" src="/assets/cards/architectures.webp" alt="" width="600" height="315" loading="lazy" decoding="async">
+<div class="body">
+<p class="place">Inference › Architectures</p>
+<div class="title"><img src="/assets/icons/architectures.svg" alt="" width="22" height="22"><h3><a href="https://llm-architectures-explained.vercel.app/">LLM Architectures Explained</a></h3></div>
+<p class="blurb">How model designs differ</p>
+<p class="checked"><b>How this is checked</b>Every value links to its source, and the modelled parameter count of 80 of the 86 open models whose published weights can be counted is within 0.5% of those weights at a pinned commit.</p>
+<p class="more"><a href="https://llm-architectures-explained.vercel.app/about#checks">How it is tested<span class="sr"> (LLM Architectures Explained)</span></a></p>
+</div>
+</article>
+<article class="card">
+<img class="thumb" src="/assets/cards/numerics.webp" alt="" width="600" height="315" loading="lazy" decoding="async">
+<div class="body">
+<p class="place">Inference › Numerics</p>
+<div class="title"><img src="/assets/icons/numerics.svg" alt="" width="22" height="22"><h3><a href="https://numerics-explained.vercel.app/">Numerics Explained</a></h3></div>
+<p class="blurb">Number formats and quantisation</p>
+<p class="checked"><b>How this is checked</b>Every code of every format up to 16 bits is checked against numpy and ml_dtypes, and the TypeScript port in your browser reproduces the Python reference exactly.</p>
+<p class="more"><a href="https://numerics-explained.vercel.app/about#checked">How it is tested<span class="sr"> (Numerics Explained)</span></a></p>
+</div>
+</article>
+<article class="card">
+<img class="thumb" src="/assets/cards/tradeoffs.webp" alt="" width="600" height="315" loading="lazy" decoding="async">
+<div class="body">
+<p class="place">Inference › Trade-offs</p>
+<div class="title"><img src="/assets/icons/tradeoffs.svg" alt="" width="22" height="22"><h3><a href="https://inference-tradeoffs-explained.vercel.app/">Inference Trade-offs Explained</a></h3></div>
+<p class="blurb">Which lever helps which metric</p>
+<p class="checked"><b>How this is checked</b>For every one of the 350 sweep points, the simulator&#x27;s JavaScript engine (the one the what-if runs in your browser) reproduces the recorded TTFT, TPOT and ITL percentiles of the Python run exactly.</p>
+<p class="more"><a href="https://inference-tradeoffs-explained.vercel.app/about#checks">How it is tested<span class="sr"> (Inference Trade-offs Explained)</span></a></p>
+</div>
+</article>
+</div>
+</div><div class="track" id="track-agents">
+<div class="track-head" style="color:var(--t-agents)"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="0.5" y="1" width="31" height="24" rx="6" fill="currentColor"/><path d="M6 23v8.5l8.5-8.5z" fill="currentColor"/></svg>
+<h3 style="color:var(--text)">Agents</h3><p>Building on models</p></div>
+<div class="grid">
+<article class="card">
+<img class="thumb" src="/assets/cards/harnesses.webp" alt="" width="600" height="315" loading="lazy" decoding="async">
+<div class="body">
+<p class="place">Agents › Harnesses</p>
+<div class="title"><img src="/assets/icons/harnesses.svg" alt="" width="22" height="22"><h3><a href="https://agent-harnesses-explained.vercel.app/">Agent Harnesses Explained</a></h3></div>
+<p class="blurb">The loop between a model and the world</p>
+<p class="checked"><b>How this is checked</b>Agent_Loop_Sim&#x27;s Python reference and the TypeScript port in your browser produce the same events, token for token and float for float, and three recorded runs of a small open-weights model are replayed token for token.</p>
+<p class="more"><a href="https://agent-harnesses-explained.vercel.app/about#engine">How it is tested<span class="sr"> (Agent Harnesses Explained)</span></a></p>
+</div>
+</article>
+<article class="card">
+<img class="thumb" src="/assets/cards/protocols.webp" alt="" width="600" height="315" loading="lazy" decoding="async">
+<div class="body">
+<p class="place">Agents › Protocols</p>
+<div class="title"><img src="/assets/icons/protocols.svg" alt="" width="22" height="22"><h3><a href="https://agent-protocols-explained.vercel.app/">Agent Protocols Explained</a></h3></div>
+<p class="blurb">MCP, transports, auth and A2A</p>
+<p class="checked"><b>How this is checked</b>The engine sends the same 160 messages as the official MCP Python SDK (mcp 2.3.0) over 18 recorded sessions, and the same 56 as the official A2A SDK (a2a-sdk 1.2.2), compared as JSON.</p>
+<p class="more"><a href="https://agent-protocols-explained.vercel.app/about#sdk">How it is tested<span class="sr"> (Agent Protocols Explained)</span></a></p>
+</div>
+</article>
+<article class="card">
+<img class="thumb" src="/assets/cards/context.webp" alt="" width="600" height="315" loading="lazy" decoding="async">
+<div class="body">
+<p class="place">Agents › Context</p>
+<div class="title"><img src="/assets/icons/context.svg" alt="" width="22" height="22"><h3><a href="https://agent-context-explained.vercel.app/">Agent Context Explained</a></h3></div>
+<p class="blurb">Retrieval, memory and context engineering</p>
+<p class="checked"><b>How this is checked</b>Every retrieval number is measured on 200 SQuAD questions with real MiniLM embeddings and recorded reranker scores, and the TypeScript engine in your browser reproduces the Python reference exactly, with no tolerance.</p>
+<p class="more"><a href="https://agent-context-explained.vercel.app/about#measured">How it is tested<span class="sr"> (Agent Context Explained)</span></a></p>
+</div>
+</article>
+<article class="card">
+<img class="thumb" src="/assets/cards/orchestration.webp" alt="" width="600" height="315" loading="lazy" decoding="async">
+<div class="body">
+<p class="place">Agents › Orchestration</p>
+<div class="title"><img src="/assets/icons/orchestration.svg" alt="" width="22" height="22"><h3><a href="https://agent-orchestration-explained.vercel.app/">Agent Orchestration Explained</a></h3></div>
+<p class="blurb">Graphs, multi-agent patterns, durability</p>
+<p class="checked"><b>How this is checked</b>Each of 39 sessions also runs in real LangGraph 1.2.14, and after every one of 71 operations its whole checkpoint history equals the engine&#x27;s.</p>
+<p class="more"><a href="https://agent-orchestration-explained.vercel.app/about#langgraph">How it is tested<span class="sr"> (Agent Orchestration Explained)</span></a></p>
+</div>
+</article>
+<article class="card">
+<img class="thumb" src="/assets/cards/evals.webp" alt="" width="600" height="315" loading="lazy" decoding="async">
+<div class="body">
+<p class="place">Agents › Evals</p>
+<div class="title"><img src="/assets/icons/evals.svg" alt="" width="22" height="22"><h3><a href="https://agent-evals-explained.vercel.app/">Agent Evals Explained</a></h3></div>
+<p class="blurb">Measuring agents</p>
+<p class="checked"><b>How this is checked</b>The estimators are tested against scipy and statsmodels on a synthetic benchmark whose truth is known, and the TypeScript engine in your browser reproduces every Python fixture bit for bit.</p>
+<p class="more"><a href="https://agent-evals-explained.vercel.app/about#engine">How it is tested<span class="sr"> (Agent Evals Explained)</span></a></p>
+</div>
+</article>
+<article class="card">
+<img class="thumb" src="/assets/cards/security.webp" alt="" width="600" height="315" loading="lazy" decoding="async">
+<div class="body">
+<p class="place">Agents › Security</p>
+<div class="title"><img src="/assets/icons/security.svg" alt="" width="22" height="22"><h3><a href="https://agent-security-explained.vercel.app/">Agent Security Explained</a></h3></div>
+<p class="blurb">Threats and defences</p>
+<p class="checked"><b>How this is checked</b>The trifecta check agrees with an exhaustive search on all 256 tool subsets, and the TypeScript engine in your browser reproduces the Python reference&#x27;s fixtures exactly.</p>
+<p class="more"><a href="https://agent-security-explained.vercel.app/about#engine">How it is tested<span class="sr"> (Agent Security Explained)</span></a></p>
+</div>
+</article>
+</div>
+</div>
+</div></section>
+
+<section class="block" id="showcases" aria-labelledby="showcases-h"><div class="wrap">
+<div class="block-head"><div><p class="eyebrow">Showcases</p><h2 id="showcases-h">Agents for hardware, and things that make sound or move</h2></div></div>
+<div class="grid">
+<article class="card">
+<img class="thumb" src="/assets/cards/dse.webp" alt="" width="600" height="315" loading="lazy" decoding="async">
+<div class="body">
+<h3><a href="https://hw-design-space-agent.vercel.app/">HW Design-Space Agent</a></h3>
+<p class="blurb">A LangGraph agent that explores hardware design trade-offs from one spec down a fidelity ladder to synthesis, with every number from a recorded run.</p>
+<p class="more"><a href="https://github.com/BrendanJamesLynskey/HW_Design_Space_Agent">Agent code</a></p>
+</div>
+</article><article class="card">
+<img class="thumb" src="/assets/cards/transit.webp" alt="" width="600" height="315" loading="lazy" decoding="async">
+<div class="body">
+<h3><a href="https://compute-in-transit-results.vercel.app/">Compute in Transit: results</a></h3>
+<p class="blurb">Can a fixed frequency band replace DeMo&#x27;s top-k? An experiment, emulated optics and a training-transit simulation, with an honest negative result.</p>
+<p class="more"><a href="https://github.com/BrendanJamesLynskey/compute-in-transit-results">Code</a></p>
+</div>
+</article><article class="card">
+<img class="thumb wide" src="/assets/shots/phatty.webp" alt="" width="640" height="360" loading="lazy" decoding="async">
+<div class="body">
+<h3><a href="https://brendanjameslynskey.github.io/Phatty/">Phatty</a></h3>
+<p class="blurb">A browser groovebox: a 303-style bass line, 808/909 drums, a poly synth and effects, all synthesised live with Web Audio.</p>
+<p class="more"><a href="https://github.com/BrendanJamesLynskey/Phatty">Code</a></p>
+</div>
+</article><article class="card">
+<img class="thumb wide" src="/assets/shots/rc.webp" alt="" width="640" height="360" loading="lazy" decoding="async">
+<div class="body">
+<h3><a href="https://brendanjameslynskey.github.io/RC-Flight-Line/">RC Flight Line</a></h3>
+<p class="blurb">A radio-control flight simulator in hand-written WebGL with a blade-element flight model: stall, tip stall and ground effect emerge from the physics.</p>
+<p class="more"><a href="https://github.com/BrendanJamesLynskey/RC-Flight-Line">Code</a></p>
+</div>
+</article><article class="card">
+<img class="thumb wide" src="/assets/shots/class47.webp" alt="" width="640" height="360" loading="lazy" decoding="async">
+<div class="body">
+<h3><a href="https://brendanjameslynskey.github.io/Class-47-Cab-Sim/">Class 47 Cab Simulator</a></h3>
+<p class="blurb">A first-person diesel locomotive cab simulator in Three.js, built to run on a Raspberry Pi 5 with a game controller.</p>
+<p class="more"><a href="https://github.com/BrendanJamesLynskey/Class-47-Cab-Sim">Code</a></p>
+</div>
+</article>
+</div>
+</div></section>
+
+<section class="block" id="checks" aria-labelledby="checks-h"><div class="wrap">
+<div class="block-head"><div><p class="eyebrow">Verification</p><h2 id="checks-h">How I check the numbers</h2></div>
+<p>A model that agrees only with itself proves little, so every site is checked against something independent of it. Four examples, quoted from the sites:</p></div>
+<div class="checks4">
+<div class="stat"><span class="k">Against RTL</span><span class="n">613 / 0</span><p>Systolic: “compares every accumulator after every clock edge with the model: 613 values, 0 mismatches”, in Verilator.</p><a href="https://systolic-arrays-explained.vercel.app/about#checked">The check →</a></div>
+<div class="stat"><span class="k">Against LangGraph</span><span class="n">39 sessions</span><p>Orchestration: real LangGraph 1.2.14. “After each of the 71 operations”, the whole checkpoint history is compared.</p><a href="https://agent-orchestration-explained.vercel.app/about#langgraph">The check →</a></div>
+<div class="stat"><span class="k">Against the official SDKs</span><span class="n">160 messages</span><p>Protocols: “the engine must produce the same 160 messages, compared as JSON with request IDs renumbered”.</p><a href="https://agent-protocols-explained.vercel.app/about#sdk">The check →</a></div>
+<div class="stat"><span class="k">Against PyTorch</span><span class="n">1e-5</span><p>Decoder: the TypeScript transformer is “checked against PyTorch fixtures, operation by operation, to within 1e-5”.</p><a href="https://transformer-decoder-explained.vercel.app/about#checked">The check →</a></div>
+</div>
+<div class="btns"><a class="btn primary" href="/checks/">Every site's check, and where the models miss →</a></div>
+</div></section>
+
+<section class="block" id="decks" aria-labelledby="decks-h"><div class="wrap">
+<div class="block-head"><div><p class="eyebrow">Deck library</p><h2 id="decks-h">The index hubs</h2></div>
+<p>Lecture-style slide decks go deeper than the sites. These indexes list them; the counts are taken from each index's README when this page is built.</p></div>
+<div class="list">
+<div class="row">
+<h3><a href="https://brendanjameslynskey.github.io/LLMs/">LLMs</a></h3>
+<p>The main index: the interactive sites, then sub-hubs from transformer internals and GPU hardware to retrieval, agents, evaluations and safety.</p>
+<span class="count">41 sub-hubs · 275 decks</span>
+</div><div class="row">
+<h3><a href="https://brendanjameslynskey.github.io/Hardware/">Hardware</a></h3>
+<p>RTL, RISC-V and Arm, SoC design, arithmetic units, optical technology, signal integrity and power electronics.</p>
+<span class="count">52 projects</span>
+</div><div class="row">
+<h3><a href="https://brendanjameslynskey.github.io/Signal_Integrity/">Signal Integrity</a></h3>
+<p>One repository, five sections, a long-form PDF alongside.</p>
+<span class="count">17 decks · 188 slides</span>
+</div><div class="row">
+<h3><a href="https://github.com/BrendanJamesLynskey/DSP_and_Music">DSP &amp; Music</a></h3>
+<p>Synthesisers, analysis and effects, audio plugins, signal-processing guides and neural audio synthesis.</p>
+<span class="count">50 projects · 8 areas</span>
+</div><div class="row">
+<h3><a href="https://brendanjameslynskey.github.io/Software/">Software</a></h3>
+<p>CI/CD, Jenkins and GitHub Actions, identity and authorisation, cloud, web, algorithms and tooling.</p>
+<span class="count">110 projects</span>
+</div><div class="row">
+<h3><a href="https://brendanjameslynskey.github.io/Mathematics/">Mathematics</a></h3>
+<p>Cryptography, coding theory, quantitative finance, mathematics for machine learning and historical mathematicians.</p>
+<span class="count">39 projects</span>
+</div><div class="row">
+<h3><a href="https://github.com/BrendanJamesLynskey/Miscellaneous">Miscellaneous</a></h3>
+<p>Interview preparation, careers, psychology and philosophy, and music.</p>
+<span class="count">13 projects</span>
+</div>
+</div>
+</div></section>
+
+<section class="block" id="built" aria-labelledby="built-h"><div class="wrap">
+<div class="block-head"><div><p class="eyebrow">Method</p><h2 id="built-h">How this is built</h2></div></div>
+<div class="built">
+<!-- how-this-is-built: start (src/how-this-is-built.html) -->
+<!-- DRAFT: owner to approve the wording. Edit this file, then run python3 tools/build.py. -->
+<p>I choose the topics, write the specifications and set the rules for verification: every number on these pages comes from a recorded run of tested code, every browser port must reproduce its Python reference, and every model is checked against something independent of it. I check the numbers, and I own them.</p>
+<p>The building is done with Claude (Anthropic's Claude Code) as an agentic engineering workflow. One session plans the work and writes a brief; another carries the brief out; the first then checks the result against the brief before anything is published. Every commit made this way carries a <code>Co-Authored-By: Claude</code> line, so the split is visible in each repository's history.</p>
+<!-- how-this-is-built: end -->
+</div>
+</div></section>
+</main>
+<script src="/assets/hero.js" defer></script>
+<footer class="site"><div class="wrap">
+<span>Brendan Lynskey · <a href="https://github.com/BrendanJamesLynskey">GitHub</a> · <a href="/checks/">How I check the numbers</a></span>
+<span>A static page, built 2026-10-16 from its <a href="https://github.com/BrendanJamesLynskey/BrendanJamesLynskey.github.io">source</a>.</span>
+</div></footer>
+</body>
+</html>

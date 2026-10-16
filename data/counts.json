@@ -1,0 +1,34 @@
+{
+ "LLMs": {
+  "subhubs": 41,
+  "decks": 275
+ },
+ "Hardware": {
+  "projects": 52
+ },
+ "Software": {
+  "projects": 110
+ },
+ "Mathematics": {
+  "projects": 39
+ },
+ "Miscellaneous": {
+  "projects": 13
+ },
+ "Signal_Integrity": {
+  "decks": 17,
+  "slides": 188,
+  "published_checks": 20,
+  "worst_pct": 2.44,
+  "sources": [
+   "Cohn 1955",
+   "Hall & Heck",
+   "Johnson",
+   "Johnson & Graham"
+  ]
+ },
+ "DSP_and_Music": {
+  "areas": 8,
+  "projects": 50
+ }
+}
