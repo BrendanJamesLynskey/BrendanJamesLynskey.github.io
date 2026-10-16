@@ -22,7 +22,9 @@ NAME = "Brendan Lynskey"
 DATA = json.load(open(os.path.join(ROOT, "data", "sites.json")))
 COUNTS = json.load(open(os.path.join(ROOT, "data", "counts.json")))
 BUILT = os.environ.get("BUILD_DATE") or datetime.date.today().isoformat()
-HOW_BUILT = open(os.path.join(ROOT, "src", "how-this-is-built.html")).read().strip()
+# the owner's paragraph; its own comments (the draft note) stay out of the published page
+HOW_BUILT = re.sub(r"<!--.*?-->\s*", "", open(os.path.join(ROOT, "src", "how-this-is-built.html")).read(),
+                   flags=re.S).strip()
 
 e = html.escape
 
