@@ -360,7 +360,7 @@ def home():
 <button type="button" id="hero-pause">Pause</button>
 </figure>
 <div class="rest">
-<p class="sub">More than 25 years in hardware, and I write the software too. Here are sixteen interactive explainer sites in four tracks, deck series from signal integrity to agents, and the simulators and RTL behind them. Every number comes from tested code that is checked against a reference.</p>
+<p class="sub">More than 25 years in hardware, and I write the software too. Here are sixteen interactive explainer sites in four tracks, deck series from signal integrity to agents, and the simulators and RTL behind them. Every number comes from tested code or a cited, dated source, and every model is checked against something independent of it.</p>
 <div class="btns">
 <a class="btn primary" href="#sites">Explore the sites ↓</a>
 <a class="btn" href="/checks/">How I check the numbers →</a>
@@ -368,7 +368,7 @@ def home():
 </div>
 </div>
 </div>
-<p class="facts"><span><b>16</b> interactive sites</span><span><b>4</b> tracks</span><span><b>{llms['subhubs']}</b> LLM sub-hubs, <b>{llms['decks']}</b> decks</span><span><b>{COUNTS['Signal_Integrity']['decks']}</b> signal-integrity decks</span><span>Every number from a recorded run</span></p>
+<p class="facts"><span><b>16</b> interactive sites</span><span><b>4</b> tracks</span><span><b>{llms['subhubs']}</b> LLM sub-hubs, <b>{llms['decks']}</b> decks</span><span><b>{COUNTS['Signal_Integrity']['decks']}</b> signal-integrity decks</span><span>Every number tested or sourced</span></p>
 </div></section>
 
 <section class="block" id="hardware" aria-labelledby="hardware-h"><div class="wrap">
@@ -551,7 +551,7 @@ def checks_page():
 <section class="hero">
 <p class="eyebrow">Verification</p>
 <h1>How I check the numbers</h1>
-<p class="lede">Every number on the sites comes from tested code, and every model is checked against something independent of it: RTL, a real framework, an official SDK, PyTorch or a published figure.</p>
+<p class="lede">Every number on the sites comes from tested code or a cited, dated source, and every model is checked against something independent of it: RTL, a real framework, an official SDK, PyTorch or a published figure.</p>
 <p class="sub">The quotes below are copied from each site's About page, its README or its <code>results.md</code>, and a script checks that every quote still appears, word for word, on the page it links to.</p>
 </section>
 
