@@ -15,7 +15,7 @@ import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from optalysys import SECTIONS as O_SECTIONS  # noqa: E402
+from optalysys import SECTIONS as O_SECTIONS, SOURCES as O_SOURCES  # noqa: E402
 from content import DIGITAL_TWIN, HARDWARE, INDEXES, QUOTES, SHOWCASES, GH  # noqa: E402
 from cv import CV, DOMAIN_LABEL, PROFILE  # noqa: E402
 
@@ -777,6 +777,16 @@ O_CSS = """
 .o-card .more a{display:inline-flex;align-items:center;min-height:32px;color:var(--accent-text);text-underline-offset:3px}
 @media (min-width:900px){.o-card.wide{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,46%) minmax(0,1fr)}
  .o-card.wide .thumb{height:100%;aspect-ratio:auto;object-position:left top;border-bottom:0;border-right:1px solid var(--border)}}
+.o-src{padding-top:3.75rem}
+.o-src-lede{color:var(--muted);max-width:44rem;margin:.4rem 0 1.25rem}
+.o-src-grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(min(100%,24rem),1fr))}
+.o-src-grid>div{border:1px solid var(--border);border-radius:.7rem;background:var(--raised);padding:1rem 1.15rem}
+.o-src h3{font:600 .72rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:.5rem}
+.o-src ul{list-style:none;margin:0;padding:0}
+.o-src li{padding:.5rem 0;border-top:1px solid var(--border);font-size:.9rem}
+.o-src li:first-child{border-top:0;padding-top:0}
+.o-src li a{color:var(--accent-text);text-underline-offset:3px}
+.o-src li span{display:block;color:var(--muted);font-size:.8rem;margin-top:.15rem}
 .o-end{margin-top:3.5rem;padding:1.4rem 1.25rem;border:1px solid var(--border);border-radius:.7rem;background:var(--surface)}
 .o-end p{color:var(--muted);max-width:44rem}
 """
@@ -852,6 +862,14 @@ def o_card(it, colour):
 </article>"""
 
 
+def o_sources():
+    out = []
+    for group, items in O_SOURCES:
+        lis = "".join(f'<li><a href="{e(u)}">{e(t)}</a><span>Used in: {e(used)}</span></li>' for t, u, used in items)
+        out.append(f'<div><h3>{e(group)}</h3><ul>{lis}</ul></div>')
+    return "\n".join(out)
+
+
 def optalysys_page():
     secs, chips = [], []
     for sec in O_SECTIONS:
@@ -895,6 +913,13 @@ set(matchMedia("(prefers-reduced-motion: reduce)").matches);b.addEventListener("
 </div></section>
 <div class="wrap">
 {"".join(secs)}
+<section class="o-src" id="sources" aria-labelledby="sources-h">
+<h2 id="sources-h">Sources</h2>
+<p class="o-src-lede">The material rests on these: the module's paper and patents, its developer's public talks, and the encryption and AI work it builds on. Each line says where it is used.</p>
+<div class="o-src-grid">
+{o_sources()}
+</div>
+</section>
 <div class="o-end">
 <p>The rest of my work, from signal integrity to agentic AI, is in the <a href="/sites/">portfolio</a>, and my experience is in the <a href="/cv/">CV</a>.</p>
 </div>

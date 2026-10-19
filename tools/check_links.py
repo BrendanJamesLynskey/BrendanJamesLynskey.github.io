@@ -19,10 +19,10 @@ PAGES = ["index.html", "sites/index.html", "checks/index.html", "cv/index.html",
 # the site's own pages (at the canonical Vercel address and on GitHub Pages) and repositories: exist only once
 # published
 PENDING = re.compile(r"^https://(brendan-lynskey\.vercel\.app|brendanjameslynskey\.github\.io)"
-                     r"/(checks/|cv/|cv/Brendan_Lynskey_CV\.pdf|og\.png|sitemap\.xml|#[\w-]+)?$"
+                     r"/(checks/|cv/|sites/|optalysys/|cv/Brendan_Lynskey_CV\.pdf|og\.png|sitemap\.xml|#[\w-]+)?$"
                      r"|^https://github\.com/BrendanJamesLynskey/BrendanJamesLynskey(\.github\.io)?$")
-# LinkedIn answers automated requests with status 999 whatever the page; reported, not counted as a failure
-BLOCKS_BOTS = re.compile(r"^https://www\.linkedin\.com/")
+# LinkedIn (999) and optalysys.com (403) answer automated requests with an error whatever the page; reported, not counted as a failure
+BLOCKS_BOTS = re.compile(r"^https://(www\.linkedin\.com|optalysys\.com)/")
 
 
 def links_in(path):
@@ -61,8 +61,8 @@ def main():
     ext = sorted(urls - set(pending))
     with concurrent.futures.ThreadPoolExecutor(8) as ex:
         for u, code in ex.map(fetch, ext):
-            if code == 999 and BLOCKS_BOTS.match(u):
-                print(f"bot?  {code} {u} (LinkedIn refuses automated requests; check it by hand)")
+            if code in (999, 403) and BLOCKS_BOTS.match(u):
+                print(f"bot?  {code} {u} (refuses automated requests; check it by hand)")
                 continue
             ok = code == 200
             bad += not ok

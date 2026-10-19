@@ -122,3 +122,43 @@ SECTIONS = [
         ],
     },
 ]
+
+# The main sources the material rests on, grouped; "used" says which pages above draw on each.
+SOURCES = [
+    ("The module", [
+        ("Kundu et al., Programmable Compute-in-Transit using Integrated Photonics, arXiv:2608.21536",
+         "https://arxiv.org/abs/2608.21536", "every page on the module, the simulator and Compute in Transit"),
+        ("Optalysys blog: Programmable Compute-in-Transit using Integrated Photonics",
+         "https://optalysys.com/resource/programmable-compute-in-transit-using-integrated-photonics/",
+         "Compute in Transit"),
+    ]),
+    ("Patents", [
+        ("WO2025168828A1, Calibration and stabilisation of photonic circuits",
+         "https://patents.google.com/patent/WO2025168828A1/en", "the calibration loop in the simulator and the explainer site"),
+        ("WO2025168827A1, Dense data packing and transceiver circuit for OFT",
+         "https://patents.google.com/patent/WO2025168827A1/en", "the module's hardware"),
+        ("WO2026057669A1, Arbitrary size and precision Fourier transforms via OFT",
+         "https://patents.google.com/patent/WO2026057669A1/en", "the module's hardware"),
+        ("WO2026057668A1, Data transfer and processing",
+         "https://patents.google.com/patent/WO2026057668A1/en", "the module's hardware"),
+        ("EP4677399A1, Optical Fourier transform device",
+         "https://patents.google.com/patent/EP4677399A1/en", "the module's hardware"),
+        ("GB2616426A, Optical encoders", "https://patents.google.com/patent/GB2616426A/en", "the module's hardware"),
+    ]),
+    ("Talks and public statements", [
+        ("Bergamaschi and Kundu, Hardware and Software Co-design of FHE accelerators using integrated photonics, "
+         "FHE.org Hardware Day, 25 Sep 2025", "https://fhe.org/meetups/2025-hardware-day",
+         "the module's hardware and FHE"),
+        ("BritChips podcast: Optalysys shines a light on Fully Homomorphic Encryption (2026)",
+         "https://youtu.be/U8DLJDfEkqc", "the future stacked chip (simulator Part II)"),
+    ]),
+    ("Encryption and AI foundations", [
+        ("Cheon, Kim, Kim and Song, Homomorphic Encryption for Arithmetic of Approximate Numbers (CKKS)",
+         "https://eprint.iacr.org/2016/421", "FHE Accelerator Simulators"),
+        ("OpenFHE", "https://openfhe-development.readthedocs.io/en/latest/",
+         "the recorded bootstrap traces in both simulators"),
+        ("HEIR, an MLIR-based FHE compiler", "https://heir.dev/", "the FHE simulator's front end"),
+        ("Peng et al., DeMo: Decoupled Momentum Optimization, arXiv:2411.19870",
+         "https://arxiv.org/abs/2411.19870", "Compute in Transit's fixed-band experiment"),
+    ]),
+]
