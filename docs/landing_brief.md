@@ -16,7 +16,7 @@ Read first: `README.md`, `tools/build.py`, `tools/content.py`, `src/how-this-is-
   - The existing home page keeps its rules: no location or contact details beyond GitHub on `/`, and nothing typed
     in that has a source.
   - The CV page may name employers and show "Leeds, UK" and LinkedIn.
-- **Look:** the owner sent a deliberately plain CV elsewhere and is happy for this one to be **nicer**.
+- **Look:** the owner's usual CV is deliberately plain; this one may be **nicer**.
   - Make it well designed, typographically confident and easy to scan.
   - It must still read as written by a person: no buzzword soup, no "passionate", "leveraging", "cutting-edge" or
     "results-driven". Short concrete lines.
