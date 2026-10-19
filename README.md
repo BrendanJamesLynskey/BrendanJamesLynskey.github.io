@@ -5,8 +5,11 @@ The portfolio home page, CV and Digital Twin card: **[brendan-lynskey.vercel.app
 [brendanjameslynskey.github.io](https://brendanjameslynskey.github.io/), so old links still work; their canonical
 tags point to Vercel.
 
-- [`index.html`](index.html): the home page: hardware, DSP and signal integrity first, then the sixteen interactive
-  sites in their four tracks, the showcases, the verification summary, the deck library and how the work is built.
+- [`index.html`](index.html): the landing page: who I am, the CV, Digital Twin and contact cards, and one tile per
+  part of the portfolio. Old links to its former sections (`/#sites`, `/#hardware`, …) are sent on to `/sites/`.
+- [`sites/index.html`](sites/index.html): the **portfolio**, built for my own learning: hardware, DSP and signal
+  integrity first, then the sixteen interactive sites in their four tracks, the showcases, the verification summary,
+  the deck library and how the work is built.
 - [`checks/index.html`](checks/index.html): **How I check the numbers**, every site's check, quoted from its source.
 - [`cv/index.html`](cv/index.html): the **CV**, generated from [`src/cv_source.md`](src/cv_source.md) by
   [`tools/cv.py`](tools/cv.py), with a career timeline and the PDF,
@@ -59,4 +62,4 @@ The thumbnails in [`assets/shots/`](assets/shots/) are screenshots of each page'
 ([`tools/thumbs.js`](tools/thumbs.js)), resized to 640×360 WebP.
 
 The work is built with Claude Code as an agentic engineering workflow; commits made this way carry a
-`Co-Authored-By` line. See "How this is built" on the home page.
+`Co-Authored-By` line. See "How this is built" on the portfolio page.

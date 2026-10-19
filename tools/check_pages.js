@@ -13,7 +13,7 @@ const axeSource = fs.readFileSync(require.resolve("axe-core/axe.min.js"), "utf8"
 const base = process.argv[2] || "http://127.0.0.1:8740";
 const out = process.argv[3] || path.join(__dirname, "out", "shots");
 fs.mkdirSync(out, { recursive: true });
-const pages = [["home", "/"], ["checks", "/checks/"], ["cv", "/cv/"], ["404", "/404.html"]];
+const pages = [["home", "/"], ["sites", "/sites/"], ["checks", "/checks/"], ["cv", "/cv/"], ["404", "/404.html"]];
 const modes = [[1280, "light"], [1280, "dark"], [390, "light"], [390, "dark"]];
 
 (async () => {

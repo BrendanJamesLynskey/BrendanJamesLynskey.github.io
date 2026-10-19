@@ -188,8 +188,34 @@ footer.site a{color:var(--muted)}
 .miss li{margin:.45rem 0}
 .miss li a{color:var(--accent-text)}
 svg text{font-family:var(--mono)}
+.hero.page{padding-bottom:0}
+.hero.page h1{font-size:clamp(2rem,5vw,3rem)}
+.hero.page .sub{max-width:44rem}
+.jump{display:flex;flex-wrap:wrap;gap:.25rem 1.1rem;margin-top:1.1rem;font:500 .85rem var(--mono)}
+.jump a{display:inline-flex;align-items:center;min-height:44px;color:var(--accent-text)}
+.doors{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(min(100%,13.5rem),1fr))}
+.door{position:relative;display:flex;flex-direction:column;gap:.4rem;padding:1.1rem 1.1rem 1rem;border:1px solid var(--border);border-radius:.6rem;background:var(--raised);text-decoration:none;color:var(--text);overflow:hidden;transition:border-color .2s,transform .2s,box-shadow .2s}
+.door::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--c)}
+.door::after{content:"";position:absolute;right:-2.5rem;top:-2.5rem;width:7rem;height:7rem;border-radius:50%;background:var(--c);opacity:.08;transition:opacity .2s,transform .3s}
+.door:hover,.door:focus-visible{border-color:var(--c);transform:translateY(-2px);box-shadow:0 8px 24px -12px var(--c)}
+.door:hover::after,.door:focus-visible::after{opacity:.16;transform:scale(1.25)}
+.door svg{width:28px;height:28px;color:var(--c)}
+.door .k{font:500 .68rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-top:.35rem}
+.door .t{font-size:1.1rem;font-weight:600;letter-spacing:-.015em;line-height:1.3}
+.door .b{font-size:.9rem;color:var(--muted)}
+.door .i{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem;margin-top:auto;padding-top:.5rem}
+.door .i img{width:20px;height:20px}
+.door .n{font:500 .78rem var(--mono);color:var(--muted);margin-left:.25rem}
+#portfolio .btns{margin-top:1.25rem}
+@media (min-width:1100px){.doors{grid-template-columns:repeat(5,minmax(0,1fr))}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 """
+
+# the home page used to hold the whole portfolio; old links to its sections now land on /sites/
+OLD_ANCHORS = """<script>if(/^#(hardware|sites|track-[a-z]+|showcases|checks|decks|built)$/.test(location.hash))location.replace("/sites/"+location.hash)</script>
+"""
+
+HOME_SHAPE = '<path d="M1 16c3-9 6-9 9 0s6 9 9 0 6-9 9 0" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><path d="M1 27h30" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".5"/>'
 
 TRACK_SHAPE = {
     # the companion sites' favicon shapes, one per track
@@ -237,8 +263,8 @@ def head(title, description, path, extra=""):
 <header class="site"><div class="wrap">
 <a class="brand" href="/"><img src="/favicon.svg" alt="" width="24" height="24">{NAME}</a>
 <nav class="top" aria-label="Main">
-<a href="/#hardware" class="wide">Hardware</a>
-<a href="/#sites">Sites</a>
+<a href="/sites/">Portfolio</a>
+<a href="/sites/#sites" class="wide">Sites</a>
 <a href="/checks/" class="mid">Checks</a>
 <a href="/cv/">CV</a>
 <a href="{GH}">GitHub</a>
@@ -377,9 +403,53 @@ def strip():
 
 
 def home():
-    groups = DATA["groups"]
-    n_sites = sum(len(sites_in(g["key"])) for g in groups)
+    n_sites = sum(len(sites_in(g["key"])) for g in DATA["groups"])
     assert n_sites == 16, n_sites
+    llms = COUNTS["LLMs"]
+    desc = ("Brendan Lynskey: a staff-level engineer across hardware (RTL and FPGA, DSP, signal integrity) "
+            "and agentic AI. His CV, a chat agent about his career, and a portfolio of explainer sites and deck "
+            "series built for his own learning.")
+    return head(f"{NAME}: hardware and agentic AI", desc, "/", OLD_ANCHORS) + f"""<main id="main">
+<section class="hero"><div class="wrap">
+<div class="hero-grid">
+<div class="intro">
+<p class="eyebrow">Hardware and agentic AI</p>
+<h1>{NAME}</h1>
+<p class="lede">A staff-level engineer across hardware (RTL and FPGA, DSP, signal integrity) and agentic AI.</p>
+</div>
+<figure class="hero-fig">
+<canvas id="hero-canvas" width="560" height="300" role="img" aria-label="Animation: an agent loop sends operands into a four-by-four systolic array; the operands move one cell per cycle and each cell fills as it accumulates; the results drain back to the loop, which checks them against a reference before planning the next step."></canvas>
+<figcaption>Illustration: an agent loop drives a 4×4 output-stationary systolic array and checks every result against a reference.</figcaption>
+<button type="button" id="hero-pause">Pause</button>
+</figure>
+<div class="rest">
+<p class="sub">More than 25 years in hardware, and I write the software too. Read my CV, ask a chat agent about my career, or look through the portfolio: explainer sites, deck series and simulators I built for my own learning.</p>
+<div class="btns">
+<a class="btn primary" href="/cv/">Read the CV →</a>
+<a class="btn" href="/sites/">Open the portfolio →</a>
+</div>
+</div>
+</div>
+<p class="facts"><span><b>25+</b> years in hardware</span><span><b>16</b> interactive sites</span><span><b>{llms['subhubs']}</b> LLM sub-hubs, <b>{llms['decks']}</b> decks</span><span><b>{COUNTS['Signal_Integrity']['decks']}</b> signal-integrity decks</span></p>
+</div></section>
+
+{strip()}
+
+<section class="block" id="portfolio" aria-labelledby="portfolio-h"><div class="wrap">
+<div class="block-head"><div><p class="eyebrow">Portfolio</p><h2 id="portfolio-h">Built to learn, shared as I go</h2></div>
+<p><b>I built these sites and decks for my own learning, and I am still working my way through them.</b> They are where my interests are heading: the hardware I know, and the AI systems that run on it. Every number in them comes from tested code or a cited source.</p></div>
+<div class="doors">
+{doors()}
+</div>
+<div class="btns"><a class="btn primary" href="/sites/">Open the portfolio →</a><a class="btn" href="/checks/">How I check the numbers →</a></div>
+</div></section>
+</main>
+<script src="/assets/hero.js" defer></script>
+""" + foot()
+
+
+def sites_page():
+    groups = DATA["groups"]
     tracks = []
     for g in groups:
         cards = "\n".join(site_card(s, g["label"]) for s in sites_in(g["key"]))
@@ -394,36 +464,16 @@ def home():
     lg, lg_src = q("lg_check")
     mcp, mcp_src = q("mcp")
     pt, pt_src = q("pt_decoder")
-    llms = COUNTS["LLMs"]
-    desc = ("Brendan Lynskey: a staff-level engineer across hardware (RTL and FPGA, DSP, signal integrity) "
-            "and agentic AI. Sixteen interactive explainer sites, deck series from signal integrity to agents, "
-            "and how every number is checked.")
-    return head(f"{NAME}: hardware and agentic AI", desc, "/") + f"""<main id="main">
-<section class="hero"><div class="wrap">
-<div class="hero-grid">
-<div class="intro">
+    desc = ("Brendan Lynskey's portfolio: hardware, DSP and signal-integrity deck series, sixteen interactive "
+            "explainer sites in four tracks, showcases and how every number is checked. Built for his own learning.")
+    return head(f"Portfolio · {NAME}", desc, "/sites/") + f"""<main id="main">
+<section class="hero page"><div class="wrap">
 <p class="eyebrow">Portfolio</p>
-<h1>{NAME}</h1>
-<p class="lede">A staff-level engineer across hardware (RTL and FPGA, DSP, signal integrity) and agentic AI.</p>
-</div>
-<figure class="hero-fig">
-<canvas id="hero-canvas" width="560" height="300" role="img" aria-label="Animation: an agent loop sends operands into a four-by-four systolic array; the operands move one cell per cycle and each cell fills as it accumulates; the results drain back to the loop, which checks them against a reference before planning the next step."></canvas>
-<figcaption>Illustration: an agent loop drives a 4×4 output-stationary systolic array and checks every result against a reference.</figcaption>
-<button type="button" id="hero-pause">Pause</button>
-</figure>
-<div class="rest">
-<p class="sub">More than 25 years in hardware, and I write the software too. Here are sixteen interactive explainer sites in four tracks, built for my own learning and still being worked through, deck series from signal integrity to agents, and the simulators and RTL behind them. Every number comes from tested code or a cited, dated source, and every model is checked against something independent of it.</p>
-<div class="btns">
-<a class="btn primary" href="#sites">Explore the sites ↓</a>
-<a class="btn" href="/checks/">How I check the numbers →</a>
-<a class="textlink" href="#hardware">Hardware, DSP and SI ↓</a>
-</div>
-</div>
-</div>
-<p class="facts"><span><b>16</b> interactive sites</span><span><b>4</b> tracks</span><span><b>{llms['subhubs']}</b> LLM sub-hubs, <b>{llms['decks']}</b> decks</span><span><b>{COUNTS['Signal_Integrity']['decks']}</b> signal-integrity decks</span><span>Every number tested or sourced</span></p>
+<h1>Sites, decks and simulators</h1>
+<p class="lede">I built all of this for my own learning, and I am still working my way through it.</p>
+<p class="sub">Hardware, DSP and signal integrity first, where most of my career has been; then sixteen interactive explainer sites in four tracks, the showcases, how the numbers are checked, and the deck library.</p>
+<p class="jump"><a href="#hardware">Hardware</a><a href="#sites">Sites</a><a href="#showcases">Showcases</a><a href="#checks">Checks</a><a href="#decks">Decks</a><a href="#built">Method</a></p>
 </div></section>
-
-{strip()}
 
 <section class="block" id="hardware" aria-labelledby="hardware-h"><div class="wrap">
 <div class="block-head"><div><p class="eyebrow">Home ground</p><h2 id="hardware-h">Hardware, DSP and signal integrity</h2></div>
@@ -475,8 +525,29 @@ def home():
 </div>
 </div></section>
 </main>
-<script src="/assets/hero.js" defer></script>
 """ + foot()
+
+
+def doors():
+    """The landing page's way into the portfolio: the home-ground hubs, then one tile per track."""
+    tiles = [("hardware", "/sites/#hardware", "Home ground", "Hardware, DSP and signal integrity",
+              f"{len(HARDWARE)} deck series", "var(--hw)", HOME_SHAPE, [])]
+    for g in DATA["groups"]:
+        ss = sites_in(g["key"])
+        tiles.append((g["key"], f"/sites/#track-{g['key']}", "Interactive sites", g["label"], g["blurb"],
+                      f"var(--t-{g['key']})", TRACK_SHAPE[g["key"]], ss))
+    out = []
+    for key, href, kicker, title, blurb, colour, shape, ss in tiles:
+        icons = "".join(f'<img src="/assets/icons/{s["key"]}.svg" alt="" width="20" height="20">' for s in ss)
+        count = f'<span class="n">{len(ss)} sites</span>' if ss else ""
+        out.append(f"""<a class="door" href="{href}" style="--c:{colour}">
+<svg viewBox="0 0 32 32" aria-hidden="true">{shape}</svg>
+<span class="k">{e(kicker)}</span>
+<span class="t">{e(title)}</span>
+<span class="b">{e(blurb)}</span>
+<span class="i">{icons}{count}</span>
+</a>""")
+    return "\n".join(out)
 
 
 # ---------------------------------------------------------------- the checks page
@@ -661,7 +732,7 @@ def not_found():
 <p class="eyebrow">404</p>
 <h1>Page not found</h1>
 <p class="lede">There is nothing at this address.</p>
-<div class="btns"><a class="btn primary" href="/">Portfolio home</a><a class="btn" href="/#sites">The interactive sites</a><a class="btn" href="/checks/">How I check the numbers</a></div>
+<div class="btns"><a class="btn primary" href="/">Portfolio home</a><a class="btn" href="/sites/">The portfolio</a><a class="btn" href="/checks/">How I check the numbers</a></div>
 </section>
 </div></main>
 """ + foot()
@@ -730,6 +801,8 @@ CV_CSS = r"""
 .work{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(min(100%,17rem),1fr))}
 .work .thumb{aspect-ratio:1200/630;object-fit:cover;object-position:top}
 .work .url{display:none}
+.work-note{color:var(--muted);font-size:.95rem;margin-bottom:1rem;max-width:42rem}
+.work-note a{color:var(--accent-text)}
 .skills{display:grid;gap:.9rem;margin:0}
 .skills>div{display:grid;gap:.35rem 1rem;grid-template-columns:minmax(0,1fr)}
 @media (min-width:640px){.skills>div{grid-template-columns:9.5rem minmax(0,1fr)}}
@@ -791,6 +864,7 @@ CV_CSS = r"""
  .work .card .place,.work .card .checked{display:none}
  .work .card .blurb{font-size:7.6pt;color:var(--muted)}
  .work .url{display:block;font-size:7.2pt;color:var(--accent-text)}
+ .work-note{font-size:7.6pt;margin-bottom:.35rem}
  .skills{gap:.2rem}
  .skills>div{grid-template-columns:7.6rem minmax(0,1fr);gap:0 .9rem}
  .skills dt{font-size:7.8pt;padding-top:0}
@@ -997,8 +1071,11 @@ def cv_page():
 
 <section class="cv-sec" aria-labelledby="work-h">
 <h2 id="work-h">Selected public work</h2>
+<div>
+<p class="work-note">I built these for my own learning, and I am still working my way through them. The full set is in the <a href="{BASE}/sites/">portfolio</a>.</p>
 <div class="work">
 {selected_work()}
+</div>
 </div>
 </section>
 
@@ -1023,14 +1100,14 @@ SR_CSS = ".sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0
 def main():
     global CSS
     CSS = CSS + SR_CSS
-    pages = {"index.html": home(), "checks/index.html": checks_page(), "cv/index.html": cv_page(),
+    pages = {"index.html": home(), "sites/index.html": sites_page(), "checks/index.html": checks_page(), "cv/index.html": cv_page(),
              "404.html": not_found()}
     for p, s in pages.items():
         os.makedirs(os.path.dirname(os.path.join(ROOT, p)) or ROOT, exist_ok=True)
         open(os.path.join(ROOT, p), "w").write(s)
         print("wrote", p, len(s))
     open(os.path.join(ROOT, "robots.txt"), "w").write(f"User-agent: *\nAllow: /\n\nSitemap: {BASE}/sitemap.xml\n")
-    urls = "".join(f"  <url><loc>{BASE}{u}</loc><lastmod>{BUILT}</lastmod></url>\n" for u in ["/", "/cv/", "/checks/"])
+    urls = "".join(f"  <url><loc>{BASE}{u}</loc><lastmod>{BUILT}</lastmod></url>\n" for u in ["/", "/sites/", "/cv/", "/checks/"])
     open(os.path.join(ROOT, "sitemap.xml"), "w").write(
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         + urls + "</urlset>\n")

@@ -171,6 +171,26 @@ footer.site a{color:var(--muted)}
 .miss li{margin:.45rem 0}
 .miss li a{color:var(--accent-text)}
 svg text{font-family:var(--mono)}
+.hero.page{padding-bottom:0}
+.hero.page h1{font-size:clamp(2rem,5vw,3rem)}
+.hero.page .sub{max-width:44rem}
+.jump{display:flex;flex-wrap:wrap;gap:.25rem 1.1rem;margin-top:1.1rem;font:500 .85rem var(--mono)}
+.jump a{display:inline-flex;align-items:center;min-height:44px;color:var(--accent-text)}
+.doors{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(min(100%,13.5rem),1fr))}
+.door{position:relative;display:flex;flex-direction:column;gap:.4rem;padding:1.1rem 1.1rem 1rem;border:1px solid var(--border);border-radius:.6rem;background:var(--raised);text-decoration:none;color:var(--text);overflow:hidden;transition:border-color .2s,transform .2s,box-shadow .2s}
+.door::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--c)}
+.door::after{content:"";position:absolute;right:-2.5rem;top:-2.5rem;width:7rem;height:7rem;border-radius:50%;background:var(--c);opacity:.08;transition:opacity .2s,transform .3s}
+.door:hover,.door:focus-visible{border-color:var(--c);transform:translateY(-2px);box-shadow:0 8px 24px -12px var(--c)}
+.door:hover::after,.door:focus-visible::after{opacity:.16;transform:scale(1.25)}
+.door svg{width:28px;height:28px;color:var(--c)}
+.door .k{font:500 .68rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-top:.35rem}
+.door .t{font-size:1.1rem;font-weight:600;letter-spacing:-.015em;line-height:1.3}
+.door .b{font-size:.9rem;color:var(--muted)}
+.door .i{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem;margin-top:auto;padding-top:.5rem}
+.door .i img{width:20px;height:20px}
+.door .n{font:500 .78rem var(--mono);color:var(--muted);margin-left:.25rem}
+#portfolio .btns{margin-top:1.25rem}
+@media (min-width:1100px){.doors{grid-template-columns:repeat(5,minmax(0,1fr))}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}</style>
 </head>
@@ -179,8 +199,8 @@ svg text{font-family:var(--mono)}
 <header class="site"><div class="wrap">
 <a class="brand" href="/"><img src="/favicon.svg" alt="" width="24" height="24">Brendan Lynskey</a>
 <nav class="top" aria-label="Main">
-<a href="/#hardware" class="wide">Hardware</a>
-<a href="/#sites">Sites</a>
+<a href="/sites/">Portfolio</a>
+<a href="/sites/#sites" class="wide">Sites</a>
 <a href="/checks/" class="mid">Checks</a>
 <a href="/cv/">CV</a>
 <a href="https://github.com/BrendanJamesLynskey">GitHub</a>

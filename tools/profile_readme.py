@@ -47,7 +47,7 @@ def main(out):
 A staff-level engineer across hardware (RTL and FPGA, DSP, signal integrity) and agentic AI. More than 25 years in
 hardware, and I write the software too.
 
-**[Portfolio home →]({HOME}/)** · [CV]({HOME}/cv/) · [How I check the numbers]({HOME}/checks/) · [Hardware, DSP and signal integrity]({HOME}/#hardware)
+**[Home →]({HOME}/)** · [Portfolio]({HOME}/sites/) · [CV]({HOME}/cv/) · [How I check the numbers]({HOME}/checks/) · [Hardware, DSP and signal integrity]({HOME}/sites/#hardware)
 
 ## Sixteen interactive sites, in four tracks
 
@@ -64,7 +64,7 @@ Each site is computed and animated by a tested model, and each is checked agains
 {rows}
 
 <sub>Built with Claude Code as an agentic engineering workflow: I specify the work, set the verification rules and
-check the numbers; commits made this way carry a Co-Authored-By line. More on the [portfolio home]({HOME}/#built).</sub>
+check the numbers; commits made this way carry a Co-Authored-By line. More on the [portfolio]({HOME}/sites/#built).</sub>
 """
     open(out, "w").write(md)
     print("wrote", out)
