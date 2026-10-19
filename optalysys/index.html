@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Optalysys · Brendan Lynskey</title>
+<meta name="description" content="Explainer sites, deck series and simulators Brendan Lynskey built to learn the areas Optalysys works in: optical computing, fully homomorphic encryption and simulation engineering.">
+<link rel="canonical" href="https://brendan-lynskey.vercel.app/optalysys/">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Brendan Lynskey">
+<meta property="og:title" content="Optalysys · Brendan Lynskey">
+<meta property="og:description" content="Explainer sites, deck series and simulators Brendan Lynskey built to learn the areas Optalysys works in: optical computing, fully homomorphic encryption and simulation engineering.">
+<meta property="og:url" content="https://brendan-lynskey.vercel.app/optalysys/">
+<meta property="og:image" content="https://brendan-lynskey.vercel.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Brendan Lynskey: hardware and agentic AI. Sixteen interactive sites, each checked against a reference.">
+<meta property="og:locale" content="en_GB">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Optalysys · Brendan Lynskey">
+<meta name="twitter:description" content="Explainer sites, deck series and simulators Brendan Lynskey built to learn the areas Optalysys works in: optical computing, fully homomorphic encryption and simulation engineering.">
+<meta name="twitter:image" content="https://brendan-lynskey.vercel.app/og.png">
+<style>:root{color-scheme:light dark;
+ --bg:#ffffff;--surface:#fafafa;--raised:#ffffff;--border:#e5e5e5;--text:#171717;--muted:#525252;--faint:#6b6b6b;
+ --accent:#4f46e5;--accent-fg:#ffffff;--accent-text:#4338ca;--accent-line:#4f46e5;--accent-soft:#eef2ff;
+ --hw:#0284c7;--hw2:#ea580c;--ok:#15803d;
+ --t-foundations:#0891b2;--t-hardware:#0284c7;--t-inference:#4f46e5;--t-agents:#dc2626;
+ --sans:Inter,"Noto Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+ --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root{
+ --bg:#0a0a0a;--surface:#171717;--raised:#121212;--border:#2a2a2a;--text:#f5f5f5;--muted:#d4d4d4;--faint:#a3a3a3;
+ --accent:#4f46e5;--accent-fg:#ffffff;--accent-text:#a5b4fc;--accent-line:#818cf8;--accent-soft:#1e1b4b;
+ --hw:#38bdf8;--hw2:#fb923c;--ok:#4ade80;
+ --t-foundations:#22d3ee;--t-hardware:#38bdf8;--t-inference:#a5b4fc;--t-agents:#f87171}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;scroll-padding-top:4.5rem}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 var(--sans)}
+a{color:inherit}
+img{max-width:100%;height:auto;display:block}
+.wrap{max-width:68rem;margin:0 auto;padding:0 1.5rem}
+@media (max-width:480px){.wrap{padding:0 1rem}}
+.skip{position:absolute;left:-999px;top:0;background:var(--accent);color:var(--accent-fg);padding:.5rem 1rem;z-index:10}
+.skip:focus{left:1rem;top:.5rem}
+:focus-visible{outline:2px solid var(--accent-line);outline-offset:2px;border-radius:4px}
+header.site{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);
+ backdrop-filter:saturate(1.4) blur(8px);-webkit-backdrop-filter:saturate(1.4) blur(8px);border-bottom:1px solid var(--border)}
+header.site .wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:3.75rem}
+.brand{display:flex;align-items:center;gap:.6rem;text-decoration:none;font-weight:600;font-size:.95rem;white-space:nowrap}
+.brand img{width:24px;height:24px}
+nav.top{display:flex;gap:1.25rem;font-size:.9rem}
+nav.top a{text-decoration:none;color:var(--muted);padding:.4rem 0}
+nav.top a:hover{color:var(--text)}
+@media (max-width:520px){nav.top{gap:.9rem}nav.top .wide{display:none}}
+@media (max-width:420px){nav.top .mid{display:none}}
+.eyebrow{font:500 .75rem/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-text);margin:0}
+h1,h2,h3,h4{line-height:1.2;letter-spacing:-.015em;margin:0}
+h1{font-size:clamp(2.4rem,6vw,3.5rem);font-weight:650;margin-top:.75rem}
+h2{font-size:clamp(1.5rem,3vw,1.9rem);font-weight:650}
+h3{font-size:1.1rem;font-weight:600}
+p{margin:0}
+.lede{font-size:clamp(1.15rem,2.2vw,1.35rem);line-height:1.5;color:var(--text);max-width:40rem;margin-top:1rem}
+.sub{color:var(--muted);max-width:40rem;margin-top:.9rem}
+.hero{padding:3.5rem 0 1rem}
+.hero-grid{display:grid;gap:1.75rem 2.5rem;grid-template-columns:minmax(0,1fr)}
+.rest{display:flex;flex-direction:column}
+@media (min-width:900px){.hero-grid{grid-template-columns:minmax(0,1fr) minmax(0,30rem);grid-template-areas:"intro fig" "rest fig";row-gap:0}
+ .intro{grid-area:intro}.hero-fig{grid-area:fig;align-self:center}.rest{grid-area:rest}}
+@media (max-width:899px){.rest .btns{order:-1;margin-top:0}.rest .sub{margin-top:1.25rem}}
+.btns{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.5rem}
+.btn{display:inline-flex;align-items:center;min-height:44px;padding:.55rem 1.15rem;border-radius:.4rem;font-size:.92rem;font-weight:550;text-decoration:none;border:1px solid var(--border);background:var(--raised);color:var(--text)}
+.btn:hover{border-color:var(--faint)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.btn.primary:hover{opacity:.92}
+figure{margin:0}
+.hero-fig{border:1px solid var(--border);border-radius:.6rem;padding:.75rem;background:var(--raised);position:relative}
+.hero-fig canvas{width:100%;aspect-ratio:560/300;display:block}
+.hero-fig figcaption{font-size:.8rem;color:var(--faint);margin-top:.4rem;padding-right:4.5rem}
+.hero-fig button{position:absolute;right:.75rem;bottom:.6rem;font:500 .75rem var(--mono);color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:.3rem;padding:.3rem .6rem;min-height:32px;cursor:pointer}
+.facts{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;margin-top:2rem;padding:1rem 0 0;border-top:1px solid var(--border);font-size:.88rem;color:var(--muted)}
+.facts b{color:var(--text);font-weight:650}
+section.block{padding:3.5rem 0 0}
+.block-head{margin-bottom:1.25rem}
+.block-head h2{margin-top:.35rem}
+.block-head>p{color:var(--muted);max-width:44rem;margin-top:.6rem}
+.grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(min(100%,19rem),1fr))}
+.card{position:relative;display:flex;flex-direction:column;border:1px solid var(--border);border-radius:.6rem;background:var(--raised);overflow:hidden;transition:border-color .15s,transform .15s}
+.card:hover{border-color:var(--faint)}
+.card .thumb{aspect-ratio:1200/630;width:100%;object-fit:cover;background:var(--surface);border-bottom:1px solid var(--border)}
+.card .thumb.wide{aspect-ratio:16/9;object-position:top}
+.hgrid .card .thumb.wide{aspect-ratio:2/1}
+.card .body{padding:.9rem 1rem 1rem;display:flex;flex-direction:column;gap:.5rem;flex:1}
+.card h3 a{text-decoration:none}
+.card h3 a::after{content:"";position:absolute;inset:0;z-index:1}
+.card .title{display:flex;align-items:center;gap:.55rem}
+.card .title img{width:22px;height:22px;flex:none}
+.card .place{font:500 .7rem/1.3 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.card .blurb{color:var(--muted);font-size:.93rem}
+.card .fact{font-size:.86rem;color:var(--text)}
+.card .checked{font-size:.82rem;line-height:1.5;color:var(--muted);border-left:2px solid var(--border);padding-left:.6rem}
+.card .checked b{font:500 .68rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);display:block}
+.card .more{margin-top:auto;padding-top:.4rem;display:flex;flex-wrap:wrap;gap:.25rem .9rem;font-size:.85rem;position:relative;z-index:2}
+.card .more a{color:var(--accent-text);text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--accent-text) 35%,transparent);text-underline-offset:3px}
+.card .more a:hover{text-decoration-color:currentColor}
+.track{margin-top:2.25rem}
+section.strip{padding-top:2rem}
+@media (min-width:860px){.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.card.mini .body{padding:1rem 1.1rem 1.1rem}
+.card h2.h3{font-size:1.1rem;font-weight:600;letter-spacing:-.015em}
+.card h2 a{text-decoration:none}
+.card h2 a::after{content:"";position:absolute;inset:0;z-index:1}
+.pill{display:inline-block;margin-left:.4rem;padding:.05rem .45rem;border-radius:999px;border:1px solid var(--border);background:var(--accent-soft);color:var(--accent-text);letter-spacing:.06em}
+@media (min-width:760px){.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.hgrid{display:grid;gap:1rem;grid-template-columns:minmax(0,1fr)}
+@media (min-width:980px){.hgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:560px){.card.h{display:grid;grid-template-columns:minmax(0,38%) minmax(0,1fr)}
+ .card.h .thumb{height:100%;aspect-ratio:auto;min-height:11rem;border-bottom:0;border-right:1px solid var(--border)}}
+.textlink{display:inline-flex;align-items:center;min-height:44px;color:var(--accent-text);font-size:.92rem;font-weight:550}
+.track-head{display:flex;align-items:center;gap:.65rem;margin-bottom:.9rem}
+.track-head svg{width:22px;height:22px;flex:none}
+.track-head p{color:var(--muted);font-size:.95rem}
+.checks4{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(min(100%,15rem),1fr))}
+.stat{border:1px solid var(--border);border-radius:.6rem;padding:1rem;background:var(--raised);display:flex;flex-direction:column;gap:.35rem}
+.stat .n{font-size:1.65rem;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat .k{font:500 .7rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.stat p{font-size:.88rem;color:var(--muted)}
+.stat a{font-size:.85rem;color:var(--accent-text);margin-top:auto}
+.list{border-top:1px solid var(--border)}
+.row{display:grid;grid-template-columns:minmax(0,12rem) minmax(0,1fr) auto;gap:.4rem 1.25rem;padding:.9rem 0;border-bottom:1px solid var(--border);align-items:baseline}
+.row h3 a{text-decoration:none}
+.row h3 a:hover{text-decoration:underline}
+.row p{color:var(--muted);font-size:.93rem}
+.row .count{font:500 .85rem var(--mono);color:var(--text);white-space:nowrap;text-align:right}
+@media (max-width:700px){.row{grid-template-columns:minmax(0,1fr) auto}.row p{grid-column:1/-1;grid-row:2}}
+.note{font-size:.82rem;color:var(--faint);margin-top:.75rem}
+.built{border:1px solid var(--border);border-radius:.6rem;padding:1.25rem 1.25rem;background:var(--surface);max-width:48rem}
+.built p+p{margin-top:.75rem}
+.built p{color:var(--muted)}
+code{font:.88em var(--mono);background:var(--surface);border:1px solid var(--border);border-radius:.25rem;padding:.05rem .3rem;overflow-wrap:anywhere}
+footer.site{margin-top:4.5rem;border-top:1px solid var(--border);padding:1.5rem 0 2.5rem;font-size:.85rem;color:var(--faint)}
+footer.site .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.5rem 1.5rem}
+footer.site a{color:var(--muted)}
+.prose{max-width:46rem}
+.prose p{color:var(--muted);margin-top:.9rem}
+.big4{display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fill,minmax(min(100%,30rem),1fr));margin-top:1.25rem}
+.check{border:1px solid var(--border);border-radius:.6rem;background:var(--raised);padding:1.1rem 1.15rem;display:flex;flex-direction:column;gap:.6rem}
+.check svg{width:100%;height:auto}
+.check svg.dv{display:none;max-width:19rem;margin:0 auto}
+@media (max-width:600px){.check svg.dh{display:none}.check svg.dv{display:block}}
+.check blockquote{margin:0;border-left:2px solid var(--accent-line);padding-left:.75rem;color:var(--text);font-size:.93rem}
+.check .src{font-size:.82rem;color:var(--faint)}
+.check .src a{color:var(--accent-text)}
+.check .k{font:500 .7rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.tbl{width:100%;border-collapse:collapse;font-size:.9rem}
+.tbl th,.tbl td{text-align:left;vertical-align:top;padding:.7rem .6rem;border-bottom:1px solid var(--border)}
+.tbl th{font:500 .72rem var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.tbl td:first-child{white-space:nowrap}
+.tbl td a{color:var(--accent-text)}
+.tbl .site{display:flex;align-items:center;gap:.5rem;font-weight:550}
+.tbl .site img{width:18px;height:18px}
+@media (max-width:700px){.tbl thead{display:none}.tbl tr{display:block;padding:.7rem 0;border-bottom:1px solid var(--border)}
+ .tbl td{display:block;border:0;padding:.15rem 0}.tbl td:first-child{white-space:normal}}
+.qt{border-collapse:collapse;font-size:.82rem;margin:.4rem 0;width:100%}
+.qt th,.qt td{border:1px solid var(--border);padding:.3rem .45rem;text-align:left;vertical-align:top}
+.qt th{font:500 .68rem var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--faint);background:var(--surface)}
+.miss{border:1px solid var(--border);border-radius:.6rem;padding:1rem 1.15rem;background:var(--raised)}
+.miss ul{margin:.5rem 0 0;padding-left:1.1rem;color:var(--muted)}
+.miss li{margin:.45rem 0}
+.miss li a{color:var(--accent-text)}
+svg text{font-family:var(--mono)}
+.o-link{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;margin-left:.6rem;vertical-align:middle;border:1px solid var(--border);border-radius:50%;font:600 .78rem var(--sans);color:var(--faint)!important;text-decoration:none;transition:color .2s,border-color .2s}
+.o-link:hover,.o-link:focus-visible{color:var(--hw2)!important;border-color:var(--hw2)}
+.hero.page{padding-bottom:0}
+.hero.page h1{font-size:clamp(2rem,5vw,3rem)}
+.hero.page .sub{max-width:44rem}
+.jump{display:flex;flex-wrap:wrap;gap:.25rem 1.1rem;margin-top:1.1rem;font:500 .85rem var(--mono)}
+.jump a{display:inline-flex;align-items:center;min-height:44px;color:var(--accent-text)}
+.doors{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(min(100%,13.5rem),1fr))}
+.door{position:relative;display:flex;flex-direction:column;gap:.4rem;padding:1.1rem 1.1rem 1rem;border:1px solid var(--border);border-radius:.6rem;background:var(--raised);text-decoration:none;color:var(--text);overflow:hidden;transition:border-color .2s,transform .2s,box-shadow .2s}
+.door::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--c)}
+.door::after{content:"";position:absolute;right:-2.5rem;top:-2.5rem;width:7rem;height:7rem;border-radius:50%;background:var(--c);opacity:.08;transition:opacity .2s,transform .3s}
+.door:hover,.door:focus-visible{border-color:var(--c);transform:translateY(-2px);box-shadow:0 8px 24px -12px var(--c)}
+.door:hover::after,.door:focus-visible::after{opacity:.16;transform:scale(1.25)}
+.door svg{width:28px;height:28px;color:var(--c)}
+.door .k{font:500 .68rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-top:.35rem}
+.door .t{font-size:1.1rem;font-weight:600;letter-spacing:-.015em;line-height:1.3}
+.door .b{font-size:.9rem;color:var(--muted)}
+.door .i{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem;margin-top:auto;padding-top:.5rem}
+.door .i img{width:20px;height:20px}
+.door .n{font:500 .78rem var(--mono);color:var(--muted);margin-left:.25rem}
+#portfolio .btns{margin-top:1.25rem}
+@media (min-width:1100px){.doors{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}</style>
+<style>.o-hero .lede{max-width:36rem}
+.o-fig svg{width:100%;height:auto;display:block}
+.o-fig .flow{fill:none;stroke:var(--hw2);stroke-width:2.4;stroke-linecap:round;stroke-dasharray:5 15;animation:o-flow 1.1s linear infinite}
+.o-fig .rail{fill:none;stroke:var(--hw2);stroke-width:1.4;opacity:.28}
+.o-fig .el{fill:none;stroke:var(--ok);stroke-width:2;stroke-dasharray:3 9;animation:o-flow 1.1s linear infinite}
+.o-fig.paused .flow,.o-fig.paused .el{animation-play-state:paused}
+.o-fig .box{fill:var(--surface);stroke:var(--border)}
+.o-fig .mesh{fill:none;stroke:var(--hw2);stroke-opacity:.45;stroke-dasharray:4 4}
+.o-fig text{font-size:10.5px;fill:var(--faint)}
+.o-fig .lbl{fill:var(--text);font-size:11px}
+@keyframes o-flow{to{stroke-dashoffset:-20}}
+.o-map{display:grid;gap:.75rem;grid-template-columns:minmax(0,1fr);margin-top:2rem}
+@media (min-width:760px){.o-map{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.o-map a{display:flex;gap:.8rem;align-items:center;padding:.8rem 1rem;border:1px solid var(--border);border-radius:.6rem;background:var(--raised);text-decoration:none;transition:border-color .2s,transform .2s}
+.o-map a:hover,.o-map a:focus-visible{border-color:var(--c);transform:translateY(-2px)}
+.o-num{flex:none;display:inline-flex;align-items:center;justify-content:center;width:2.1rem;height:2.1rem;border-radius:50%;border:2px solid var(--c);color:var(--c);font:700 .95rem var(--mono)}
+.o-map b{display:block;font-weight:600}
+.o-map small{display:block;color:var(--muted);font-size:.8rem}
+.o-sec{padding-top:3.75rem}
+.o-sec-head{display:flex;gap:1rem;align-items:flex-start;margin-bottom:1.4rem}
+.o-sec-head .o-num{width:2.75rem;height:2.75rem;font-size:1.15rem;margin-top:.2rem}
+.o-sec-head p{color:var(--muted);max-width:42rem;margin-top:.35rem}
+.o-grid{display:grid;gap:1.1rem;grid-template-columns:repeat(auto-fill,minmax(min(100%,22rem),1fr))}
+.o-card{position:relative;display:flex;flex-direction:column;border:1px solid var(--border);border-radius:.7rem;background:var(--raised);overflow:hidden;transition:border-color .2s,box-shadow .2s}
+.o-card:hover{border-color:var(--c);box-shadow:0 10px 30px -18px var(--c)}
+.o-card .thumb{aspect-ratio:16/9;width:100%;object-fit:cover;object-position:top;border-bottom:1px solid var(--border);background:var(--surface)}
+.o-card .body{padding:1rem 1.15rem 1.15rem;display:flex;flex-direction:column;gap:.65rem;flex:1}
+.o-card .k{font:500 .68rem/1.4 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.o-card .k span{color:var(--text)}
+.o-card .k span::before{content:"";display:inline-block;width:.5rem;height:.5rem;border-radius:50%;background:var(--c);margin-right:.45rem;vertical-align:.05rem}
+.o-card h3{font-size:1.2rem;letter-spacing:-.015em}
+.o-card h3 a{text-decoration:none}
+.o-card h3 a::after{content:"";position:absolute;inset:0;z-index:1}
+.o-card .what{color:var(--muted);font-size:.93rem}
+.o-card .why{font-size:.9rem;border-left:3px solid var(--c);background:color-mix(in srgb,var(--c) 7%,transparent);padding:.55rem .75rem;border-radius:0 .35rem .35rem 0}
+.o-card .why b,.o-card .what b{display:block;font:500 .66rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:.15rem}
+.o-card .more{margin-top:auto;display:flex;flex-wrap:wrap;gap:.25rem 1rem;font-size:.86rem;position:relative;z-index:2}
+.o-card .more a{display:inline-flex;align-items:center;min-height:32px;color:var(--accent-text);text-underline-offset:3px}
+@media (min-width:900px){.o-card.wide{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,46%) minmax(0,1fr)}
+ .o-card.wide .thumb{height:100%;aspect-ratio:auto;object-position:left top;border-bottom:0;border-right:1px solid var(--border)}}
+.o-end{margin-top:3.5rem;padding:1.4rem 1.25rem;border:1px solid var(--border);border-radius:.7rem;background:var(--surface)}
+.o-end p{color:var(--muted);max-width:44rem}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site"><div class="wrap">
+<a class="brand" href="/"><img src="/favicon.svg" alt="" width="24" height="24">Brendan Lynskey</a>
+<nav class="top" aria-label="Main">
+<a href="/sites/">Portfolio</a>
+<a href="/sites/#sites" class="wide">Sites</a>
+<a href="/checks/" class="mid">Checks</a>
+<a href="/cv/">CV</a>
+<a href="https://github.com/BrendanJamesLynskey">GitHub</a>
+</nav>
+</div></header>
+<main id="main">
+<section class="hero o-hero"><div class="wrap">
+<div class="hero-grid">
+<div class="intro">
+<p class="eyebrow">For Optalysys</p>
+<h1>Light, encryption and simulation</h1>
+<p class="lede">Optalysys works on optical computing, including for fully homomorphic encryption. These are the sites, decks and simulators I built to learn the areas that work touches.</p>
+</div>
+<figure class="hero-fig o-fig" id="o-fig">
+<svg viewBox="0 0 560 300" role="img" aria-labelledby="o-fig-cap">
+<text x="20" y="22">lanes</text><text x="88" y="22">modulators</text><text x="250" y="22">4-point optical DFT</text><text x="398" y="22">receivers</text><text x="470" y="22">decisions</text>
+<rect class="box" x="18" y="54" width="34" height="24" rx="4"/><text class="lbl" x="35" y="70" text-anchor="middle">b0</text><path class="el" d="M52 66H88"/><rect class="box" x="88" y="52" width="40" height="28" rx="5"/><path class="rail" d="M128 66H240"/><path class="flow" d="M128 66H240"/><path class="rail" d="M374 66H404"/><path class="flow" d="M374 66H404"/><path d="M404 54a12 12 0 0 1 0 24z" fill="var(--hw2)" opacity=".85"/><path class="el" d="M418 66H462"/><rect class="box" x="18" y="114" width="34" height="24" rx="4"/><text class="lbl" x="35" y="130" text-anchor="middle">b1</text><path class="el" d="M52 126H88"/><rect class="box" x="88" y="112" width="40" height="28" rx="5"/><path class="rail" d="M128 126H240"/><path class="flow" d="M128 126H240"/><path class="rail" d="M374 126H404"/><path class="flow" d="M374 126H404"/><path d="M404 114a12 12 0 0 1 0 24z" fill="var(--hw2)" opacity=".85"/><path class="el" d="M418 126H462"/><rect class="box" x="18" y="174" width="34" height="24" rx="4"/><text class="lbl" x="35" y="190" text-anchor="middle">b2</text><path class="el" d="M52 186H88"/><rect class="box" x="88" y="172" width="40" height="28" rx="5"/><path class="rail" d="M128 186H240"/><path class="flow" d="M128 186H240"/><path class="rail" d="M374 186H404"/><path class="flow" d="M374 186H404"/><path d="M404 174a12 12 0 0 1 0 24z" fill="var(--hw2)" opacity=".85"/><path class="el" d="M418 186H462"/><rect class="box" x="18" y="234" width="34" height="24" rx="4"/><text class="lbl" x="35" y="250" text-anchor="middle">b3</text><path class="el" d="M52 246H88"/><rect class="box" x="88" y="232" width="40" height="28" rx="5"/><path class="rail" d="M128 246H240"/><path class="flow" d="M128 246H240"/><path class="rail" d="M374 246H404"/><path class="flow" d="M374 246H404"/><path d="M404 234a12 12 0 0 1 0 24z" fill="var(--hw2)" opacity=".85"/><path class="el" d="M418 246H462"/>
+<rect class="mesh" x="232" y="38" width="150" height="230" rx="10"/>
+<path class="rail" d="M240 66L300 126"/><path class="flow" d="M240 66L300 126"/><path class="rail" d="M240 126L300 66"/><path class="flow" d="M240 126L300 66"/><path class="rail" d="M240 186L300 246"/><path class="flow" d="M240 186L300 246"/><path class="rail" d="M240 246L300 186"/><path class="flow" d="M240 246L300 186"/><path class="rail" d="M314 66L374 186"/><path class="flow" d="M314 66L374 186"/><path class="rail" d="M314 186L374 66"/><path class="flow" d="M314 186L374 66"/><path class="rail" d="M314 126L374 246"/><path class="flow" d="M314 126L374 246"/><path class="rail" d="M314 246L374 126"/><path class="flow" d="M314 246L374 126"/><path class="rail" d="M300 66H314"/><path class="flow" d="M300 66H314"/><path class="rail" d="M300 126H314"/><path class="flow" d="M300 126H314"/><path class="rail" d="M300 186H314"/><path class="flow" d="M300 186H314"/><path class="rail" d="M300 246H314"/><path class="flow" d="M300 246H314"/>
+<rect class="box" x="462" y="56" width="82" height="196" rx="8"/>
+<text class="lbl" x="503" y="148" text-anchor="middle">exact</text><text class="lbl" x="503" y="164" text-anchor="middle">integers</text>
+<text x="503" y="282" text-anchor="middle">back to logic</text>
+</svg>
+<figcaption id="o-fig-cap">Illustration: four binary lanes drive four modulators; light crosses an interferometer that computes a 4-point Fourier transform in one pass, and the receivers turn it back into exact integers.</figcaption>
+<button type="button" id="o-pause" aria-pressed="false">Pause</button>
+</figure>
+<div class="rest">
+<p class="sub">I built all of this for my own learning, and I am still working my way through it. Each page below says what it does and why I made it. They follow one path: the hardware, the workloads it might run, and the engineering that makes a simulator's answers trustworthy.</p>
+</div>
+</div>
+<nav class="o-map" aria-label="Sections">
+<a href="#hardware" style="--c:var(--hw2)"><span class="o-num">1</span><span><b>The hardware</b><small>2 resources</small></span></a><a href="#workloads" style="--c:var(--accent-line)"><span class="o-num">2</span><span><b>The workloads</b><small>4 resources</small></span></a><a href="#engineering" style="--c:var(--hw)"><span class="o-num">3</span><span><b>The simulation engineering</b><small>2 resources</small></span></a>
+</nav>
+</div></section>
+<div class="wrap">
+<section class="o-sec" id="hardware" aria-labelledby="hardware-h" style="--c:var(--hw2)">
+<div class="o-sec-head"><span class="o-num" aria-hidden="true">1</span>
+<div><h2 id="hardware-h">The hardware</h2><p>How light computes, from the device physics up to a whole module, modelled in enough detail to ask whether it pays.</p></div></div>
+<div class="o-grid">
+<article class="o-card wide" style="--c:var(--hw2)">
+<img class="thumb" src="/assets/shots/plm.webp" alt="" width="640" height="360" loading="lazy" decoding="async">
+<div class="body">
+<p class="k"><span>Interactive site</span> · 17 chapters, simulator in the page</p>
+<h3><a href="https://photonic-link-module-explained.vercel.app/">Inside a Photonic Link Module</a></h3>
+<p class="what"><b>What it does</b>A simulator of a photonic link module (arXiv:2608.21536), explained chapter by chapter: the modulators, the optical Fourier transform, homodyne detection, calibration, and how a 4-point kernel becomes an NTT inside a real FHE bootstrap. A TypeScript port of the simulator runs in the page, checked against the Python reference. Part II models a future chip with the photonics stacked on its logic.</p>
+<p class="why"><b>Why I built it</b>To understand the hardware properly by modelling it, layer by layer, and to see with numbers where it pays and where it falls short.</p>
+<p class="more"><a href="https://photonic-link-module-explained.vercel.app/">Open the site<span class="sr"> (Inside a Photonic Link Module)</span></a><a href="https://photonic-link-module-explained.vercel.app/method">Method<span class="sr"> (Inside a Photonic Link Module)</span></a></p>
+</div>
+</article>
+<article class="o-card" style="--c:var(--hw2)">
+<img class="thumb" src="/assets/shots/siph.webp" alt="" width="640" height="360" loading="lazy" decoding="async">
+<div class="body">
+<p class="k"><span>Deck series</span> · 3 decks</p>
+<h3><a href="https://brendanjameslynskey.github.io/Optical_Hub_Silicon_Photonics/">Silicon Photonics Fundamentals</a></h3>
+<p class="what"><b>What it does</b>The device physics under every optical link: how silicon guides, splits and filters light; how modulators and germanium photodiodes put data on it and take it off; and where the laser, the package and the picojoules per bit come from.</p>
+<p class="why"><b>Why I built it</b>My background is electronics. This is the optics I needed underneath everything else.</p>
+<p class="more"><a href="https://brendanjameslynskey.github.io/Optical_Hub_Silicon_Photonics/">Open the hub<span class="sr"> (Silicon Photonics Fundamentals)</span></a></p>
+</div>
+</article>
+</div>
+</section><section class="o-sec" id="workloads" aria-labelledby="workloads-h" style="--c:var(--accent-line)">
+<div class="o-sec-head"><span class="o-num" aria-hidden="true">2</span>
+<div><h2 id="workloads-h">The workloads</h2><p>What the optics might be asked to do: encrypted computing, and moving and transforming data for AI.</p></div></div>
+<div class="o-grid">
+<article class="o-card" style="--c:var(--accent-line)">
+<img class="thumb" src="/assets/shots/fhe.webp" alt="" width="640" height="360" loading="lazy" decoding="async">
+<div class="body">
+<p class="k"><span>Deck series and simulator</span> · 5 decks, tested code</p>
+<h3><a href="https://brendanjameslynskey.github.io/FHE_Hub_Accelerator_Simulators/">FHE Accelerator Simulators</a></h3>
+<p class="what"><b>What it does</b>CKKS as a hardware workload, the anatomy of bootstrapping, a SimPy simulator of an FHE accelerator (live in the browser), optical NTT engines, and the design space: is a design bound by NTT throughput or by key traffic, and does an optical NTT engine win once conversion energy and precision are counted?</p>
+<p class="why"><b>Why I built it</b>To learn FHE from the hardware side: where an accelerator spends its time and energy, and where optics could help.</p>
+<p class="more"><a href="https://brendanjameslynskey.github.io/FHE_Hub_Accelerator_Simulators/">Open the hub<span class="sr"> (FHE Accelerator Simulators)</span></a><a href="https://github.com/BrendanJamesLynskey/FHE_Accelerator_Sim">The simulator<span class="sr"> (FHE Accelerator Simulators)</span></a></p>
+</div>
+</article>
+<article class="o-card" style="--c:var(--accent-line)">
+<img class="thumb" src="/assets/shots/cithub.webp" alt="" width="640" height="360" loading="lazy" decoding="async">
+<div class="body">
+<p class="k"><span>Deck series and results site</span> · 5 decks, an experiment</p>
+<h3><a href="https://brendanjameslynskey.github.io/LLM_Hub_Compute_in_Transit/">Compute in Transit</a></h3>
+<p class="what"><b>What it does</b>Which data movements in LLM training and serving a photonic link module could compute on as the data crosses the link, how much work each needs per byte, and an experiment on the strongest candidate: a fixed frequency band in place of DeMo&#x27;s top-k for compressing gradients. At this scale the answer is no, and the results site shows why.</p>
+<p class="why"><b>Why I built it</b>To find out whether the module could help AI training, by experiment rather than by argument.</p>
+<p class="more"><a href="https://brendanjameslynskey.github.io/LLM_Hub_Compute_in_Transit/">Open the hub<span class="sr"> (Compute in Transit)</span></a><a href="https://compute-in-transit-results.vercel.app/">The results site<span class="sr"> (Compute in Transit)</span></a></p>
+</div>
+</article>
+<article class="o-card" style="--c:var(--accent-line)">
+<img class="thumb" src="/assets/shots/foptinf.webp" alt="" width="640" height="360" loading="lazy" decoding="async">
+<div class="body">
+<p class="k"><span>Deck series</span> · 3 decks</p>
+<h3><a href="https://brendanjameslynskey.github.io/LLM_Hub_Fourier_Optics_Inference/">Fourier Optics for Inference</a></h3>
+<p class="what"><b>What it does</b>Could a Fourier-optical engine accelerate LLM inference? The physics with its precision and energy bill, where transforms appear in inference workloads, and a disaggregated-serving simulator with an optical transform device in the prefill pool, live in the browser.</p>
+<p class="why"><b>Why I built it</b>To put numbers on where optical transforms could matter for serving AI models.</p>
+<p class="more"><a href="https://brendanjameslynskey.github.io/LLM_Hub_Fourier_Optics_Inference/">Open the hub<span class="sr"> (Fourier Optics for Inference)</span></a></p>
+</div>
+</article>
+<article class="o-card" style="--c:var(--accent-line)">
+<img class="thumb" src="/assets/shots/fopttrn.webp" alt="" width="640" height="360" loading="lazy" decoding="async">
+<div class="body">
+<p class="k"><span>Deck series</span> · 3 decks</p>
+<h3><a href="https://brendanjameslynskey.github.io/LLM_Hub_Fourier_Optics_Training/">Fourier Optics for Training</a></h3>
+<p class="what"><b>What it does</b>The companion question for training: transforms in the backward pass, optical backpropagation and in-situ training, and optical engines inside a training cluster.</p>
+<p class="why"><b>Why I built it</b>Training is a different problem: the weights change every step and the gradients need their own precision.</p>
+<p class="more"><a href="https://brendanjameslynskey.github.io/LLM_Hub_Fourier_Optics_Training/">Open the hub<span class="sr"> (Fourier Optics for Training)</span></a></p>
+</div>
+</article>
+</div>
+</section><section class="o-sec" id="engineering" aria-labelledby="engineering-h" style="--c:var(--hw)">
+<div class="o-sec-head"><span class="o-num" aria-hidden="true">3</span>
+<div><h2 id="engineering-h">The simulation engineering</h2><p>The craft around a simulator: the code, tests, pipelines and measurements that make its answers trustworthy.</p></div></div>
+<div class="o-grid">
+<article class="o-card" style="--c:var(--hw)">
+<img class="thumb" src="/assets/shots/simeng.webp" alt="" width="640" height="360" loading="lazy" decoding="async">
+<div class="body">
+<p class="k"><span>Deck series</span> · 14 decks, each with tested code</p>
+<h3><a href="https://brendanjameslynskey.github.io/SimEng_Hub_Toolkit/">Simulation Engineering Toolkit</a></h3>
+<p class="what"><b>What it does</b>Rust and PyO3 fast paths, SystemC models, memory systems, cocotb against RTL, testing frameworks, Jenkins, specifications, PyTorch and ONNX front ends, performance analysis, measurement tools, power-performance-area trade-offs, and an accelerator model in SimPy end to end. Every number in the decks comes from a recorded run.</p>
+<p class="why"><b>Why I built it</b>These are the everyday tools of simulation and frameworks work. I built a deck and working code for each to practise them.</p>
+<p class="more"><a href="https://brendanjameslynskey.github.io/SimEng_Hub_Toolkit/">Open the hub<span class="sr"> (Simulation Engineering Toolkit)</span></a></p>
+</div>
+</article>
+<article class="o-card" style="--c:var(--hw)">
+<img class="thumb" src="/assets/shots/introsim.webp" alt="" width="640" height="360" loading="lazy" decoding="async">
+<div class="body">
+<p class="k"><span>Presentation</span> · one interactive deck</p>
+<h3><a href="https://brendanjameslynskey.github.io/Introduction_to_Simulation/">Introduction to Simulation</a></h3>
+<p class="what"><b>What it does</b>Six levels of simulation, from field solvers to cloud systems, the methods they share and how to choose a level, with links at every level into working simulators and decks.</p>
+<p class="why"><b>Why I built it</b>To place the module, the FHE accelerator and the rest within simulation as a whole.</p>
+<p class="more"><a href="https://brendanjameslynskey.github.io/Introduction_to_Simulation/">Open the deck<span class="sr"> (Introduction to Simulation)</span></a></p>
+</div>
+</article>
+</div>
+</section>
+<div class="o-end">
+<p>The rest of my work, from signal integrity to agentic AI, is in the <a href="/sites/">portfolio</a>, and my experience is in the <a href="/cv/">CV</a>.</p>
+</div>
+</div>
+</main>
+<script>(()=>{const f=document.getElementById("o-fig"),b=document.getElementById("o-pause");
+const set=p=>{f.classList.toggle("paused",p);b.textContent=p?"Play":"Pause";b.setAttribute("aria-pressed",String(p))};
+set(matchMedia("(prefers-reduced-motion: reduce)").matches);b.addEventListener("click",()=>set(!f.classList.contains("paused")))})()</script>
+<footer class="site"><div class="wrap">
+<span>Brendan Lynskey · <a href="https://github.com/BrendanJamesLynskey">GitHub</a> · <a href="/checks/">How I check the numbers</a></span>
+<span>A static page, built 2026-10-19 from its <a href="https://github.com/BrendanJamesLynskey/BrendanJamesLynskey.github.io">source</a>.</span>
+</div></footer>
+</body>
+</html>

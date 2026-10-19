@@ -15,6 +15,7 @@ import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from optalysys import SECTIONS as O_SECTIONS  # noqa: E402
 from content import DIGITAL_TWIN, HARDWARE, INDEXES, QUOTES, SHOWCASES, GH  # noqa: E402
 from cv import CV, DOMAIN_LABEL, PROFILE  # noqa: E402
 
@@ -188,6 +189,8 @@ footer.site a{color:var(--muted)}
 .miss li{margin:.45rem 0}
 .miss li a{color:var(--accent-text)}
 svg text{font-family:var(--mono)}
+.o-link{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;margin-left:.6rem;vertical-align:middle;border:1px solid var(--border);border-radius:50%;font:600 .78rem var(--sans);color:var(--faint)!important;text-decoration:none;transition:color .2s,border-color .2s}
+.o-link:hover,.o-link:focus-visible{color:var(--hw2)!important;border-color:var(--hw2)}
 .hero.page{padding-bottom:0}
 .hero.page h1{font-size:clamp(2rem,5vw,3rem)}
 .hero.page .sub{max-width:44rem}
@@ -226,10 +229,12 @@ TRACK_SHAPE = {
 }
 
 
-def head(title, description, path, extra=""):
+def head(title, description, path, extra="", noindex=False):
     url = BASE + path
     canonical = (f'<link rel="canonical" href="{url}">' if path != "/404.html"
                  else '<meta name="robots" content="noindex">')
+    if noindex and path != "/404.html":
+        canonical += '\n<meta name="robots" content="noindex">'
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -273,9 +278,9 @@ def head(title, description, path, extra=""):
 """
 
 
-def foot():
+def foot(extra=""):
     return f"""<footer class="site"><div class="wrap">
-<span>{NAME} · <a href="{GH}">GitHub</a> · <a href="/checks/">How I check the numbers</a></span>
+<span>{NAME} · <a href="{GH}">GitHub</a> · <a href="/checks/">How I check the numbers</a>{extra}</span>
 <span>A static page, built {BUILT} from its <a href="{GH}/BrendanJamesLynskey.github.io">source</a>.</span>
 </div></footer>
 </body>
@@ -445,7 +450,7 @@ def home():
 </div></section>
 </main>
 <script src="/assets/hero.js" defer></script>
-""" + foot()
+""" + foot(' <a class="o-link" href="/optalysys/" title="Optalysys-related work"><span class="sr">Optalysys-related work</span><span aria-hidden="true">O</span></a>')
 
 
 def sites_page():
@@ -723,6 +728,152 @@ def checks_page():
 </tbody></table>
 </section>
 </div></main>
+""" + foot()
+
+
+# ---------------------------------------------------------------- the /optalysys/ page
+
+O_CSS = """
+.o-hero .lede{max-width:36rem}
+.o-fig svg{width:100%;height:auto;display:block}
+.o-fig .flow{fill:none;stroke:var(--hw2);stroke-width:2.4;stroke-linecap:round;stroke-dasharray:5 15;animation:o-flow 1.1s linear infinite}
+.o-fig .rail{fill:none;stroke:var(--hw2);stroke-width:1.4;opacity:.28}
+.o-fig .el{fill:none;stroke:var(--ok);stroke-width:2;stroke-dasharray:3 9;animation:o-flow 1.1s linear infinite}
+.o-fig.paused .flow,.o-fig.paused .el{animation-play-state:paused}
+.o-fig .box{fill:var(--surface);stroke:var(--border)}
+.o-fig .mesh{fill:none;stroke:var(--hw2);stroke-opacity:.45;stroke-dasharray:4 4}
+.o-fig text{font-size:10.5px;fill:var(--faint)}
+.o-fig .lbl{fill:var(--text);font-size:11px}
+@keyframes o-flow{to{stroke-dashoffset:-20}}
+.o-map{display:grid;gap:.75rem;grid-template-columns:minmax(0,1fr);margin-top:2rem}
+@media (min-width:760px){.o-map{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.o-map a{display:flex;gap:.8rem;align-items:center;padding:.8rem 1rem;border:1px solid var(--border);border-radius:.6rem;background:var(--raised);text-decoration:none;transition:border-color .2s,transform .2s}
+.o-map a:hover,.o-map a:focus-visible{border-color:var(--c);transform:translateY(-2px)}
+.o-num{flex:none;display:inline-flex;align-items:center;justify-content:center;width:2.1rem;height:2.1rem;border-radius:50%;border:2px solid var(--c);color:var(--c);font:700 .95rem var(--mono)}
+.o-map b{display:block;font-weight:600}
+.o-map small{display:block;color:var(--muted);font-size:.8rem}
+.o-sec{padding-top:3.75rem}
+.o-sec-head{display:flex;gap:1rem;align-items:flex-start;margin-bottom:1.4rem}
+.o-sec-head .o-num{width:2.75rem;height:2.75rem;font-size:1.15rem;margin-top:.2rem}
+.o-sec-head p{color:var(--muted);max-width:42rem;margin-top:.35rem}
+.o-grid{display:grid;gap:1.1rem;grid-template-columns:repeat(auto-fill,minmax(min(100%,22rem),1fr))}
+.o-card{position:relative;display:flex;flex-direction:column;border:1px solid var(--border);border-radius:.7rem;background:var(--raised);overflow:hidden;transition:border-color .2s,box-shadow .2s}
+.o-card:hover{border-color:var(--c);box-shadow:0 10px 30px -18px var(--c)}
+.o-card .thumb{aspect-ratio:16/9;width:100%;object-fit:cover;object-position:top;border-bottom:1px solid var(--border);background:var(--surface)}
+.o-card .body{padding:1rem 1.15rem 1.15rem;display:flex;flex-direction:column;gap:.65rem;flex:1}
+.o-card .k{font:500 .68rem/1.4 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.o-card .k span{color:var(--text)}
+.o-card .k span::before{content:"";display:inline-block;width:.5rem;height:.5rem;border-radius:50%;background:var(--c);margin-right:.45rem;vertical-align:.05rem}
+.o-card h3{font-size:1.2rem;letter-spacing:-.015em}
+.o-card h3 a{text-decoration:none}
+.o-card h3 a::after{content:"";position:absolute;inset:0;z-index:1}
+.o-card .what{color:var(--muted);font-size:.93rem}
+.o-card .why{font-size:.9rem;border-left:3px solid var(--c);background:color-mix(in srgb,var(--c) 7%,transparent);padding:.55rem .75rem;border-radius:0 .35rem .35rem 0}
+.o-card .why b,.o-card .what b{display:block;font:500 .66rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:.15rem}
+.o-card .more{margin-top:auto;display:flex;flex-wrap:wrap;gap:.25rem 1rem;font-size:.86rem;position:relative;z-index:2}
+.o-card .more a{display:inline-flex;align-items:center;min-height:32px;color:var(--accent-text);text-underline-offset:3px}
+@media (min-width:900px){.o-card.wide{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,46%) minmax(0,1fr)}
+ .o-card.wide .thumb{height:100%;aspect-ratio:auto;object-position:left top;border-bottom:0;border-right:1px solid var(--border)}}
+.o-end{margin-top:3.5rem;padding:1.4rem 1.25rem;border:1px solid var(--border);border-radius:.7rem;background:var(--surface)}
+.o-end p{color:var(--muted);max-width:44rem}
+"""
+
+O_COLOUR = {"hardware": "var(--hw2)", "workloads": "var(--accent-line)", "engineering": "var(--hw)"}
+
+O_FIG = """<svg viewBox="0 0 560 300" role="img" aria-labelledby="o-fig-cap">
+<text x="20" y="22">lanes</text><text x="88" y="22">modulators</text><text x="250" y="22">4-point optical DFT</text><text x="398" y="22">receivers</text><text x="470" y="22">decisions</text>
+{lanes}
+<rect class="mesh" x="232" y="38" width="150" height="230" rx="10"/>
+{mesh}
+<rect class="box" x="462" y="56" width="82" height="196" rx="8"/>
+<text class="lbl" x="503" y="148" text-anchor="middle">exact</text><text class="lbl" x="503" y="164" text-anchor="middle">integers</text>
+<text x="503" y="282" text-anchor="middle">back to logic</text>
+</svg>"""
+
+
+def o_fig():
+    lanes, mesh = [], []
+    for i, y in enumerate([66, 126, 186, 246]):
+        lanes.append(f'<rect class="box" x="18" y="{y - 12}" width="34" height="24" rx="4"/>'
+                     f'<text class="lbl" x="35" y="{y + 4}" text-anchor="middle">b{i}</text>'
+                     f'<path class="el" d="M52 {y}H88"/>'
+                     f'<rect class="box" x="88" y="{y - 14}" width="40" height="28" rx="5"/>'
+                     f'<path class="rail" d="M128 {y}H240"/><path class="flow" d="M128 {y}H240"/>'
+                     f'<path class="rail" d="M374 {y}H404"/><path class="flow" d="M374 {y}H404"/>'
+                     f'<path d="M404 {y - 12}a12 12 0 0 1 0 24z" fill="var(--hw2)" opacity=".85"/>'
+                     f'<path class="el" d="M418 {y}H462"/>')
+    pairs = [((66, 126), (186, 246), 240, 300), ((66, 186), (126, 246), 314, 374)]
+    for (a, b), (c, d), x0, x1 in pairs:
+        for p, r in [(a, b), (b, a), (c, d), (d, c)]:
+            mesh.append(f'<path class="rail" d="M{x0} {p}L{x1} {r}"/><path class="flow" d="M{x0} {p}L{x1} {r}"/>')
+    for y in [66, 126, 186, 246]:
+        mesh.append(f'<path class="rail" d="M300 {y}H314"/><path class="flow" d="M300 {y}H314"/>')
+    return O_FIG.format(lanes="".join(lanes), mesh="".join(mesh))
+
+
+def o_card(it, colour):
+    links = "".join(f'<a href="{e(u)}">{e(t)}<span class="sr"> ({e(it["title"])})</span></a>' for t, u in it["links"])
+    return f"""<article class="o-card{" wide" if it.get("wide") else ""}" style="--c:{colour}">
+<img class="thumb" src="/assets/shots/{it["key"]}.webp" alt="" width="640" height="360" loading="lazy" decoding="async">
+<div class="body">
+<p class="k"><span>{e(it["kind"])}</span> · {e(it["size"])}</p>
+<h3><a href="{e(it["href"])}">{e(it["title"])}</a></h3>
+<p class="what"><b>What it does</b>{e(it["what"])}</p>
+<p class="why"><b>Why I built it</b>{e(it["why"])}</p>
+<p class="more">{links}</p>
+</div>
+</article>"""
+
+
+def optalysys_page():
+    secs, chips = [], []
+    for sec in O_SECTIONS:
+        c = O_COLOUR[sec["key"]]
+        chips.append(f'<a href="#{sec["key"]}" style="--c:{c}"><span class="o-num">{sec["n"]}</span>'
+                     f'<span><b>{e(sec["title"])}</b><small>{len(sec["items"])} '
+                     f'{"resource" if len(sec["items"]) == 1 else "resources"}</small></span></a>')
+        cards = "\n".join(o_card(it, c) for it in sec["items"])
+        secs.append(f"""<section class="o-sec" id="{sec["key"]}" aria-labelledby="{sec["key"]}-h" style="--c:{c}">
+<div class="o-sec-head"><span class="o-num" aria-hidden="true">{sec["n"]}</span>
+<div><h2 id="{sec["key"]}-h">{e(sec["title"])}</h2><p>{e(sec["lede"])}</p></div></div>
+<div class="o-grid">
+{cards}
+</div>
+</section>""")
+    desc = ("Explainer sites, deck series and simulators Brendan Lynskey built to learn the areas Optalysys works "
+            "in: optical computing, fully homomorphic encryption and simulation engineering.")
+    script = """<script>(()=>{const f=document.getElementById("o-fig"),b=document.getElementById("o-pause");
+const set=p=>{f.classList.toggle("paused",p);b.textContent=p?"Play":"Pause";b.setAttribute("aria-pressed",String(p))};
+set(matchMedia("(prefers-reduced-motion: reduce)").matches);b.addEventListener("click",()=>set(!f.classList.contains("paused")))})()</script>"""
+    return head(f"Optalysys · {NAME}", desc, "/optalysys/", f"<style>{O_CSS.strip()}</style>\n", noindex=True) + f"""<main id="main">
+<section class="hero o-hero"><div class="wrap">
+<div class="hero-grid">
+<div class="intro">
+<p class="eyebrow">For Optalysys</p>
+<h1>Light, encryption and simulation</h1>
+<p class="lede">Optalysys works on optical computing, including for fully homomorphic encryption. These are the sites, decks and simulators I built to learn the areas that work touches.</p>
+</div>
+<figure class="hero-fig o-fig" id="o-fig">
+{o_fig()}
+<figcaption id="o-fig-cap">Illustration: four binary lanes drive four modulators; light crosses an interferometer that computes a 4-point Fourier transform in one pass, and the receivers turn it back into exact integers.</figcaption>
+<button type="button" id="o-pause" aria-pressed="false">Pause</button>
+</figure>
+<div class="rest">
+<p class="sub">I built all of this for my own learning, and I am still working my way through it. Each page below says what it does and why I made it. They follow one path: the hardware, the workloads it might run, and the engineering that makes a simulator's answers trustworthy.</p>
+</div>
+</div>
+<nav class="o-map" aria-label="Sections">
+{"".join(chips)}
+</nav>
+</div></section>
+<div class="wrap">
+{"".join(secs)}
+<div class="o-end">
+<p>The rest of my work, from signal integrity to agentic AI, is in the <a href="/sites/">portfolio</a>, and my experience is in the <a href="/cv/">CV</a>.</p>
+</div>
+</div>
+</main>
+{script}
 """ + foot()
 
 
@@ -1101,6 +1252,7 @@ def main():
     global CSS
     CSS = CSS + SR_CSS
     pages = {"index.html": home(), "sites/index.html": sites_page(), "checks/index.html": checks_page(), "cv/index.html": cv_page(),
+             "optalysys/index.html": optalysys_page(),
              "404.html": not_found()}
     for p, s in pages.items():
         os.makedirs(os.path.dirname(os.path.join(ROOT, p)) or ROOT, exist_ok=True)

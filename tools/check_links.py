@@ -15,7 +15,7 @@ import urllib.error
 import urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PAGES = ["index.html", "sites/index.html", "checks/index.html", "cv/index.html", "404.html"]
+PAGES = ["index.html", "sites/index.html", "checks/index.html", "cv/index.html", "optalysys/index.html", "404.html"]
 # the site's own pages (at the canonical Vercel address and on GitHub Pages) and repositories: exist only once
 # published
 PENDING = re.compile(r"^https://(brendan-lynskey\.vercel\.app|brendanjameslynskey\.github\.io)"

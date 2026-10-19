@@ -10,6 +10,11 @@ tags point to Vercel.
 - [`sites/index.html`](sites/index.html): the **portfolio**, built for my own learning: hardware, DSP and signal
   integrity first, then the sixteen interactive sites in their four tracks, the showcases, the verification summary,
   the deck library and how the work is built.
+- [`optalysys/index.html`](optalysys/index.html): a landing page for the work built while learning the areas
+  Optalysys works in (the photonic link module site, silicon photonics, FHE, compute in transit, Fourier optics and
+  simulation engineering), with what each does and why it was built. The entries are in
+  [`tools/optalysys.py`](tools/optalysys.py); the page is `noindex`, left out of the sitemap, and linked from the
+  landing page only by a small "O" in the footer.
 - [`checks/index.html`](checks/index.html): **How I check the numbers**, every site's check, quoted from its source.
 - [`cv/index.html`](cv/index.html): the **CV**, generated from [`src/cv_source.md`](src/cv_source.md) by
   [`tools/cv.py`](tools/cv.py), with a career timeline and the PDF,
