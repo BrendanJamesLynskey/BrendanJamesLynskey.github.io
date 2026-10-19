@@ -15,12 +15,14 @@ import urllib.error
 import urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PAGES = ["index.html", "checks/index.html", "404.html"]
-SELF = ("https://brendanjameslynskey.github.io/", "https://github.com/BrendanJamesLynskey/BrendanJamesLynskey.github.io",
-        "https://github.com/BrendanJamesLynskey/BrendanJamesLynskey")
-# the site's own pages and repositories: exist only once published
-PENDING = re.compile(r"^https://brendanjameslynskey\.github\.io/(checks/|og\.png|sitemap\.xml|#[\w-]+)?$"
+PAGES = ["index.html", "checks/index.html", "cv/index.html", "404.html"]
+# the site's own pages (at the canonical Vercel address and on GitHub Pages) and repositories: exist only once
+# published
+PENDING = re.compile(r"^https://(brendan-lynskey\.vercel\.app|brendanjameslynskey\.github\.io)"
+                     r"/(checks/|cv/|cv/Brendan_Lynskey_CV\.pdf|og\.png|sitemap\.xml|#[\w-]+)?$"
                      r"|^https://github\.com/BrendanJamesLynskey/BrendanJamesLynskey(\.github\.io)?$")
+# LinkedIn answers automated requests with status 999 whatever the page; reported, not counted as a failure
+BLOCKS_BOTS = re.compile(r"^https://www\.linkedin\.com/")
 
 
 def links_in(path):
@@ -59,6 +61,9 @@ def main():
     ext = sorted(urls - set(pending))
     with concurrent.futures.ThreadPoolExecutor(8) as ex:
         for u, code in ex.map(fetch, ext):
+            if code == 999 and BLOCKS_BOTS.match(u):
+                print(f"bot?  {code} {u} (LinkedIn refuses automated requests; check it by hand)")
+                continue
             ok = code == 200
             bad += not ok
             print(f"{'ok  ' if ok else 'FAIL'}  {code} {u}")

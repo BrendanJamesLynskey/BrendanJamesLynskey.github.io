@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>How I check the numbers · Brendan Lynskey</title>
 <meta name="description" content="How the numbers on Brendan Lynskey&#x27;s sixteen interactive sites are checked: RTL in Verilator, real LangGraph, the official MCP and A2A SDKs, PyTorch, exact ports with fixtures in CI, and validation bands that show where the models miss.">
-<link rel="canonical" href="https://brendanjameslynskey.github.io/checks/">
+<link rel="canonical" href="https://brendan-lynskey.vercel.app/checks/">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
@@ -14,8 +14,8 @@
 <meta property="og:site_name" content="Brendan Lynskey">
 <meta property="og:title" content="How I check the numbers · Brendan Lynskey">
 <meta property="og:description" content="How the numbers on Brendan Lynskey&#x27;s sixteen interactive sites are checked: RTL in Verilator, real LangGraph, the official MCP and A2A SDKs, PyTorch, exact ports with fixtures in CI, and validation bands that show where the models miss.">
-<meta property="og:url" content="https://brendanjameslynskey.github.io/checks/">
-<meta property="og:image" content="https://brendanjameslynskey.github.io/og.png">
+<meta property="og:url" content="https://brendan-lynskey.vercel.app/checks/">
+<meta property="og:image" content="https://brendan-lynskey.vercel.app/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Brendan Lynskey: hardware and agentic AI. Sixteen interactive sites, each checked against a reference.">
@@ -23,7 +23,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="How I check the numbers · Brendan Lynskey">
 <meta name="twitter:description" content="How the numbers on Brendan Lynskey&#x27;s sixteen interactive sites are checked: RTL in Verilator, real LangGraph, the official MCP and A2A SDKs, PyTorch, exact ports with fixtures in CI, and validation bands that show where the models miss.">
-<meta name="twitter:image" content="https://brendanjameslynskey.github.io/og.png">
+<meta name="twitter:image" content="https://brendan-lynskey.vercel.app/og.png">
 <style>:root{color-scheme:light dark;
  --bg:#ffffff;--surface:#fafafa;--raised:#ffffff;--border:#e5e5e5;--text:#171717;--muted:#525252;--faint:#6b6b6b;
  --accent:#4f46e5;--accent-fg:#ffffff;--accent-text:#4338ca;--accent-line:#4f46e5;--accent-soft:#eef2ff;
@@ -55,6 +55,7 @@ nav.top{display:flex;gap:1.25rem;font-size:.9rem}
 nav.top a{text-decoration:none;color:var(--muted);padding:.4rem 0}
 nav.top a:hover{color:var(--text)}
 @media (max-width:520px){nav.top{gap:.9rem}nav.top .wide{display:none}}
+@media (max-width:420px){nav.top .mid{display:none}}
 .eyebrow{font:500 .75rem/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-text);margin:0}
 h1,h2,h3,h4{line-height:1.2;letter-spacing:-.015em;margin:0}
 h1{font-size:clamp(2.4rem,6vw,3.5rem);font-weight:650;margin-top:.75rem}
@@ -105,6 +106,13 @@ section.block{padding:3.5rem 0 0}
 .card .more a{color:var(--accent-text);text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--accent-text) 35%,transparent);text-underline-offset:3px}
 .card .more a:hover{text-decoration-color:currentColor}
 .track{margin-top:2.25rem}
+section.strip{padding-top:2rem}
+@media (min-width:860px){.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.card.mini .body{padding:1rem 1.1rem 1.1rem}
+.card h2.h3{font-size:1.1rem;font-weight:600;letter-spacing:-.015em}
+.card h2 a{text-decoration:none}
+.card h2 a::after{content:"";position:absolute;inset:0;z-index:1}
+.pill{display:inline-block;margin-left:.4rem;padding:.05rem .45rem;border-radius:999px;border:1px solid var(--border);background:var(--accent-soft);color:var(--accent-text);letter-spacing:.06em}
 @media (min-width:760px){.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .hgrid{display:grid;gap:1rem;grid-template-columns:minmax(0,1fr)}
 @media (min-width:980px){.hgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -173,7 +181,8 @@ svg text{font-family:var(--mono)}
 <nav class="top" aria-label="Main">
 <a href="/#hardware" class="wide">Hardware</a>
 <a href="/#sites">Sites</a>
-<a href="/checks/">Checks</a>
+<a href="/checks/" class="mid">Checks</a>
+<a href="/cv/">CV</a>
 <a href="https://github.com/BrendanJamesLynskey">GitHub</a>
 </nav>
 </div></header>
@@ -359,7 +368,7 @@ svg text{font-family:var(--mono)}
 </div></main>
 <footer class="site"><div class="wrap">
 <span>Brendan Lynskey · <a href="https://github.com/BrendanJamesLynskey">GitHub</a> · <a href="/checks/">How I check the numbers</a></span>
-<span>A static page, built 2026-10-16 from its <a href="https://github.com/BrendanJamesLynskey/BrendanJamesLynskey.github.io">source</a>.</span>
+<span>A static page, built 2026-10-19 from its <a href="https://github.com/BrendanJamesLynskey/BrendanJamesLynskey.github.io">source</a>.</span>
 </div></footer>
 </body>
 </html>

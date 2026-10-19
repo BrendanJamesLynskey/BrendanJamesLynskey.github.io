@@ -225,3 +225,13 @@ QUOTES = {
     "dse_25": ("https://hw-design-space-agent.vercel.app/about", None,
                "a staff-level engineer with more than 25 years in hardware, and I write the software too"),
 }
+
+# The Digital Twin card on the home page. While "url" is None the card says a new version is coming soon and
+# links the earlier one (interim_url); set "url" to the new twin's address and rebuild to switch the card live.
+DIGITAL_TWIN = {
+    "url": None,
+    "label": "Digital Twin",
+    "interim_url": "https://huggingface.co/spaces/BrendanLynskey/CareerConversation",
+    "text": "A chat agent, trained on my career, that answers questions about it. Built in Ed Donner's "
+            "Proficient AI Engineer curriculum.",
+}

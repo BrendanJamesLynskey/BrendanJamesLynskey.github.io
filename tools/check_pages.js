@@ -13,7 +13,7 @@ const axeSource = fs.readFileSync(require.resolve("axe-core/axe.min.js"), "utf8"
 const base = process.argv[2] || "http://127.0.0.1:8740";
 const out = process.argv[3] || path.join(__dirname, "out", "shots");
 fs.mkdirSync(out, { recursive: true });
-const pages = [["home", "/"], ["checks", "/checks/"], ["404", "/404.html"]];
+const pages = [["home", "/"], ["checks", "/checks/"], ["cv", "/cv/"], ["404", "/404.html"]];
 const modes = [[1280, "light"], [1280, "dark"], [390, "light"], [390, "dark"]];
 
 (async () => {
@@ -70,6 +70,31 @@ const modes = [[1280, "light"], [1280, "dark"], [390, "light"], [390, "dark"]];
     const ok = reduce === "reduce" ? a === b && label === "Play" : a !== b && label === "Pause" && pausedStill;
     failures += !ok;
     console.log(`${ok ? "ok  " : "FAIL"} hero, prefers-reduced-motion: ${reduce}: frames ${a === b ? "still" : "moving"}, button "${label}"${reduce === "no-preference" ? `, still after Pause: ${pausedStill}` : ""}`);
+    await page.close();
+  }
+  // the CV timeline: tabbing to a band shows its role, the hint hides, and the band links to the role's entry
+  {
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1280, height: 800 });
+    await page.goto(base + "/cv/", { waitUntil: "load" });
+    const bands = await page.$$eval(".tl-svg a", (as) => as.map((a) => [a.dataset.r, a.getAttribute("href")]));
+    let shown = 0;
+    // tab from the top of the page to the first band, then through the bands in order
+    for (let i = 0; i < 60 && !(await page.evaluate(() => !!document.activeElement.closest(".tl-svg"))); i++)
+      await page.keyboard.press("Tab");
+    for (const [r, href] of bands) {
+      if (r !== (await page.evaluate(() => document.activeElement.dataset && document.activeElement.dataset.r))) break;
+      const st = await page.evaluate((r, href) => ({
+        out: getComputedStyle(document.querySelector(`[data-o="${r}"]`)).display,
+        hint: getComputedStyle(document.querySelector(".tl-hint")).display,
+        target: !!document.querySelector(href),
+      }), r, href);
+      shown += st.out === "block" && st.hint === "none" && st.target;
+      await page.keyboard.press("Tab");
+    }
+    const ok = bands.length > 0 && shown === bands.length;
+    failures += !ok;
+    console.log(`${ok ? "ok  " : "FAIL"} cv timeline: ${shown}/${bands.length} bands show their label on focus and link to an entry`);
     await page.close();
   }
   await browser.close();

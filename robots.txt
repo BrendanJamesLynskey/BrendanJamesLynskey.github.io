@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://brendanjameslynskey.github.io/sitemap.xml
+Sitemap: https://brendan-lynskey.vercel.app/sitemap.xml
