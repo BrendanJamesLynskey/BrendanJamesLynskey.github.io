@@ -5,6 +5,9 @@ The portfolio home page: **[brendanjameslynskey.github.io](https://brendanjamesl
 - [`index.html`](index.html): the home page: hardware, DSP and signal integrity first, then the sixteen interactive
   sites in their four tracks, the showcases, the verification summary, the deck library and how the work is built.
 - [`checks/index.html`](checks/index.html): **How I check the numbers**, every site's check, quoted from its source.
+- [`src/cv_source.md`](src/cv_source.md): the facts behind the CV page (the only source for `/cv/`), and
+  [`docs/landing_brief.md`](docs/landing_brief.md): the brief for the CV page, the Digital Twin card and the move to
+  brendan-lynskey.vercel.app.
 - [`404.html`](404.html), [`sitemap.xml`](sitemap.xml), [`robots.txt`](robots.txt), [`og.png`](og.png) (the
   link-preview card), [`favicon.svg`](favicon.svg) and [`apple-touch-icon.png`](apple-touch-icon.png).
 
