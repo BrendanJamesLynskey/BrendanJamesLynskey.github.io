@@ -28,15 +28,16 @@ PROFILE = [
 
 # timeline colour per role (by company and start year); a role that spanned two domains carries two
 DOMAINS = {
-    ("Thales", 1994): ["hardware"],
+    ("Thales", 1994): ["hardware", "fpga"],
     ("Pace", 1998): ["hardware", "fpga"],
-    ("Comodo", 2002): ["fpga"],
+    ("Comodo", 2002): ["fpga", "crypto"],
     ("Pace", 2005): ["fpga", "dsp"],
-    ("Red Embedded", 2011): ["fpga"],
-    ("Imagination Technologies / MIPS", 2014): ["fpga"],
+    ("Red Embedded", 2011): ["fpga", "hardware", "dsp"],
+    ("Imagination Technologies / MIPS", 2014): ["fpga", "hardware", "dsp"],
     ("Blaize (formerly Thinci)", 2018): ["hardware", "ai"],
 }
-DOMAIN_LABEL = {"hardware": "Hardware", "fpga": "FPGA and SoC", "dsp": "DSP", "ai": "Software and AI"}
+DOMAIN_LABEL = {"hardware": "Hardware", "fpga": "FPGA and SoC", "dsp": "DSP", "crypto": "Cryptography",
+                "ai": "Software and AI"}
 
 
 def sections(text):

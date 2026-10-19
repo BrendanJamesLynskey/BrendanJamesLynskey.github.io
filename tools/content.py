@@ -110,19 +110,6 @@ SHOWCASES = [
          text="Can a fixed frequency band replace DeMo's top-k? An experiment, emulated optics and a "
               "training-transit simulation, with an honest negative result.",
          links=[("Code", f"{GH}/compute-in-transit-results")]),
-    dict(key="phatty", title="Phatty", href=f"{PG}/Phatty/", img="shots/phatty.webp",
-         text="A browser groovebox: a 303-style bass line, 808/909 drums, a poly synth and effects, all "
-              "synthesised live with Web Audio.",
-         links=[("Code", f"{GH}/Phatty")]),
-    dict(key="rc", title="RC Flight Line", href=f"{PG}/RC-Flight-Line/", img="shots/rc.webp",
-         text="A radio-control flight simulator in hand-written WebGL with a blade-element flight "
-              "model: stall, tip stall and ground effect emerge from the physics.",
-         links=[("Code", f"{GH}/RC-Flight-Line")]),
-    dict(key="class47", title="Class 47 Cab Simulator", href=f"{PG}/Class-47-Cab-Sim/",
-         img="shots/class47.webp",
-         text="A first-person diesel locomotive cab simulator in Three.js, built to run on a "
-              "Raspberry Pi 5 with a game controller.",
-         links=[("Code", f"{GH}/Class-47-Cab-Sim")]),
 ]
 
 # The deck library: index hubs. Counts come from data/counts.json.
@@ -145,8 +132,6 @@ INDEXES = [
     dict(key="Mathematics", title="Mathematics", href=f"{PG}/Mathematics/", repo=f"{GH}/Mathematics",
          text="Cryptography, coding theory, quantitative finance, mathematics for machine learning and "
               "historical mathematicians."),
-    dict(key="Miscellaneous", title="Miscellaneous", href=f"{GH}/Miscellaneous", repo=None,
-         text="Interview preparation, careers, psychology and philosophy, and music."),
 ]
 
 DECODER_RESULTS = "https://github.com/BrendanJamesLynskey/transformer-explainer/blob/main/results.md"

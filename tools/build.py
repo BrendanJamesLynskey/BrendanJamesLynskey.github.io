@@ -440,7 +440,7 @@ def home():
 </div></section>
 
 <section class="block" id="showcases" aria-labelledby="showcases-h"><div class="wrap">
-<div class="block-head"><div><p class="eyebrow">Showcases</p><h2 id="showcases-h">Agents for hardware, and things that make sound or move</h2></div></div>
+<div class="block-head"><div><p class="eyebrow">Showcases</p><h2 id="showcases-h">Hardware agents and compute experiments</h2></div></div>
 <div class="grid">
 {"".join(showcase_card(c) for c in SHOWCASES)}
 </div>
@@ -670,8 +670,8 @@ def not_found():
 # ---------------------------------------------------------------- the CV page
 
 CV_CSS = r"""
-:root{--d-hardware:#0369a1;--d-fpga:#6d28d9;--d-dsp:#c2410c;--d-ai:#047857;--d-fg:#ffffff;--d-edu:#8a8a8a}
-@media (prefers-color-scheme:dark){:root{--d-hardware:#38bdf8;--d-fpga:#a78bfa;--d-dsp:#fb923c;--d-ai:#34d399;--d-fg:#0a0a0a;--d-edu:#737373}}
+:root{--d-hardware:#0369a1;--d-fpga:#6d28d9;--d-dsp:#c2410c;--d-crypto:#be185d;--d-ai:#047857;--d-fg:#ffffff;--d-edu:#8a8a8a}
+@media (prefers-color-scheme:dark){:root{--d-hardware:#38bdf8;--d-fpga:#a78bfa;--d-dsp:#fb923c;--d-crypto:#f472b6;--d-ai:#34d399;--d-fg:#0a0a0a;--d-edu:#737373}}
 .cv-head{padding:3rem 0 0}
 .cv-head h1{margin-top:.5rem}
 .cv-head .lede{max-width:44rem}
@@ -752,7 +752,7 @@ CV_CSS = r"""
 @media print{
  :root{color-scheme:light;--bg:#fff;--surface:#f5f5f5;--raised:#fff;--border:#d4d4d4;--text:#111;--muted:#333;--faint:#555;
   --accent:#4338ca;--accent-text:#3730a3;--accent-line:#4f46e5;--accent-soft:#eef2ff;
-  --d-hardware:#0369a1;--d-fpga:#6d28d9;--d-dsp:#c2410c;--d-ai:#047857;--d-fg:#fff;--d-edu:#8a8a8a}
+  --d-hardware:#0369a1;--d-fpga:#6d28d9;--d-dsp:#c2410c;--d-crypto:#be185d;--d-ai:#047857;--d-fg:#fff;--d-edu:#8a8a8a}
  html{font-size:12px}
  body{font-size:8.6pt;line-height:1.36;-webkit-print-color-adjust:exact;print-color-adjust:exact}
  .wrap{max-width:none;padding:0}
@@ -878,8 +878,6 @@ def timeline():
         top = (f'<rect x="{a:.1f}" y="0" width="{b - a:.1f}" height="40" fill="var(--d-edu)"{sep}/>' if g else "")
         bands.append(f'<a href="#education" data-r="e{i}" aria-label="{e(label)}"><title>{e(label)}</title>{top}'
                      f'<rect x="{a:.1f}" y="50" width="{b - a:.1f}" height="10" fill="var(--d-edu)"{sep}/></a>')
-        if g:
-            names.append(f'<span style="left:{a / 10 + .15:.2f}%;width:{(b - a) / 10 - .3:.2f}%">{e(ed["school"].split()[-1])}</span>')
         outs.append(f'<p data-o="e{i}"><b>{e(ed["degree"])}</b>, {e(ed["school"])} · {e(ed["years"])}'
                     f'{" <span class=d>· part-time</span>" if ed["part_time"] else ""}</p>')
         rules.append(f'.tl:has([data-r="e{i}"]:is(:hover,:focus-visible)) [data-o="e{i}"]')
