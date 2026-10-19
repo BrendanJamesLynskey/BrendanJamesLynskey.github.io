@@ -12,6 +12,7 @@ and any covering letter.
 - LinkedIn: https://www.linkedin.com/in/brendan-lynskey-a891705
 - GitHub: https://github.com/BrendanJamesLynskey
 - Portfolio: https://brendanjameslynskey.github.io
+- Career Conversation (earlier Digital Twin): https://huggingface.co/spaces/BrendanLynskey/CareerConversation
 - Email: not published (contact through LinkedIn)
 
 ## Headline

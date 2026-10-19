@@ -54,8 +54,10 @@ Read first: `README.md`, `tools/build.py`, `tools/content.py`, `src/how-this-is-
   - **Digital Twin**: a **"coming soon" placeholder card**. It is generated from one constant in `tools/content.py`
     (`DIGITAL_TWIN = {"url": None, "label": ...}`), so the owner can switch it live later by setting the URL and
     rebuilding. Its text: a chat agent, trained on the owner's career, that answers questions about it, built in
-    Ed Donner's Proficient AI Engineer curriculum. The card is disabled and labelled "coming soon" while the URL
-    is None; it becomes a link when the URL is set;
+    Ed Donner's Proficient AI Engineer curriculum. While the new twin's URL is None, the card is labelled "new
+    version coming soon" and links to the earlier version, `DIGITAL_TWIN["interim_url"] =
+    "https://huggingface.co/spaces/BrendanLynskey/CareerConversation"` ("Try the earlier version →"). When the URL
+    is set, the card links to it instead;
   - **Contact** → LinkedIn.
 - Add `/cv/` to the nav, the sitemap and the README.
 
