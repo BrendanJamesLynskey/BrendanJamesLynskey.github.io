@@ -24,7 +24,7 @@ cd "$tmp"
 vercel link --yes --scope "$SCOPE" --project "$PROJECT" >/dev/null
 vercel deploy --prod --yes --scope "$SCOPE"
 
-for path in / /sites/ /cv/ /cv/Brendan_Lynskey_CV.pdf /checks/ /og.png /sitemap.xml; do
+for path in / /sites/ /optalysys/ /cv/ /cv/Brendan_Lynskey_CV.pdf /checks/ /og.png /sitemap.xml; do
   printf '%s  %s\n' "$(curl -s -o /dev/null -w '%{http_code}' "$URL$path")" "$URL$path"
 done
 printf '%s  %s (should be 404)\n' "$(curl -s -o /dev/null -w '%{http_code}' "$URL/tools/build.py")" "$URL/tools/build.py"
