@@ -741,7 +741,10 @@ O_CSS = """
 .o-fig .el{fill:none;stroke:var(--ok);stroke-width:2;stroke-dasharray:3 9;animation:o-flow 1.1s linear infinite}
 .o-fig.paused .flow,.o-fig.paused .el{animation-play-state:paused}
 .o-fig .box{fill:var(--surface);stroke:var(--border)}
-.o-fig .mesh{fill:none;stroke:var(--hw2);stroke-opacity:.45;stroke-dasharray:4 4}
+.o-fig .lo{fill:none;stroke:#a855f7;stroke-width:1.4;stroke-dasharray:2 4;opacity:.8}
+.o-fig .drv{stroke:var(--ok);stroke-width:2}
+.o-fig .rx{fill:var(--surface);stroke:var(--text);stroke-width:1.4}
+.o-fig .ps{fill:var(--surface);stroke:var(--hw2)}
 .o-fig text{font-size:10.5px;fill:var(--faint)}
 .o-fig .lbl{fill:var(--text);font-size:11px}
 @keyframes o-flow{to{stroke-dashoffset:-20}}
@@ -780,35 +783,59 @@ O_CSS = """
 
 O_COLOUR = {"hardware": "var(--hw2)", "workloads": "var(--accent-line)", "engineering": "var(--hw)"}
 
-O_FIG = """<svg viewBox="0 0 560 300" role="img" aria-labelledby="o-fig-cap">
-<text x="20" y="22">lanes</text><text x="88" y="22">modulators</text><text x="250" y="22">4-point optical DFT</text><text x="398" y="22">receivers</text><text x="470" y="22">decisions</text>
-{lanes}
-<rect class="mesh" x="232" y="38" width="150" height="230" rx="10"/>
-{mesh}
-<rect class="box" x="462" y="56" width="82" height="196" rx="8"/>
-<text class="lbl" x="503" y="148" text-anchor="middle">exact</text><text class="lbl" x="503" y="164" text-anchor="middle">integers</text>
-<text x="503" y="282" text-anchor="middle">back to logic</text>
-</svg>"""
-
-
 def o_fig():
-    lanes, mesh = [], []
-    for i, y in enumerate([66, 126, 186, 246]):
-        lanes.append(f'<rect class="box" x="18" y="{y - 12}" width="34" height="24" rx="4"/>'
-                     f'<text class="lbl" x="35" y="{y + 4}" text-anchor="middle">b{i}</text>'
-                     f'<path class="el" d="M52 {y}H88"/>'
-                     f'<rect class="box" x="88" y="{y - 14}" width="40" height="28" rx="5"/>'
-                     f'<path class="rail" d="M128 {y}H240"/><path class="flow" d="M128 {y}H240"/>'
-                     f'<path class="rail" d="M374 {y}H404"/><path class="flow" d="M374 {y}H404"/>'
-                     f'<path d="M404 {y - 12}a12 12 0 0 1 0 24z" fill="var(--hw2)" opacity=".85"/>'
-                     f'<path class="el" d="M418 {y}H462"/>')
-    pairs = [((66, 126), (186, 246), 240, 300), ((66, 186), (126, 246), 314, 374)]
-    for (a, b), (c, d), x0, x1 in pairs:
-        for p, r in [(a, b), (b, a), (c, d), (d, c)]:
-            mesh.append(f'<path class="rail" d="M{x0} {p}L{x1} {r}"/><path class="flow" d="M{x0} {p}L{x1} {r}"/>')
-    for y in [66, 126, 186, 246]:
-        mesh.append(f'<path class="rail" d="M300 {y}H314"/><path class="flow" d="M300 {y}H314"/>')
-    return O_FIG.format(lanes="".join(lanes), mesh="".join(mesh))
+    """The 4-point optical DFT as the simulator models it: a 2-stage radix-2 mesh of 2x2 couplers, a -j phase
+    shifter and one waveguide crossing, read by coherent receivers fed from the same laser (the real layout is not
+    published)."""
+    R = [80, 130, 180, 230]                     # rows: x0, x2, x1, x3 (bit-reversed in, so couplers are adjacent)
+    out = []
+    W = lambda d: f'<path class="rail" d="{d}"/><path class="flow" d="{d}"/>'
+
+    def coupler(x0, ya, yb):
+        m, g = (ya + yb) / 2, 5
+        top = f"M{x0} {ya}C{x0 + 14} {ya} {x0 + 10} {m - g} {x0 + 24} {m - g}H{x0 + 36}C{x0 + 50} {m - g} {x0 + 46} {ya} {x0 + 60} {ya}"
+        bot = f"M{x0} {yb}C{x0 + 14} {yb} {x0 + 10} {m + g} {x0 + 24} {m + g}H{x0 + 36}C{x0 + 50} {m + g} {x0 + 46} {yb} {x0 + 60} {yb}"
+        return W(top) + W(bot)
+
+    # laser, a 1x4 splitter bus and the local-oscillator tap
+    out.append('<rect class="box" x="6" y="140" width="40" height="30" rx="5"/><text class="lbl" x="26" y="159" text-anchor="middle">laser</text>')
+    out.append(W("M46 155H58") + W("M58 155V80") + W("M58 155V230"))
+    out.append('<path class="lo" d="M58 80V44H380V214"/><text x="150" y="38">local oscillator, from the same laser</text>'
+               '<text x="88" y="38" text-anchor="middle">bits ↓</text>')
+    for k, y in enumerate(R):
+        lab = ["x0", "x2", "x1", "x3"][k]
+        out.append(W(f"M58 {y}H70") + f'<rect class="box" x="70" y="{y - 11}" width="36" height="22" rx="4"/>'
+                   f'<path class="drv" d="M88 {y - 25}V{y - 11}"/>'
+                   + W(f"M106 {y}H140") + f'<text x="120" y="{y - 6}" text-anchor="middle">{lab}</text>')
+    # stage 1: couplers on (x0,x2) and (x1,x3)
+    out.append(coupler(140, R[0], R[1]) + coupler(140, R[2], R[3]))
+    # -j on row 4, straight through on rows 1-3
+    for y in R[:3]:
+        out.append(W(f"M200 {y}H246"))
+    out.append(W(f"M200 {R[3]}H210") + f'<rect class="ps" x="210" y="{R[3] - 10}" width="26" height="20" rx="3"/>'
+               f'<text class="lbl" x="223" y="{R[3] + 4}" text-anchor="middle">−j</text>' + W(f"M236 {R[3]}H246"))
+    # one waveguide crossing between rows 2 and 3
+    out.append(W(f"M246 {R[0]}H276") + W(f"M246 {R[3]}H276") + W(f"M246 {R[1]}L276 {R[2]}") + W(f"M246 {R[2]}L276 {R[1]}"))
+    # stage 2: couplers on the new adjacent pairs
+    out.append(coupler(276, R[0], R[1]) + coupler(276, R[2], R[3]))
+    for k, y in enumerate(R):
+        out.append(W(f"M336 {y}H392") + f'<text x="356" y="{y - 6}" text-anchor="middle">{["X0", "X2", "X1", "X3"][k]}</text>')
+        # coherent receiver: the LO mixes in, then a right-pointing amplifier (balanced detector + TIA)
+        out.append(f'<path class="lo" d="M380 {y - 16}H398V{y - 9}"/><path class="rx" d="M392 {y - 12}L414 {y}L392 {y + 12}Z"/>'
+                   f'<path class="el" d="M414 {y}H446"/>')
+    out.append('<text x="170" y="262" text-anchor="middle">stage 1</text><text x="306" y="262" text-anchor="middle">stage 2</text>'
+               '<text x="261" y="276" text-anchor="middle">crossing</text>')
+    # read-out: two modes
+    out.append('<rect class="box" x="446" y="62" width="148" height="88" rx="7"/>'
+               '<text class="lbl" x="458" y="84">exact mode</text><text x="458" y="102">PAM4 slicers + table</text>'
+               '<text x="458" y="118">→ exact integers</text><text x="458" y="136">NTT, FHE</text>'
+               '<rect class="box" x="446" y="160" width="148" height="88" rx="7"/>'
+               '<text class="lbl" x="458" y="182">approximate mode</text><text x="458" y="200">ADCs</text>'
+               '<text x="458" y="216">→ a few bits</text><text x="458" y="234">FFT- and AI-style</text>')
+    hdr = ('<text x="26" y="20" text-anchor="middle">source</text><text x="88" y="20" text-anchor="middle">modulators</text>'
+           '<text x="238" y="20" text-anchor="middle">4-point optical DFT</text><text x="403" y="20" text-anchor="middle">receivers</text>'
+           '<text x="520" y="20" text-anchor="middle">read-out</text>')
+    return f'<svg viewBox="0 0 600 280" role="img" aria-labelledby="o-fig-cap">{hdr}{"".join(out)}</svg>'
 
 
 def o_card(it, colour):
@@ -841,7 +868,7 @@ def optalysys_page():
 </div>
 </section>""")
     desc = ("Explainer sites, deck series and simulators Brendan Lynskey built to learn the areas Optalysys works "
-            "in: optical computing, fully homomorphic encryption and simulation engineering.")
+            "in: optical computing, fully homomorphic encryption, AI workloads and simulation engineering.")
     script = """<script>(()=>{const f=document.getElementById("o-fig"),b=document.getElementById("o-pause");
 const set=p=>{f.classList.toggle("paused",p);b.textContent=p?"Play":"Pause";b.setAttribute("aria-pressed",String(p))};
 set(matchMedia("(prefers-reduced-motion: reduce)").matches);b.addEventListener("click",()=>set(!f.classList.contains("paused")))})()</script>"""
@@ -850,12 +877,12 @@ set(matchMedia("(prefers-reduced-motion: reduce)").matches);b.addEventListener("
 <div class="hero-grid">
 <div class="intro">
 <p class="eyebrow">For Optalysys</p>
-<h1>Light, encryption and simulation</h1>
-<p class="lede">Optalysys works on optical computing, including for fully homomorphic encryption. These are the sites, decks and simulators I built to learn the areas that work touches.</p>
+<h1>Computing with light: encryption and AI</h1>
+<p class="lede">Optalysys works on optical computing, including for fully homomorphic encryption. These are the sites, decks and simulators I built to learn the areas that work touches: the optics, encrypted computing, AI workloads, and how to simulate all three.</p>
 </div>
 <figure class="hero-fig o-fig" id="o-fig">
 {o_fig()}
-<figcaption id="o-fig-cap">Illustration: four binary lanes drive four modulators; light crosses an interferometer that computes a 4-point Fourier transform in one pass, and the receivers turn it back into exact integers.</figcaption>
+<figcaption id="o-fig-cap">Illustration, as the simulator models it: one laser feeds four modulators driven by bits, and a local oscillator. A two-stage mesh of 2×2 couplers, a −j phase shifter and one crossing computes a 4-point DFT in one pass; coherent receivers read it. In exact mode the levels decode to exact integers (NTT, FHE); in approximate mode ADCs keep a few bits (FFT- and AI-style work). The real layout is not published.</figcaption>
 <button type="button" id="o-pause" aria-pressed="false">Pause</button>
 </figure>
 <div class="rest">
