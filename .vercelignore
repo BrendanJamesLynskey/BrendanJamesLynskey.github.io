@@ -1,0 +1,10 @@
+# Served by Vercel: the pages, assets and icons only. The tools, the brief, the sources and the gathered data
+# stay out (GitHub Pages serves them, which is fine for a public repo, but the canonical site does not need them).
+tools/
+docs/
+src/
+data/
+README.md
+.gitignore
+.vercelignore
+vercel.json

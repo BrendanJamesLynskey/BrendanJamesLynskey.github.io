@@ -1,10 +1,16 @@
 # brendanjameslynskey.github.io
 
-The portfolio home page: **[brendanjameslynskey.github.io](https://brendanjameslynskey.github.io/)**.
+The portfolio home page, CV and Digital Twin card: **[brendan-lynskey.vercel.app](https://brendan-lynskey.vercel.app/)**
+(the canonical address). GitHub Pages serves the same files from `main` at
+[brendanjameslynskey.github.io](https://brendanjameslynskey.github.io/), so old links still work; their canonical
+tags point to Vercel.
 
 - [`index.html`](index.html): the home page: hardware, DSP and signal integrity first, then the sixteen interactive
   sites in their four tracks, the showcases, the verification summary, the deck library and how the work is built.
 - [`checks/index.html`](checks/index.html): **How I check the numbers**, every site's check, quoted from its source.
+- [`cv/index.html`](cv/index.html): the **CV**, generated from [`src/cv_source.md`](src/cv_source.md) by
+  [`tools/cv.py`](tools/cv.py), with a career timeline and the PDF,
+  [`cv/Brendan_Lynskey_CV.pdf`](cv/Brendan_Lynskey_CV.pdf).
 - [`src/cv_source.md`](src/cv_source.md): the facts behind the CV page (the only source for `/cv/`), and
   [`docs/landing_brief.md`](docs/landing_brief.md): the brief for the CV page, the Digital Twin card and the move to
   brendan-lynskey.vercel.app.
@@ -21,7 +27,8 @@ Nothing on the page that has a source is typed in by hand.
 | Step | Command | What it does |
 |---|---|---|
 | Gather | `python3 tools/gather.py` | Reads each site's name, track and blurb from the shared site switch, its "How this is checked" line, evidence link, favicon and card from the live landing page, and the deck counts from the index READMEs; writes [`data/`](data/), [`assets/icons/`](assets/icons/) and [`assets/cards/`](assets/cards/) |
-| Build | `python3 tools/build.py` | Writes the pages from `data/`, [`tools/content.py`](tools/content.py) (the hubs, showcases and quotes) and [`src/how-this-is-built.html`](src/how-this-is-built.html) |
+| Build | `python3 tools/build.py` | Writes the pages from `data/`, [`tools/content.py`](tools/content.py) (the hubs, showcases, quotes and the Digital Twin card), [`src/how-this-is-built.html`](src/how-this-is-built.html) and, for `/cv/`, [`src/cv_source.md`](src/cv_source.md) |
+| CV PDF | `node tools/cv_pdf.js` (with `python3 -m http.server 8740` running) | Prints `/cv/` with its print stylesheet to `cv/Brendan_Lynskey_CV.pdf` (A4, two pages at most) |
 | Brand | `python3 tools/brand.py && node tools/render_brand.js` | The favicon, the card and the touch icon |
 | Profile | `python3 tools/profile_readme.py <path>` | The GitHub profile README, from the same data |
 
@@ -31,7 +38,22 @@ Checks (run before publishing):
 |---|---|
 | Every quote still appears, word for word, on its source page | `python3 tools/check_quotes.py` |
 | Every link returns 200 | `python3 tools/check_links.py` |
+| Every experience entry, date range, education item, award, certification and skill in `src/cv_source.md` is on `/cv/`, and nothing else in those categories | `python3 tools/check_cv.py` |
 | Each page at 1280 and 390 px, light and dark: no page errors, no horizontal overflow, axe clean, no external requests | `node tools/check_pages.js` (with `python3 -m http.server 8740` running) |
+
+## The Digital Twin card
+
+The home page's Digital Twin card comes from `DIGITAL_TWIN` in [`tools/content.py`](tools/content.py). While its
+`"url"` is `None`, the card says a new version is coming soon and links the earlier one (`"interim_url"`, the
+CareerConversation Space). To switch it live, set `"url"` to the new twin's address and run
+`python3 tools/build.py`.
+
+## Deploying
+
+The owner deploys: [`tools/deploy_vercel.sh`](tools/deploy_vercel.sh) takes a `git archive` of `origin/main` and
+deploys it to the Vercel project `brendan-lynskey` ([`vercel.json`](vercel.json): static, no build step, clean URLs,
+trailing slashes; [`.vercelignore`](.vercelignore) keeps `tools/`, `docs/`, `src/` and `data/` out), then checks the
+live pages answer.
 
 The thumbnails in [`assets/shots/`](assets/shots/) are screenshots of each page's first screen
 ([`tools/thumbs.js`](tools/thumbs.js)), resized to 640×360 WebP.

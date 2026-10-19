@@ -1,7 +1,8 @@
 """Build the static site from data/ and tools/content.py.
 
     python3 tools/gather.py      # refresh data/ and the site icons and cards from their live sources
-    python3 tools/build.py       # write index.html, checks/index.html, 404.html, sitemap.xml, robots.txt
+    python3 tools/build.py       # write index.html, checks/index.html, cv/index.html, 404.html, sitemap.xml,
+                                 # robots.txt
 
 The CSS is inlined into every page (one small stylesheet, so no extra request). The only script is
 assets/hero.js. No external requests: system fonts, local images.
@@ -14,10 +15,13 @@ import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from content import HARDWARE, INDEXES, QUOTES, SHOWCASES, GH  # noqa: E402
+from content import DIGITAL_TWIN, HARDWARE, INDEXES, QUOTES, SHOWCASES, GH  # noqa: E402
+from cv import CV, DOMAIN_LABEL, PROFILE  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BASE = "https://brendanjameslynskey.github.io"
+# the canonical address; GitHub Pages serves the same files from main, and its pages point here
+BASE = "https://brendan-lynskey.vercel.app"
+PDF = "/cv/Brendan_Lynskey_CV.pdf"
 NAME = "Brendan Lynskey"
 DATA = json.load(open(os.path.join(ROOT, "data", "sites.json")))
 COUNTS = json.load(open(os.path.join(ROOT, "data", "counts.json")))
@@ -68,6 +72,7 @@ nav.top{display:flex;gap:1.25rem;font-size:.9rem}
 nav.top a{text-decoration:none;color:var(--muted);padding:.4rem 0}
 nav.top a:hover{color:var(--text)}
 @media (max-width:520px){nav.top{gap:.9rem}nav.top .wide{display:none}}
+@media (max-width:420px){nav.top .mid{display:none}}
 .eyebrow{font:500 .75rem/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-text);margin:0}
 h1,h2,h3,h4{line-height:1.2;letter-spacing:-.015em;margin:0}
 h1{font-size:clamp(2.4rem,6vw,3.5rem);font-weight:650;margin-top:.75rem}
@@ -118,6 +123,13 @@ section.block{padding:3.5rem 0 0}
 .card .more a{color:var(--accent-text);text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--accent-text) 35%,transparent);text-underline-offset:3px}
 .card .more a:hover{text-decoration-color:currentColor}
 .track{margin-top:2.25rem}
+section.strip{padding-top:2rem}
+@media (min-width:860px){.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.card.mini .body{padding:1rem 1.1rem 1.1rem}
+.card h2.h3{font-size:1.1rem;font-weight:600;letter-spacing:-.015em}
+.card h2 a{text-decoration:none}
+.card h2 a::after{content:"";position:absolute;inset:0;z-index:1}
+.pill{display:inline-block;margin-left:.4rem;padding:.05rem .45rem;border-radius:999px;border:1px solid var(--border);background:var(--accent-soft);color:var(--accent-text);letter-spacing:.06em}
 @media (min-width:760px){.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .hgrid{display:grid;gap:1rem;grid-template-columns:minmax(0,1fr)}
 @media (min-width:980px){.hgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -227,7 +239,8 @@ def head(title, description, path, extra=""):
 <nav class="top" aria-label="Main">
 <a href="/#hardware" class="wide">Hardware</a>
 <a href="/#sites">Sites</a>
-<a href="/checks/">Checks</a>
+<a href="/checks/" class="mid">Checks</a>
+<a href="/cv/">CV</a>
 <a href="{GH}">GitHub</a>
 </nav>
 </div></header>
@@ -324,6 +337,45 @@ def index_row(x):
 </div>"""
 
 
+def strip():
+    """CV · Digital Twin · Contact: three cards near the top of the home page."""
+    t = DIGITAL_TWIN
+    if t["url"]:
+        twin_href, status, more = t["url"], "", f'<a href="{e(t["url"])}">Talk to it →</a>'
+    else:
+        twin_href = t["interim_url"]
+        status = '<span class="pill">New version coming soon</span>'
+        more = f'<a href="{e(t["interim_url"])}">Try the earlier version →</a>'
+    return f"""<section class="block strip" id="cv-twin" aria-label="CV, Digital Twin and contact"><div class="wrap">
+<div class="grid three">
+<article class="card mini">
+<div class="body">
+<p class="place">CV</p>
+<h2 class="h3"><a href="/cv/">Experience, skills and education</a></h2>
+<p class="blurb">{e(CV["headline"])}</p>
+<p class="more"><a href="/cv/">Read the CV →</a><a href="{PDF}">Download the PDF</a></p>
+</div>
+</article>
+<article class="card mini">
+<div class="body">
+<p class="place">{e(t["label"])} {status}</p>
+<h2 class="h3"><a href="{e(twin_href)}">Ask about my career</a></h2>
+<p class="blurb">{e(t["text"])}</p>
+<p class="more">{more}</p>
+</div>
+</article>
+<article class="card mini">
+<div class="body">
+<p class="place">Contact</p>
+<h2 class="h3"><a href="{e(CV["linkedin"])}">LinkedIn</a></h2>
+<p class="blurb">The best way to reach me is a message on LinkedIn.</p>
+<p class="more"><a href="{e(CV["linkedin"])}">Message me on LinkedIn →</a></p>
+</div>
+</article>
+</div>
+</div></section>"""
+
+
 def home():
     groups = DATA["groups"]
     n_sites = sum(len(sites_in(g["key"])) for g in groups)
@@ -370,6 +422,8 @@ def home():
 </div>
 <p class="facts"><span><b>16</b> interactive sites</span><span><b>4</b> tracks</span><span><b>{llms['subhubs']}</b> LLM sub-hubs, <b>{llms['decks']}</b> decks</span><span><b>{COUNTS['Signal_Integrity']['decks']}</b> signal-integrity decks</span><span>Every number tested or sourced</span></p>
 </div></section>
+
+{strip()}
 
 <section class="block" id="hardware" aria-labelledby="hardware-h"><div class="wrap">
 <div class="block-head"><div><p class="eyebrow">Home ground</p><h2 id="hardware-h">Hardware, DSP and signal integrity</h2></div>
@@ -613,19 +667,352 @@ def not_found():
 """ + foot()
 
 
+# ---------------------------------------------------------------- the CV page
+
+CV_CSS = r"""
+:root{--d-hardware:#0369a1;--d-fpga:#6d28d9;--d-dsp:#c2410c;--d-ai:#047857;--d-fg:#ffffff;--d-edu:#8a8a8a}
+@media (prefers-color-scheme:dark){:root{--d-hardware:#38bdf8;--d-fpga:#a78bfa;--d-dsp:#fb923c;--d-ai:#34d399;--d-fg:#0a0a0a;--d-edu:#737373}}
+.cv-head{padding:3rem 0 0}
+.cv-head h1{margin-top:.5rem}
+.cv-head .lede{max-width:44rem}
+.meta{display:flex;flex-wrap:wrap;gap:.35rem 1.25rem;margin-top:1.1rem;font-size:.93rem;color:var(--muted);list-style:none;padding:0}
+.meta a{color:var(--accent-text);text-underline-offset:3px;display:inline-flex;align-items:center;min-height:32px}
+.meta li{display:flex;align-items:center}
+.cv-head .btns{margin-top:1.25rem}
+.cv-sec{padding:2.75rem 0 0;display:grid;gap:.75rem 2rem;grid-template-columns:minmax(0,1fr)}
+@media (min-width:900px){.cv-sec{grid-template-columns:10rem minmax(0,1fr)}.cv-sec>h2{padding-top:.2rem}}
+.cv-sec>h2{font:600 .78rem/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-text)}
+.profile{font-size:1.06rem;line-height:1.65;max-width:46rem}
+.tl{margin:0}
+.tl-strip{position:relative}
+.tl-svg{display:block;width:100%;height:5rem;overflow:visible}
+.tl-svg a rect{transition:opacity .15s}
+.tl-svg:hover a rect{opacity:.55}
+.tl-svg a:hover rect,.tl-svg a:focus rect{opacity:1}
+.tl-svg a:focus{outline:none}
+.tl-svg a:focus-visible rect{stroke:var(--text);stroke-width:2.5px;vector-effect:non-scaling-stroke;opacity:1}
+.tl-names{position:absolute;left:0;right:0;top:0;height:3.125rem;pointer-events:none;display:none}
+.tl-names span{position:absolute;top:0;height:100%;display:flex;align-items:center;justify-content:safe center;font:600 .72rem/1 var(--sans);color:var(--d-fg);white-space:nowrap;overflow:hidden;letter-spacing:-.01em}
+@media (min-width:760px){.tl-names{display:block}}
+.tl-axis{position:relative;height:1.3rem;margin-top:.35rem;border-top:1px solid var(--border);font:500 .72rem/1 var(--mono);color:var(--faint)}
+.tl-axis span{position:absolute;top:.35rem;transform:translateX(-50%)}
+.tl-axis span::before{content:"";position:absolute;left:50%;top:-.4rem;height:.3rem;border-left:1px solid var(--border)}
+@media (max-width:600px){.tl-axis span.near{display:none}}
+.tl-axis span.first{transform:none}.tl-axis span.first::before{left:0}
+.tl-axis span.last{transform:translateX(-100%)}.tl-axis span.last::before{left:100%}
+.tl-out{min-height:3rem;margin-top:.6rem;font-size:.92rem}
+.tl-out p{display:none}
+.tl-out p.tl-hint{display:block;color:var(--faint)}
+.tl-out b{font-weight:600}
+.tl-out .d{color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:.35rem 1.1rem;font-size:.84rem;color:var(--muted);list-style:none;padding:0;margin:.25rem 0 0}
+.legend li{display:flex;align-items:center;gap:.4rem}
+.sw{display:inline-block;width:.8rem;height:.8rem;border-radius:2px;flex:none}
+.sw.edu{height:.35rem}
+.tl-text{margin-top:.75rem;font-size:.88rem;color:var(--muted)}
+.tl-text summary{cursor:pointer;color:var(--accent-text);min-height:32px;display:inline-flex;align-items:center}
+.tl-text ol{margin:.4rem 0 0;padding-left:1.2rem}
+.roles{display:flex;flex-direction:column}
+.role{display:grid;gap:.25rem 1.5rem;grid-template-columns:minmax(0,1fr);padding:1.25rem 0;border-top:1px solid var(--border)}
+.role:first-child{border-top:0;padding-top:0}
+@media (min-width:640px){.role{grid-template-columns:9.5rem minmax(0,1fr)}}
+.when{font:500 .8rem/1.5 var(--mono);color:var(--faint);padding-top:.2rem}
+.when span{white-space:nowrap}
+.role h3{font-size:1.08rem}
+.role h3 .at{font-weight:500;color:var(--muted)}
+.where{display:flex;flex-wrap:wrap;align-items:center;gap:.3rem .9rem;font-size:.85rem;color:var(--faint);margin-top:.2rem}
+.where .dom{display:inline-flex;align-items:center;gap:.35rem}
+.where .sw{width:.6rem;height:.6rem;border-radius:50%}
+.role .intro{margin-top:.55rem;color:var(--text)}
+.role ul{margin:.5rem 0 0;padding-left:1.1rem;color:var(--muted)}
+.role li{margin:.3rem 0}
+.role li::marker{color:var(--faint)}
+.work{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(min(100%,17rem),1fr))}
+.work .thumb{aspect-ratio:1200/630;object-fit:cover;object-position:top}
+.work .url{display:none}
+.skills{display:grid;gap:.9rem;margin:0}
+.skills>div{display:grid;gap:.35rem 1rem;grid-template-columns:minmax(0,1fr)}
+@media (min-width:640px){.skills>div{grid-template-columns:9.5rem minmax(0,1fr)}}
+.skills dt{font-size:.86rem;font-weight:600;padding-top:.25rem}
+.skills dd{margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:.35rem;list-style:none;margin:0;padding:0}
+.chips li{font-size:.84rem;line-height:1.35;padding:.22rem .6rem;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--text)}
+.edu,.certs{list-style:none;margin:0;padding:0;display:grid;gap:.75rem}
+.edu li{display:grid;gap:.1rem 1.5rem;grid-template-columns:minmax(0,1fr)}
+@media (min-width:640px){.edu li{grid-template-columns:9.5rem minmax(0,1fr)}}
+.edu .yrs{font:500 .8rem/1.6 var(--mono);color:var(--faint)}
+.edu b{font-weight:600}
+.edu .sch{color:var(--muted)}
+.certs{gap:.4rem}
+.certs li{padding-left:1.1rem;position:relative}
+.certs li::before{content:"";position:absolute;left:0;top:.62em;width:.45rem;height:.45rem;border-radius:50%;background:var(--accent-line)}
+.certs-note{font-size:.85rem;color:var(--faint);margin-top:.6rem}
+.purl{display:none}
+@page{size:A4;margin:11mm 12mm}
+@media print{
+ :root{color-scheme:light;--bg:#fff;--surface:#f5f5f5;--raised:#fff;--border:#d4d4d4;--text:#111;--muted:#333;--faint:#555;
+  --accent:#4338ca;--accent-text:#3730a3;--accent-line:#4f46e5;--accent-soft:#eef2ff;
+  --d-hardware:#0369a1;--d-fpga:#6d28d9;--d-dsp:#c2410c;--d-ai:#047857;--d-fg:#fff;--d-edu:#8a8a8a}
+ html{font-size:12px}
+ body{font-size:8.6pt;line-height:1.36;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .wrap{max-width:none;padding:0}
+ header.site,footer.site,.skip,.cv-head .btns,.tl-out,.tl-text,.work img,.work .more,.no-print{display:none!important}
+ a{text-decoration:none}
+ .cv-head{padding:0}
+ .cv-head .eyebrow{display:none}
+ .cv-head h1{font-size:20pt;margin:0}
+ .cv-head .lede{font-size:10pt;margin-top:.15rem;max-width:none}
+ .meta{margin-top:.35rem;font-size:8.4pt;gap:0 1rem}
+ .meta a{min-height:0;color:var(--accent-text)}
+ .meta .lbl{display:none}.purl{display:inline}
+ .cv-sec{padding:.85rem 0 0;grid-template-columns:7rem minmax(0,1fr);gap:.2rem .8rem}
+ .cv-sec>h2{font-size:6.8pt;letter-spacing:.06em;padding-top:.15rem}
+ .profile{font-size:8.9pt;line-height:1.42;max-width:none}
+ .tl-svg{height:2.9rem}
+ .tl-svg:hover a rect{opacity:1}
+ .tl-names{display:block;height:1.85rem}
+ .tl-names span{font-size:6.2pt;letter-spacing:-.02em}
+ .tl-axis{font-size:6.6pt;height:1rem;margin-top:.2rem}
+ .legend{font-size:7pt;margin-top:0}
+ .role{padding:.45rem 0;grid-template-columns:7.6rem minmax(0,1fr);gap:0 .9rem}
+ .role li,.role .intro,.role h3{break-inside:avoid}
+ .role h3{break-after:avoid}
+ .role:first-child{padding-top:0}
+ .when{font-size:7.2pt;padding-top:.1rem}
+ .role h3{font-size:9.4pt}
+ .where{font-size:7.4pt;margin-top:0}
+ .role .intro{margin-top:.15rem}
+ .role ul{margin-top:.15rem}
+ .role li{margin:.05rem 0}
+ .work{grid-template-columns:repeat(2,minmax(0,1fr));gap:.15rem 1rem}
+ .work .card{border:0;border-radius:0;break-inside:avoid}
+ .work .card .body{padding:0;gap:0}
+ .work .card h3{font-size:8.6pt}
+ .work .card .place,.work .card .checked{display:none}
+ .work .card .blurb{font-size:7.6pt;color:var(--muted)}
+ .work .url{display:block;font-size:7.2pt;color:var(--accent-text)}
+ .skills{gap:.2rem}
+ .skills>div{grid-template-columns:7.6rem minmax(0,1fr);gap:0 .9rem}
+ .skills dt{font-size:7.8pt;padding-top:0}
+ .chips{gap:.15rem .25rem}
+ .chips li{font-size:7.4pt;padding:.02rem .4rem;background:none}
+ .edu{gap:.1rem}
+ .edu li{grid-template-columns:7.6rem minmax(0,1fr);gap:0 .9rem}
+ .edu .yrs{font-size:7.2pt}
+ .certs{grid-template-columns:repeat(2,minmax(0,1fr));gap:.05rem 1rem}
+ .certs-note{font-size:7.2pt;margin-top:.15rem}
+ .cv-print-break{break-before:page}
+}
+"""
+
+DOMAIN_VAR = {d: f"var(--d-{d})" for d in DOMAIN_LABEL}
+
+
+def now_year():
+    y, m, d = (int(x) for x in BUILT.split("-"))
+    return y + (m - 1 + d / 31) / 12
+
+
+def dates(r):
+    return f"{r['start']} – {r['end']}"
+
+
+def short(company):
+    c = company.split(" (")[0].split(" /")[0]
+    return c.split()[0] if len(c) > 14 else c
+
+
+def role_label(r):
+    doms = " and ".join(DOMAIN_LABEL[d] for d in r["domains"])
+    return f"{r['title']}, {r['company']}, {r['place']}, {dates(r)} ({doms})"
+
+
+def timeline():
+    t0, t1 = 1994.0, now_year()
+    W, span = 1000.0, now_year() - 1994.0
+
+    def x(t):
+        return (t - t0) / span * W
+
+    bands, names, outs, rules, alt = [], [], [], [], []
+    for r in sorted(CV["roles"], key=lambda r: r["t0"]):
+        a, b = x(r["t0"]), x(r["t1"] or t1)
+        n = len(r["domains"])
+        rects = "".join(f'<rect x="{a + 1.5:.1f}" y="{i * 40 / n:.1f}" width="{b - a - 3:.1f}" height="{40 / n:.1f}" fill="{DOMAIN_VAR[d]}"/>'
+                        for i, d in enumerate(r["domains"]))
+        label = role_label(r)
+        bands.append(f'<a href="#r-{r["id"]}" data-r="{r["id"]}" aria-label="{e(label)}"><title>{e(label)}</title>{rects}</a>')
+        names.append(f'<span style="left:{a / 10 + .15:.2f}%;width:{(b - a) / 10 - .3:.2f}%">{e(short(r["company"]))}</span>')
+        doms = " + ".join(DOMAIN_LABEL[d] for d in r["domains"])
+        outs.append(f'<p data-o="{r["id"]}"><b>{e(r["title"])}</b>, {e(r["company"])}, {e(r["place"])} · {e(dates(r))} '
+                    f'<span class="d">· {e(doms)}</span></p>')
+        rules.append(f'.tl:has([data-r="{r["id"]}"]:is(:hover,:focus-visible)) [data-o="{r["id"]}"]')
+        alt.append(f"<li>{e(dates(r))}: {e(r['title'])}, {e(r['company'])} ({e(doms)})</li>")
+    for i, ed in enumerate(CV["education"]):
+        y0, y1 = (int(v) for v in ed["years"].split("–"))
+        if y1 <= t0:
+            continue  # before the strip starts; it is in the Education section
+        a, b = x(max(y0, t0)), x(y1)
+        label = f"{ed['degree']}, {ed['school']}, {ed['years']}{' (part-time)' if ed['part_time'] else ''}"
+        bands.append(f'<a href="#education" data-r="e{i}" aria-label="{e(label)}"><title>{e(label)}</title>'
+                     f'<rect x="{a + 1.5:.1f}" y="50" width="{b - a - 3:.1f}" height="10" fill="var(--d-edu)"/></a>')
+        outs.append(f'<p data-o="e{i}"><b>{e(ed["degree"])}</b>, {e(ed["school"])} · {e(ed["years"])}'
+                    f'{" <span class=d>· part-time</span>" if ed["part_time"] else ""}</p>')
+        rules.append(f'.tl:has([data-r="e{i}"]:is(:hover,:focus-visible)) [data-o="e{i}"]')
+        alt.append(f"<li>{e(ed['years'])}: {e(ed['degree'])}, {e(ed['school'])}</li>")
+    years = list(range(2000, int(t1) + 1, 5))
+    axis = [f'<span class="first" style="left:0">1994</span>']
+    axis += [f'<span{" class=near" if x(y) > W - 90 else ""} style="left:{x(y) / 10:.2f}%">{y}</span>' for y in years if x(y) < W - 45]
+    axis.append(f'<span class="last" style="left:100%">now</span>')
+    css = (",\n".join(rules) + "{display:block}\n"
+           ".tl:has(.tl-svg a:is(:hover,:focus-visible)) .tl-hint{display:none}")
+    legend = "".join(f'<li><span class="sw" style="background:{DOMAIN_VAR[d]}"></span>{e(lbl)}</li>'
+                     for d, lbl in DOMAIN_LABEL.items())
+    legend += '<li><span class="sw edu" style="background:var(--d-edu)"></span>Study</li>'
+    return css, f"""<figure class="tl" aria-labelledby="tl-cap">
+<p id="tl-cap" class="sr">Career timeline from 1994 to now: one band per role, coloured by domain, with study below. The same information is in the list under “The timeline as text” and in Experience.</p>
+<div class="tl-strip">
+<svg class="tl-svg" viewBox="0 0 1000 60" preserveAspectRatio="none" role="group" aria-label="Career timeline, 1994 to now">
+{"".join(bands)}
+</svg>
+<div class="tl-names" aria-hidden="true">{"".join(names)}</div>
+</div>
+<div class="tl-axis" aria-hidden="true">{"".join(axis)}</div>
+<div class="tl-out" aria-hidden="true"><p class="tl-hint">Hover over a band, or tab to it, to see the role. Each band links to its entry below.</p>{"".join(outs)}</div>
+<ul class="legend" aria-label="Key">{legend}</ul>
+<details class="tl-text"><summary>The timeline as text</summary><ol>{"".join(alt)}</ol></details>
+</figure>"""
+
+
+def role_html(r):
+    doms = "".join(f'<span class="dom"><span class="sw" style="background:{DOMAIN_VAR[d]}"></span>{e(DOMAIN_LABEL[d])}</span>'
+                   for d in r["domains"])
+    lis = "".join(f"<li>{e(b)}</li>" for b in r["bullets"])
+    return f"""<article class="role" id="r-{r["id"]}" data-title="{e(r["title"])}" data-company="{e(r["company"])}">
+<p class="when"><span>{e(r["start"])}</span> – <span>{e(r["end"])}</span></p>
+<div>
+<h3>{e(r["title"])} <span class="at">· {e(r["company"])}</span></h3>
+<p class="where"><span>{e(r["place"])}</span>{doms}</p>
+<p class="intro">{e(r["intro"])}</p>
+{f"<ul>{lis}</ul>" if lis else ""}
+</div>
+</article>"""
+
+
+def selected_work():
+    """Six cards; the titles, links and blurbs come from data/sites.json and tools/content.py."""
+    sites = {s["key"]: s for s in DATA["sites"]}
+    hubs = {h["key"]: h for h in HARDWARE}
+    shows = {c["key"]: c for c in SHOWCASES}
+    picks = [("show", "dse"), ("site", "decoder"), ("hub", "si"), ("site", "silicon"), ("site", "orchestration"),
+             ("hub", "fhe")]
+    cards = []
+    for kind, k in picks:
+        if kind == "site":
+            s = sites[k]
+            title, href, img, place, text = s["name"], s["landing"], f"cards/{k}.webp", s["blurb"], s["claim"]
+        elif kind == "hub":
+            h = hubs[k]
+            title, href, img, place, text = h["title"], h["href"], f"shots/{k}.webp", "Hardware deck series", h["text"]
+        else:
+            c = shows[k]
+            title, href, img, place, text = c["title"], c["href"], c["img"], "Showcase", c["text"]
+        cards.append(f"""<article class="card">
+<img class="thumb" src="/assets/{img}" alt="" width="600" height="315" loading="lazy" decoding="async">
+<div class="body">
+<p class="place">{e(place)}</p>
+<h3><a href="{e(href)}">{e(title)}</a></h3>
+<p class="blurb">{e(text)}</p>
+<p class="url">{e(href.replace("https://", "").rstrip("/"))}</p>
+</div>
+</article>""")
+    return "\n".join(cards)
+
+
+def cv_page():
+    css, tl = timeline()
+    location = CV["location"].replace(", England", "")
+    twin = DIGITAL_TWIN["url"] or DIGITAL_TWIN["interim_url"]
+    twin_label = "Digital Twin" if DIGITAL_TWIN["url"] else "Digital Twin (earlier version)"
+
+    def link(label, href):
+        return (f'<li><a href="{e(href)}"><span class="lbl">{e(label)}</span>'
+                f'<span class="purl">{e(href.replace("https://", "").replace("www.", ""))}</span></a></li>')
+    meta = (f"<li>{e(location)}</li>" + link("LinkedIn", CV["linkedin"]) + link("GitHub", CV["github"])
+            + link("Portfolio", BASE + "/") + f'<li class="no-print"><a href="{e(twin)}">{e(twin_label)}</a></li>')
+    skills = "".join(f'<div><dt>{e(k)}</dt><dd><ul class="chips">{"".join(f"<li>{e(c)}</li>" for c in chips)}</ul></dd></div>'
+                     for k, chips in CV["skills"])
+    edu = "".join(f'<li><span class="yrs">{e(x["years"])}</span><span><b>{e(x["degree"])}</b>, '
+                  f'<span class="sch">{e(x["school"])}{" (part-time)" if x["part_time"] else ""}</span></span></li>'
+                  for x in CV["education"])
+    certs = "".join(f"<li>{e(c)}</li>" for c in CV["certs"])
+    desc = f"{CV['name']}: CV. {CV['headline']}"
+    return head(f"{NAME}: CV", desc, "/cv/", f"<style>{CV_CSS.strip()}\n{css}</style>\n") + f"""<main id="main"><div class="wrap">
+<header class="cv-head">
+<p class="eyebrow">Curriculum vitae</p>
+<h1>{e(CV["name"])}</h1>
+<p class="lede">{e(CV["headline"])}</p>
+<ul class="meta">{meta}</ul>
+<div class="btns"><a class="btn primary" href="{PDF}" download>Download PDF</a><a class="btn" href="/">Portfolio home</a></div>
+</header>
+
+<section class="cv-sec" aria-labelledby="profile-h">
+<h2 id="profile-h">Profile</h2>
+<p class="profile">{e(" ".join(PROFILE))}</p>
+</section>
+
+<section class="cv-sec" aria-labelledby="timeline-h">
+<h2 id="timeline-h">Timeline</h2>
+{tl}
+</section>
+
+<section class="cv-sec" id="experience" aria-labelledby="experience-h">
+<h2 id="experience-h">Experience</h2>
+<div class="roles">
+{"".join(role_html(r) for r in CV["roles"])}
+</div>
+</section>
+
+<section class="cv-sec" aria-labelledby="work-h">
+<h2 id="work-h">Selected public work</h2>
+<div class="work">
+{selected_work()}
+</div>
+</section>
+
+<section class="cv-sec" aria-labelledby="skills-h">
+<h2 id="skills-h">Skills</h2>
+<dl class="skills">{skills}</dl>
+</section>
+
+<section class="cv-sec" id="education" aria-labelledby="education-h">
+<h2 id="education-h">Education</h2>
+<ul class="edu">{edu}</ul>
+</section>
+
+<section class="cv-sec" aria-labelledby="certs-h">
+<h2 id="certs-h">Certifications</h2>
+<div><ul class="certs">{certs}</ul>
+<p class="certs-note">{e(CV["certs_note"][0].upper() + CV["certs_note"][1:])}.</p></div>
+</section>
+</div></main>
+""" + foot()
+
+
 SR_CSS = ".sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}"
 
 
 def main():
     global CSS
     CSS = CSS + SR_CSS
-    pages = {"index.html": home(), "checks/index.html": checks_page(), "404.html": not_found()}
+    pages = {"index.html": home(), "checks/index.html": checks_page(), "cv/index.html": cv_page(),
+             "404.html": not_found()}
     for p, s in pages.items():
         os.makedirs(os.path.dirname(os.path.join(ROOT, p)) or ROOT, exist_ok=True)
         open(os.path.join(ROOT, p), "w").write(s)
         print("wrote", p, len(s))
     open(os.path.join(ROOT, "robots.txt"), "w").write(f"User-agent: *\nAllow: /\n\nSitemap: {BASE}/sitemap.xml\n")
-    urls = "".join(f"  <url><loc>{BASE}{u}</loc><lastmod>{BUILT}</lastmod></url>\n" for u in ["/", "/checks/"])
+    urls = "".join(f"  <url><loc>{BASE}{u}</loc><lastmod>{BUILT}</lastmod></url>\n" for u in ["/", "/cv/", "/checks/"])
     open(os.path.join(ROOT, "sitemap.xml"), "w").write(
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         + urls + "</urlset>\n")

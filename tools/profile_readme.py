@@ -10,7 +10,8 @@ import os
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-HOME = "https://brendanjameslynskey.github.io"
+HOME = "https://brendan-lynskey.vercel.app"  # the portfolio home, CV and Digital Twin card
+PG = "https://brendanjameslynskey.github.io"  # GitHub Pages: the deck hubs live here, one repo each
 GH = "https://github.com/BrendanJamesLynskey"
 DATA = json.load(open(os.path.join(ROOT, "data", "sites.json")))
 COUNTS = json.load(open(os.path.join(ROOT, "data", "counts.json")))
@@ -29,7 +30,7 @@ def main(out):
         (f'[HW Design-Space Agent]({SITES["dse"]["landing"]})',
          "A LangGraph agent that explores hardware trade-offs down a fidelity ladder to synthesis",
          "Every number from a recorded run of the agent"),
-        (f"[Signal Integrity]({HOME}/Signal_Integrity/)",
+        (f"[Signal Integrity]({PG}/Signal_Integrity/)",
          f'{si["decks"]} decks, {si["slides"]} slides, from transmission lines to channel operating margin',
          f'{si["published_checks"]} cross-checks against published results, largest difference {si["worst_pct"]:.2f} %'),
         (f'[Agent Orchestration Explained]({SITES["orchestration"]["landing"]})',
@@ -37,7 +38,7 @@ def main(out):
          "Real LangGraph 1.2.14: 39 sessions, checkpoint history equal after every one of 71 operations"),
         (f'[Transformer Decoder Explained]({SITES["decoder"]["landing"]})', "How one forward pass works, live in the browser",
          "PyTorch, operation by operation, to within 1e-5"),
-        (f"[LLMs index]({HOME}/LLMs/)", f'{llms["subhubs"]} sub-hubs listing {llms["decks"]} decks',
+        (f"[LLMs index]({PG}/LLMs/)", f'{llms["subhubs"]} sub-hubs listing {llms["decks"]} decks',
          "The deck library behind the sites"),
     ]
     rows = "\n".join(f"| {a} | {b} | {c} |" for a, b, c in featured)
@@ -46,7 +47,7 @@ def main(out):
 A staff-level engineer across hardware (RTL and FPGA, DSP, signal integrity) and agentic AI. More than 25 years in
 hardware, and I write the software too.
 
-**[Portfolio home →]({HOME}/)** · [How I check the numbers]({HOME}/checks/) · [Hardware, DSP and signal integrity]({HOME}/#hardware)
+**[Portfolio home →]({HOME}/)** · [CV]({HOME}/cv/) · [How I check the numbers]({HOME}/checks/) · [Hardware, DSP and signal integrity]({HOME}/#hardware)
 
 ## Sixteen interactive sites, in four tracks
 
