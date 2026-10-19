@@ -3,7 +3,7 @@
     python3 tools/check_cv.py
 
 Every experience entry (title, company, place, intro and bullets), date range, education item, award string,
-certification and skill in the source must appear on cv/index.html, and nothing else in those categories may:
+certification in the source must appear on cv/index.html, and nothing else in those categories may:
 the page must hold exactly the source's roles, education items and certifications, every date range on it must be
 one of the source's, and every sentence on it that mentions an award must come from the source. Exits non-zero on
 any failure.
@@ -98,15 +98,13 @@ def main():
         if norm(m) not in sources:
             bad.append(f"award text not in the source: {m.strip()}")
 
-    # skills: every chip, and only the source's
-    chips = [text_of(x) for x in re.findall(r'<ul class="chips">(.*?)</ul>', raw, re.S)]
-    want = [" ".join(c) for _, c in CV["skills"]]
-    if chips != [norm(w) for w in want]:
-        bad.append(f"skills on the page {chips} differ from the source {want}")
+    # skills are deliberately not shown on the page (owner decision, 2026-10-19)
+    if 'class="chips"' in raw:
+        bad.append("a skills section is on the page; it was removed by the owner")
 
     n = len(CV["roles"])
     print(f"roles {len(articles)}/{n}, date ranges {len(ranges)}, education {len(items)}/{len(CV['education'])}, "
-          f"certifications {len(shown)}/{len(CV['certs'])}, award strings {len(awards)}, skill groups {len(chips)}")
+          f"certifications {len(shown)}/{len(CV['certs'])}, award strings {len(awards)}")
     for b in bad:
         print("FAIL", b)
     print("ok: /cv/ matches src/cv_source.md" if not bad else f"{len(bad)} failures")

@@ -26,13 +26,13 @@ PROFILE = [
     "Keen to work where a hardware background counts, such as new compute architectures.",
 ]
 
-# timeline colour per role (by company and start year); Blaize was a dual role, so it carries two
+# timeline colour per role (by company and start year); a role that spanned two domains carries two
 DOMAINS = {
     ("Thales", 1994): ["hardware"],
-    ("Pace", 1998): ["hardware"],
+    ("Pace", 1998): ["hardware", "fpga"],
     ("Comodo", 2002): ["fpga"],
-    ("Pace", 2005): ["fpga"],
-    ("Red Embedded", 2011): ["dsp"],
+    ("Pace", 2005): ["fpga", "dsp"],
+    ("Red Embedded", 2011): ["fpga"],
     ("Imagination Technologies / MIPS", 2014): ["fpga"],
     ("Blaize (formerly Thinci)", 2018): ["hardware", "ai"],
 }

@@ -351,7 +351,7 @@ def strip():
 <article class="card mini">
 <div class="body">
 <p class="place">CV</p>
-<h2 class="h3"><a href="/cv/">Experience, skills and education</a></h2>
+<h2 class="h3"><a href="/cv/">Experience and education</a></h2>
 <p class="blurb">{e(CV["headline"])}</p>
 <p class="more"><a href="/cv/">Read the CV →</a><a href="{PDF}">Download the PDF</a></p>
 </div>
@@ -582,8 +582,8 @@ def checks_page():
         ports.append(f'<li><b>{e(s["name"])}</b>: “{text}”. <a href="{e(src)}">Source</a></li>')
     kst, ksrc = q("kernels_stale")
     misses = []
-    for qid, who in [("acc_band", "AI Accelerators Explained"), ("acc_mlperf", "AI Accelerators Explained"),
-                     ("acc_miss", "AI Accelerators Explained"), ("racks_band", "AI Racks Explained"),
+    for qid, who in [("acc_band", "AI Accelerators Explained"), ("acc_mlperf", "AI Accelerators Explained (MLPerf Offline throughput against the model's compute ceiling)"),
+                     ("acc_miss", "AI Accelerators Explained"), ("racks_band", "AI Racks Explained (spec cross-checks against published figures)"),
                      ("arch_band", "LLM Architectures Explained"), ("arch_approx", "LLM Architectures Explained"),
                      ("si_droop", "Signal Integrity (an internal check: time domain against frequency domain)"),
                      ("cit_neg", "Compute in Transit (the experiment's result)")]:
@@ -784,7 +784,7 @@ CV_CSS = r"""
  .role .intro{margin-top:.15rem}
  .role ul{margin-top:.15rem}
  .role li{margin:.05rem 0}
- .work{grid-template-columns:repeat(2,minmax(0,1fr));gap:.15rem 1rem}
+ .work{grid-template-columns:repeat(2,minmax(0,1fr));gap:.55rem 1rem}
  .work .card{border:0;border-radius:0;break-inside:avoid}
  .work .card .body{padding:0;gap:0}
  .work .card h3{font-size:8.6pt}
@@ -835,10 +835,29 @@ def timeline():
         return (t - t0) / span * W
 
     bands, names, outs, rules, alt = [], [], [], [], []
-    for r in sorted(CV["roles"], key=lambda r: r["t0"]):
-        a, b = x(r["t0"]), x(r["t1"] or t1)
+    # Blocks abut: each role runs from its start to the next block's start (the strip is a coarse picture; exact
+    # dates are in Experience). A gap between roles is full-time study, drawn as a grey block on the same row.
+    # A uniform vertical hairline (in the page background colour) separates neighbouring blocks.
+    roles = sorted(CV["roles"], key=lambda r: r["t0"])
+    full_time = [ed for ed in CV["education"] if not ed["part_time"]]
+    gaps = []  # (t0, t1, education item) for full-time study between roles
+    for prev, nxt in zip(roles, roles[1:]):
+        if prev["t1"] and nxt["t0"] - prev["t1"] > 0.25:
+            ed = next((ed for ed in full_time
+                       if int(ed["years"].split("–")[0]) <= nxt["t0"] and int(ed["years"].split("–")[1]) >= prev["t1"]), None)
+            if ed:
+                gaps.append((prev["t1"], nxt["t0"], ed))
+    starts = sorted([r["t0"] for r in roles] + [g[0] for g in gaps])
+    sep = ""  # dividers are drawn once, as vertical lines at block starts (below), so split blocks keep their labels clear
+
+    def end_of(t):
+        later = [u for u in starts if u > t]
+        return later[0] if later else t1
+
+    for r in roles:
+        a, b = x(r["t0"]), x(end_of(r["t0"]))
         n = len(r["domains"])
-        rects = "".join(f'<rect x="{a + 1.5:.1f}" y="{i * 40 / n:.1f}" width="{b - a - 3:.1f}" height="{40 / n:.1f}" fill="{DOMAIN_VAR[d]}"/>'
+        rects = "".join(f'<rect x="{a:.1f}" y="{i * 40 / n:.1f}" width="{b - a:.1f}" height="{40 / n:.1f}" fill="{DOMAIN_VAR[d]}"{sep}/>'
                         for i, d in enumerate(r["domains"]))
         label = role_label(r)
         bands.append(f'<a href="#r-{r["id"]}" data-r="{r["id"]}" aria-label="{e(label)}"><title>{e(label)}</title>{rects}</a>')
@@ -848,18 +867,25 @@ def timeline():
                     f'<span class="d">· {e(doms)}</span></p>')
         rules.append(f'.tl:has([data-r="{r["id"]}"]:is(:hover,:focus-visible)) [data-o="{r["id"]}"]')
         alt.append(f"<li>{e(dates(r))}: {e(r['title'])}, {e(r['company'])} ({e(doms)})</li>")
+    gap_of = {id(g[2]): g for g in gaps}
     for i, ed in enumerate(CV["education"]):
         y0, y1 = (int(v) for v in ed["years"].split("–"))
         if y1 <= t0:
             continue  # before the strip starts; it is in the Education section
-        a, b = x(max(y0, t0)), x(y1)
+        g = gap_of.get(id(ed))
+        a, b = (x(g[0]), x(g[1])) if g else (x(max(y0, t0)), x(y1))
         label = f"{ed['degree']}, {ed['school']}, {ed['years']}{' (part-time)' if ed['part_time'] else ''}"
-        bands.append(f'<a href="#education" data-r="e{i}" aria-label="{e(label)}"><title>{e(label)}</title>'
-                     f'<rect x="{a + 1.5:.1f}" y="50" width="{b - a - 3:.1f}" height="10" fill="var(--d-edu)"/></a>')
+        top = (f'<rect x="{a:.1f}" y="0" width="{b - a:.1f}" height="40" fill="var(--d-edu)"{sep}/>' if g else "")
+        bands.append(f'<a href="#education" data-r="e{i}" aria-label="{e(label)}"><title>{e(label)}</title>{top}'
+                     f'<rect x="{a:.1f}" y="50" width="{b - a:.1f}" height="10" fill="var(--d-edu)"{sep}/></a>')
+        if g:
+            names.append(f'<span style="left:{a / 10 + .15:.2f}%;width:{(b - a) / 10 - .3:.2f}%">{e(ed["school"].split()[-1])}</span>')
         outs.append(f'<p data-o="e{i}"><b>{e(ed["degree"])}</b>, {e(ed["school"])} · {e(ed["years"])}'
                     f'{" <span class=d>· part-time</span>" if ed["part_time"] else ""}</p>')
         rules.append(f'.tl:has([data-r="e{i}"]:is(:hover,:focus-visible)) [data-o="e{i}"]')
         alt.append(f"<li>{e(ed['years'])}: {e(ed['degree'])}, {e(ed['school'])}</li>")
+    bands.append("".join(f'<line x1="{x(u):.1f}" x2="{x(u):.1f}" y1="0" y2="40" stroke="var(--bg)" stroke-width="2" '
+                         f'vector-effect="non-scaling-stroke" aria-hidden="true"/>' for u in starts[1:]))
     years = list(range(2000, int(t1) + 1, 5))
     axis = [f'<span class="first" style="left:0">1994</span>']
     axis += [f'<span{" class=near" if x(y) > W - 90 else ""} style="left:{x(y) / 10:.2f}%">{y}</span>' for y in years if x(y) < W - 45]
@@ -940,8 +966,6 @@ def cv_page():
                 f'<span class="purl">{e(href.replace("https://", "").replace("www.", ""))}</span></a></li>')
     meta = (f"<li>{e(location)}</li>" + link("LinkedIn", CV["linkedin"]) + link("GitHub", CV["github"])
             + link("Portfolio", BASE + "/") + f'<li class="no-print"><a href="{e(twin)}">{e(twin_label)}</a></li>')
-    skills = "".join(f'<div><dt>{e(k)}</dt><dd><ul class="chips">{"".join(f"<li>{e(c)}</li>" for c in chips)}</ul></dd></div>'
-                     for k, chips in CV["skills"])
     edu = "".join(f'<li><span class="yrs">{e(x["years"])}</span><span><b>{e(x["degree"])}</b>, '
                   f'<span class="sch">{e(x["school"])}{" (part-time)" if x["part_time"] else ""}</span></span></li>'
                   for x in CV["education"])
@@ -980,10 +1004,6 @@ def cv_page():
 </div>
 </section>
 
-<section class="cv-sec" aria-labelledby="skills-h">
-<h2 id="skills-h">Skills</h2>
-<dl class="skills">{skills}</dl>
-</section>
 
 <section class="cv-sec" id="education" aria-labelledby="education-h">
 <h2 id="education-h">Education</h2>
