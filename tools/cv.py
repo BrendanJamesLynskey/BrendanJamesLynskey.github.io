@@ -18,7 +18,7 @@ MONTHS = ["January", "February", "March", "April", "May", "June", "July", "Augus
 # the source's Profile section, shortened; every clause is from it
 PROFILE = [
     "Engineer with over 25 years' experience across hardware, FPGA, SoC, DSP and software.",
-    "Much of it designing and verifying FPGA and SoC systems (packet switching, high-speed serial links, cable "
+    "Much of it designing and verifying FPGA or SoC systems (packet switching, high-speed serial links, cable "
     "modem PHY/MAC, CPU debug, broadcast video, cryptography), then board-level hardware for AI accelerators at "
     "Blaize: power delivery, signal integrity and DDR.",
     "For the last two years almost entirely software, mainly Python, building agentic AI systems with LangGraph "

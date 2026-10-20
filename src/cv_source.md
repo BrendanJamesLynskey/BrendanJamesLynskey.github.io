@@ -23,7 +23,7 @@ power.
 ## Profile
 
 - Engineer with over 25 years' experience across hardware, FPGA, SoC, DSP and software.
-- Much of that time was spent designing and verifying FPGA and SoC systems: packet switching, high-speed serial
+- Much of that time was spent designing and verifying FPGA or SoC systems: packet switching, high-speed serial
   links, cable modem PHY/MAC, CPU debug, broadcast video and cryptography.
 - Then came board-level hardware for AI accelerators at Blaize, including power delivery, signal integrity and DDR.
 - Has always combined hardware work with software development.
