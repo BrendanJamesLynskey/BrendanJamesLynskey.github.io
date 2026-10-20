@@ -71,15 +71,17 @@ SECTIONS = [
                           ("The results site", "https://compute-in-transit-results.vercel.app/")],
             },
             {
-                "key": "foptinf", "kind": "Deck series", "size": "3 decks",
+                "key": "foptinf", "kind": "Deck series", "size": "5 decks",
                 "title": "Fourier Optics for Inference",
                 "href": f"{PG}/LLM_Hub_Fourier_Optics_Inference/",
                 "what": "Could a Fourier-optical engine accelerate LLM inference? The physics with its precision "
-                        "and energy bill, where transforms appear in inference workloads, and a "
+                        "and energy bill, where transforms appear in inference workloads, a "
                         "disaggregated-serving simulator with an optical transform device in the prefill pool, "
-                        "live in the browser.",
-                "why": "To put numbers on where optical transforms could matter for serving AI models.",
-                "links": [("Open the hub", f"{PG}/LLM_Hub_Fourier_Optics_Inference/")],
+                        "the photonic link's hardware, and which AI workloads the future stacked chip could run.",
+                "why": "To put numbers on where optical transforms could matter for serving AI models, and to test "
+                       "the AI case for the stacked chip against its simulated precision and energy.",
+                "links": [("Open the hub", f"{PG}/LLM_Hub_Fourier_Optics_Inference/"),
+                          ("AI workloads deck", f"{PG}/FOptInf_05_AI_Workloads_on_a_Stacked_Photonic_Chip/")],
             },
             {
                 "key": "fopttrn", "kind": "Deck series", "size": "3 decks",
