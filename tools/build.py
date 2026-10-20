@@ -944,8 +944,8 @@ def not_found():
 # ---------------------------------------------------------------- the CV page
 
 CV_CSS = r"""
-:root{--d-hardware:#0369a1;--d-fpga:#6d28d9;--d-dsp:#c2410c;--d-crypto:#be185d;--d-sw:#a16207;--d-ai:#047857;--d-fg:#ffffff;--d-edu:#8a8a8a}
-@media (prefers-color-scheme:dark){:root{--d-hardware:#38bdf8;--d-fpga:#a78bfa;--d-dsp:#fb923c;--d-crypto:#f472b6;--d-sw:#facc15;--d-ai:#34d399;--d-fg:#0a0a0a;--d-edu:#737373}}
+:root{--d-hardware:#0369a1;--d-fpga:#6d28d9;--d-dsp:#c2410c;--d-crypto:#be185d;--d-sw:#a16207;--d-ai:#4d7c0f;--d-fg:#ffffff;--d-edu:#8a8a8a}
+@media (prefers-color-scheme:dark){:root{--d-hardware:#38bdf8;--d-fpga:#a78bfa;--d-dsp:#fb923c;--d-crypto:#f472b6;--d-sw:#facc15;--d-ai:#4ade80;--d-fg:#0a0a0a;--d-edu:#737373}}
 .cv-head{padding:3rem 0 0}
 .cv-head h1{margin-top:.5rem}
 .cv-head .lede{max-width:44rem}
@@ -1028,7 +1028,7 @@ CV_CSS = r"""
 @media print{
  :root{color-scheme:light;--bg:#fff;--surface:#f5f5f5;--raised:#fff;--border:#d4d4d4;--text:#111;--muted:#333;--faint:#555;
   --accent:#4338ca;--accent-text:#3730a3;--accent-line:#4f46e5;--accent-soft:#eef2ff;
-  --d-hardware:#0369a1;--d-fpga:#6d28d9;--d-dsp:#c2410c;--d-crypto:#be185d;--d-sw:#a16207;--d-ai:#047857;--d-fg:#fff;--d-edu:#8a8a8a}
+  --d-hardware:#0369a1;--d-fpga:#6d28d9;--d-dsp:#c2410c;--d-crypto:#be185d;--d-sw:#a16207;--d-ai:#4d7c0f;--d-fg:#fff;--d-edu:#8a8a8a}
  html{font-size:12px}
  body{font-size:8.6pt;line-height:1.36;-webkit-print-color-adjust:exact;print-color-adjust:exact}
  .wrap{max-width:none;padding:0}
