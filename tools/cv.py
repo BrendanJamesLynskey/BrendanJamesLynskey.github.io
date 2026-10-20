@@ -32,12 +32,12 @@ DOMAINS = {
     ("Pace", 1998): ["hardware", "fpga"],
     ("Comodo", 2002): ["fpga", "crypto"],
     ("Pace", 2005): ["fpga", "dsp"],
-    ("Red Embedded", 2011): ["fpga", "hardware", "dsp"],
-    ("Imagination Technologies / MIPS", 2014): ["fpga", "hardware", "dsp"],
-    ("Blaize (formerly Thinci)", 2018): ["hardware", "ai"],
+    ("Red Embedded", 2011): ["fpga", "hardware", "dsp", "sw"],
+    ("Imagination Technologies / MIPS", 2014): ["fpga", "hardware", "dsp", "sw"],
+    ("Blaize (formerly Thinci)", 2018): ["hardware", "sw", "ai"],
 }
 DOMAIN_LABEL = {"hardware": "Hardware", "fpga": "FPGA and SoC", "dsp": "DSP", "crypto": "Cryptography",
-                "ai": "Software and AI"}
+                "sw": "Software", "ai": "AI"}
 
 
 def sections(text):
