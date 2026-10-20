@@ -27,7 +27,7 @@ PROFILE = [
 ]
 
 # timeline colour per role (by company and start year); a role that spanned two domains carries two. Bands stack
-# top to bottom in DOMAIN_LABEL order (FPGA and SoC first, Software last) so the same domain lines up across roles
+# top to bottom in DOMAIN_LABEL order (FPGA/SoC first, Software last) so the same domain lines up across roles
 DOMAINS = {
     ("Thales", 1994): ["fpga", "hardware"],
     ("Pace", 1998): ["fpga", "hardware"],
@@ -37,7 +37,7 @@ DOMAINS = {
     ("Imagination Technologies / MIPS", 2014): ["fpga", "hardware", "dsp", "sw"],
     ("Blaize (formerly Thinci)", 2018): ["fpga", "hardware", "ai", "sw"],
 }
-DOMAIN_LABEL = {"fpga": "FPGA and SoC", "hardware": "Hardware", "dsp": "DSP", "crypto": "Cryptography", "ai": "AI",
+DOMAIN_LABEL = {"fpga": "FPGA/SoC", "hardware": "Hardware", "dsp": "DSP", "crypto": "Cryptography", "ai": "AI",
                 "sw": "Software"}
 for _doms in DOMAINS.values():
     assert _doms == sorted(_doms, key=list(DOMAIN_LABEL).index), _doms
