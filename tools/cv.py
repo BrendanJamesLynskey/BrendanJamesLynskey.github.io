@@ -22,22 +22,25 @@ PROFILE = [
     "modem PHY/MAC, CPU debug, broadcast video, cryptography), then board-level hardware for AI accelerators at "
     "Blaize: power delivery, signal integrity and DDR.",
     "For the last two years almost entirely software, mainly Python, building agentic AI systems with LangGraph "
-    "and MCP; Claude Code and OpenCode every day.",
+    "and MCP; Claude Code every day.",
     "Keen to work where a hardware background counts, such as new compute architectures.",
 ]
 
-# timeline colour per role (by company and start year); a role that spanned two domains carries two
+# timeline colour per role (by company and start year); a role that spanned two domains carries two. Bands stack
+# top to bottom in DOMAIN_LABEL order (FPGA and SoC first, Software last) so the same domain lines up across roles
 DOMAINS = {
-    ("Thales", 1994): ["hardware", "fpga"],
-    ("Pace", 1998): ["hardware", "fpga"],
+    ("Thales", 1994): ["fpga", "hardware"],
+    ("Pace", 1998): ["fpga", "hardware"],
     ("Comodo", 2002): ["fpga", "crypto"],
     ("Pace", 2005): ["fpga", "dsp"],
     ("Red Embedded", 2011): ["fpga", "hardware", "dsp", "sw"],
     ("Imagination Technologies / MIPS", 2014): ["fpga", "hardware", "dsp", "sw"],
-    ("Blaize (formerly Thinci)", 2018): ["hardware", "sw", "ai"],
+    ("Blaize (formerly Thinci)", 2018): ["fpga", "hardware", "ai", "sw"],
 }
-DOMAIN_LABEL = {"hardware": "Hardware", "fpga": "FPGA and SoC", "dsp": "DSP", "crypto": "Cryptography",
-                "sw": "Software", "ai": "AI"}
+DOMAIN_LABEL = {"fpga": "FPGA and SoC", "hardware": "Hardware", "dsp": "DSP", "crypto": "Cryptography", "ai": "AI",
+                "sw": "Software"}
+for _doms in DOMAINS.values():
+    assert _doms == sorted(_doms, key=list(DOMAIN_LABEL).index), _doms
 
 
 def sections(text):

@@ -28,7 +28,7 @@ power.
 - Then came board-level hardware for AI accelerators at Blaize, including power delivery, signal integrity and DDR.
 - Has always combined hardware work with software development.
 - For the last two years has worked almost entirely in software, mainly Python, building agentic AI systems with
-  LangGraph and MCP. Uses AI coding tools (Claude Code, OpenCode) every day.
+  LangGraph and MCP. Uses Claude Code every day.
 - Often works where digital hardware meets analogue physics. Particular interests: SI/PI, power delivery for
   demanding accelerator SoCs, high-speed serial links, thermal, mathematics, and cryptography (including FHE).
 - Keen to work where a hardware background counts, such as new compute architectures.
