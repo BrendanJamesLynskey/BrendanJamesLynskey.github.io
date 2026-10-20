@@ -1100,7 +1100,8 @@ def short(company):
 
 
 def role_label(r):
-    doms = " and ".join(DOMAIN_LABEL[d] for d in r["domains"])
+    names = [DOMAIN_LABEL[d] for d in r["domains"]]
+    doms = names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
     return f"{r['title']}, {r['company']}, {r['place']}, {dates(r)} ({doms})"
 
 
