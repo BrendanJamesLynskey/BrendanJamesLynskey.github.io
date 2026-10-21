@@ -28,8 +28,9 @@ tags point to Vercel.
 - [`404.html`](404.html), [`sitemap.xml`](sitemap.xml), [`robots.txt`](robots.txt), [`og.png`](og.png) (the
   link-preview card), [`favicon.svg`](favicon.svg) and [`apple-touch-icon.png`](apple-touch-icon.png).
 
-It is a static site: plain HTML and CSS, one small script ([`assets/hero.js`](assets/hero.js), the hero animation,
-which honours `prefers-reduced-motion`), system fonts and local images. It makes no external requests.
+It is a static site: plain HTML and CSS, two small scripts ([`assets/hero.js`](assets/hero.js), the hero animation,
+which honours `prefers-reduced-motion`, and [`assets/twin.js`](assets/twin.js), the Digital Twin side panel), system
+fonts and local images. It makes no external requests (the panel loads `/twin/`, same-origin through the rewrite).
 
 ## How it is built
 
@@ -50,7 +51,7 @@ Checks (run before publishing):
 | Every quote still appears, word for word, on its source page | `python3 tools/check_quotes.py` |
 | Every link returns 200 | `python3 tools/check_links.py` |
 | Every experience entry, date range, education item, award, certification and skill in `src/cv_source.md` is on `/cv/`, and nothing else in those categories | `python3 tools/check_cv.py` |
-| Each page at 1280 and 390 px, light and dark: no page errors, no horizontal overflow, axe clean, no external requests | `node tools/check_pages.js` (with `python3 -m http.server 8740` running) |
+| Each page at 1280 and 390 px, light and dark: no page errors, no horizontal overflow, axe clean, no external requests; the twin panel opens and closes as a dialog on the three pages that have it, and nowhere else | `node tools/check_pages.js` (with `python3 -m http.server 8740` running) |
 
 ## The Digital Twin card
 
@@ -61,6 +62,21 @@ served at [brendan-lynskey.vercel.app/twin/](https://brendan-lynskey.vercel.app/
 CV page's link all come from `DIGITAL_TWIN` in [`tools/content.py`](tools/content.py). With `"url"` set to `None`
 the card falls back to "new version coming soon" and links the earlier version (`"interim_url"`, the
 CareerConversation Space); change it and run `python3 tools/build.py`.
+
+### The side panel
+
+The home, `/sites/` and `/cv/` pages also carry a floating "Ask my twin" launcher (bottom right).
+[`assets/twin.js`](assets/twin.js) turns it, the card, the hero button and the CV link into openers for a side
+panel holding the twin in an iframe of `/twin/?embed=1` (the twin's compact embed mode): a tall card on the right
+on a desktop, with the page usable beside it, and a modal sheet on a phone. The iframe is created on first open
+(or when the pointer reaches the launcher), never on page load, and kept when the panel closes, so the
+conversation lasts while you stay on the page. It closes with its button, Escape (the twin posts a message, since
+key presses inside an iframe never reach the page) and, on a phone, a tap on the backdrop; focus moves into the
+panel and back to whatever opened it. A one-time nudge ("Questions about my career? Ask my twin") appears after
+six seconds and is remembered in `localStorage`. Without JavaScript, and on GitHub Pages (which has no `/twin/`),
+every opener stays a plain link to the twin. The markup and styles are `twin_panel()` and `TWIN_CSS` in
+[`tools/build.py`](tools/build.py); the twin allows framing only by itself and brendan-lynskey.vercel.app
+(`frame-ancestors`).
 
 ## Deploying
 

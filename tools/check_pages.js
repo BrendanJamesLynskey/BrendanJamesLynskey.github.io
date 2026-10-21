@@ -72,6 +72,38 @@ const modes = [[1280, "light"], [1280, "dark"], [390, "light"], [390, "dark"]];
     console.log(`${ok ? "ok  " : "FAIL"} hero, prefers-reduced-motion: ${reduce}: frames ${a === b ? "still" : "moving"}, button "${label}"${reduce === "no-preference" ? `, still after Pause: ${pausedStill}` : ""}`);
     await page.close();
   }
+  // the Digital Twin panel: launcher on home, /sites/ and /cv/ only; no /twin/ request until it opens; opening
+  // moves focus into a dialog holding /twin/?embed=1 and sets aria-expanded; Escape closes it and focus returns.
+  // (The twin itself is not served here, so this checks the panel, not the chat.)
+  for (const [p, want] of [["/", true], ["/sites/", true], ["/cv/", true], ["/library/", false], ["/checks/", false], ["/optalysys/", false], ["/404.html", false]]) {
+    const page = await browser.newPage();
+    const twinReqs = [];
+    page.on("request", (r) => { if (new URL(r.url()).pathname.startsWith("/twin")) twinReqs.push(r.url()); });
+    await page.setViewport({ width: 1280, height: 800 });
+    await page.goto(base + p, { waitUntil: "load" });
+    const has = !!(await page.$("#tw-launch"));
+    let ok = has === want, detail = `launcher ${has ? "present" : "absent"}`;
+    if (ok && want) {
+      const before = twinReqs.length;
+      await page.focus("#tw-launch");
+      await page.keyboard.press("Enter");
+      await new Promise((r) => setTimeout(r, 600));
+      const open = await page.evaluate(() => {
+        const panel = document.getElementById("tw-panel"), f = panel.querySelector("iframe");
+        return { exp: document.getElementById("tw-launch").getAttribute("aria-expanded"), role: panel.getAttribute("role"),
+          visible: getComputedStyle(panel).visibility, src: f && f.getAttribute("src"), inside: panel.contains(document.activeElement) };
+      });
+      await page.keyboard.press("Escape");
+      await new Promise((r) => setTimeout(r, 400));
+      const closed = await page.evaluate(() => ({ exp: document.getElementById("tw-launch").getAttribute("aria-expanded"), back: document.activeElement.id }));
+      ok = before === 0 && open.exp === "true" && open.role === "dialog" && open.visible === "visible" && open.src === "/twin/?embed=1"
+        && open.inside && closed.exp === "false" && closed.back === "tw-launch";
+      detail += `, /twin/ requests before opening ${before}, open ${JSON.stringify(open)}, after Escape ${JSON.stringify(closed)}`;
+    }
+    failures += !ok;
+    console.log(`${ok ? "ok  " : "FAIL"} twin panel ${p}: ${detail}`);
+    await page.close();
+  }
   // the CV timeline: tabbing to a band shows its role, the hint hides, and the band links to the role's entry
   {
     const page = await browser.newPage();
