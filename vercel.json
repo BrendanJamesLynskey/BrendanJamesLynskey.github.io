@@ -2,5 +2,10 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "cleanUrls": true,
-  "trailingSlash": true
+  "trailingSlash": true,
+  "rewrites": [
+    { "source": "/twin", "destination": "https://brendan-lynskey-twin.vercel.app/twin/" },
+    { "source": "/twin/", "destination": "https://brendan-lynskey-twin.vercel.app/twin/" },
+    { "source": "/twin/:path*", "destination": "https://brendan-lynskey-twin.vercel.app/twin/:path*" }
+  ]
 }

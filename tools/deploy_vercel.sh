@@ -31,3 +31,10 @@ for path in / /sites/ /library/ /optalysys/ /cv/ /cv/Brendan_Lynskey_CV.pdf /che
   printf '%s  %s\n' "$code" "$URL$path"
 done
 printf '%s  %s (should be 404)\n' "$(curl -s -o /dev/null -w '%{http_code}' "$URL/tools/build.py")" "$URL/tools/build.py"
+# the Digital Twin is a separate Vercel project (brendan-lynskey-twin), reached through the /twin rewrite in vercel.json
+code=$(curl -s -o /dev/null -w '%{http_code}' "$URL/twin/")
+if [ "$code" = 200 ]; then
+  printf '%s  %s (Digital Twin, via the rewrite)\n' "$code" "$URL/twin/"
+else
+  printf '%s  %s (Digital Twin not answering: deploy it first with tools/deploy_both.sh or its own tools/deploy_twin.sh)\n' "$code" "$URL/twin/"
+fi

@@ -113,6 +113,11 @@ section.strip{padding-top:2rem}
 .card h2 a{text-decoration:none}
 .card h2 a::after{content:"";position:absolute;inset:0;z-index:1}
 .pill{display:inline-block;margin-left:.4rem;padding:.05rem .45rem;border-radius:999px;border:1px solid var(--border);background:var(--accent-soft);color:var(--accent-text);letter-spacing:.06em}
+.pill.live::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--ok);margin:0 .35rem .1rem 0;vertical-align:middle}
+.card.twin{border-color:var(--accent-line);box-shadow:0 12px 32px -20px var(--accent);background:linear-gradient(180deg,var(--accent-soft),var(--raised) 70%)}
+.card.twin .place{color:var(--accent-text)}
+.card .more a.btn{color:var(--accent-fg);text-decoration:none;min-height:40px;padding:.45rem 1rem;margin-top:.15rem}
+.card .more a.btn:hover{opacity:.92}
 @media (min-width:760px){.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .hgrid{display:grid;gap:1rem;grid-template-columns:minmax(0,1fr)}
 @media (min-width:980px){.hgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -227,6 +232,7 @@ svg text{font-family:var(--mono)}
 <p class="sub">More than 25 years in hardware, and I write the software too. Read my CV, ask a chat agent about my career, or look through the portfolio: explainer sites, deck series and simulators I built for my own learning.</p>
 <div class="btns">
 <a class="btn primary" href="/cv/">Read the CV →</a>
+<a class="btn" href="https://brendan-lynskey.vercel.app/twin/">Ask my Digital Twin →</a>
 <a class="btn" href="/sites/">Open the portfolio →</a>
 </div>
 </div>
@@ -244,12 +250,12 @@ svg text{font-family:var(--mono)}
 <p class="more"><a href="/cv/">Read the CV →</a><a href="/cv/Brendan_Lynskey_CV.pdf">Download the PDF</a></p>
 </div>
 </article>
-<article class="card mini">
+<article class="card mini twin">
 <div class="body">
-<p class="place">Digital Twin <span class="pill">New version coming soon</span></p>
-<h2 class="h3"><a href="https://huggingface.co/spaces/BrendanLynskey/CareerConversation">Ask about my career</a></h2>
-<p class="blurb">A chat agent, trained on my career, that answers questions about it. Built in Ed Donner&#x27;s Proficient AI Engineer curriculum.</p>
-<p class="more"><a href="https://huggingface.co/spaces/BrendanLynskey/CareerConversation">Try the earlier version →</a></p>
+<p class="place">Digital Twin <span class="pill live">Live</span></p>
+<h2 class="h3"><a href="https://brendan-lynskey.vercel.app/twin/">Ask about my career</a></h2>
+<p class="blurb">An AI twin that answers in my voice from my CV and public work. Ask about my experience, or paste a job description and it will say where I fit and where I don&#x27;t. Built in Ed Donner&#x27;s Proficient AI Engineer curriculum.</p>
+<p class="more"><a class="btn primary" href="https://brendan-lynskey.vercel.app/twin/">Talk to my Digital Twin →</a></p>
 </div>
 </article>
 <article class="card mini">

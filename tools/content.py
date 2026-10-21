@@ -217,12 +217,15 @@ QUOTES = {
 
 # The Digital Twin card on the home page. While "url" is None the card says a new version is coming soon and
 # links the earlier one (interim_url); set "url" to the new twin's address and rebuild to switch the card live.
+# The twin is its own Vercel project (BrendanJamesLynskey/Digital_Twin, private), served at /twin/ through the
+# rewrite in vercel.json. The URL is absolute so the card also works on the GitHub Pages mirror.
 DIGITAL_TWIN = {
-    "url": None,
+    "url": "https://brendan-lynskey.vercel.app/twin/",
     "label": "Digital Twin",
     "interim_url": "https://huggingface.co/spaces/BrendanLynskey/CareerConversation",
-    "text": "A chat agent, trained on my career, that answers questions about it. Built in Ed Donner's "
-            "Proficient AI Engineer curriculum.",
+    "text": "An AI twin that answers in my voice from my CV and public work. Ask about my experience, or paste a "
+            "job description and it will say where I fit and where I don't. Built in Ed Donner's Proficient AI "
+            "Engineer curriculum.",
 }
 
 # The library (brief 45): one row per subject index with its series hubs, used by the /library/ page and the

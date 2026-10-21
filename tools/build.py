@@ -131,6 +131,11 @@ section.strip{padding-top:2rem}
 .card h2 a{text-decoration:none}
 .card h2 a::after{content:"";position:absolute;inset:0;z-index:1}
 .pill{display:inline-block;margin-left:.4rem;padding:.05rem .45rem;border-radius:999px;border:1px solid var(--border);background:var(--accent-soft);color:var(--accent-text);letter-spacing:.06em}
+.pill.live::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--ok);margin:0 .35rem .1rem 0;vertical-align:middle}
+.card.twin{border-color:var(--accent-line);box-shadow:0 12px 32px -20px var(--accent);background:linear-gradient(180deg,var(--accent-soft),var(--raised) 70%)}
+.card.twin .place{color:var(--accent-text)}
+.card .more a.btn{color:var(--accent-fg);text-decoration:none;min-height:40px;padding:.45rem 1rem;margin-top:.15rem}
+.card .more a.btn:hover{opacity:.92}
 @media (min-width:760px){.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .hgrid{display:grid;gap:1rem;grid-template-columns:minmax(0,1fr)}
 @media (min-width:980px){.hgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -373,9 +378,11 @@ def strip():
     """CV · Digital Twin · Contact: three cards near the top of the home page."""
     t = DIGITAL_TWIN
     if t["url"]:
-        twin_href, status, more = t["url"], "", f'<a href="{e(t["url"])}">Talk to it →</a>'
+        twin_href, cls = t["url"], "card mini twin"
+        status = '<span class="pill live">Live</span>'
+        more = f'<a class="btn primary" href="{e(t["url"])}">Talk to my Digital Twin →</a>'
     else:
-        twin_href = t["interim_url"]
+        twin_href, cls = t["interim_url"], "card mini"
         status = '<span class="pill">New version coming soon</span>'
         more = f'<a href="{e(t["interim_url"])}">Try the earlier version →</a>'
     return f"""<section class="block strip" id="cv-twin" aria-label="CV, Digital Twin and contact"><div class="wrap">
@@ -388,7 +395,7 @@ def strip():
 <p class="more"><a href="/cv/">Read the CV →</a><a href="{PDF}">Download the PDF</a></p>
 </div>
 </article>
-<article class="card mini">
+<article class="{cls}">
 <div class="body">
 <p class="place">{e(t["label"])} {status}</p>
 <h2 class="h3"><a href="{e(twin_href)}">Ask about my career</a></h2>
@@ -409,6 +416,8 @@ def strip():
 
 
 def home():
+    twin_btn = (f'<a class="btn" href="{e(DIGITAL_TWIN["url"])}">Ask my Digital Twin →</a>\n'
+                if DIGITAL_TWIN["url"] else "")
     n_sites = sum(len(sites_in(g["key"])) for g in DATA["groups"])
     assert n_sites == 16, n_sites
     llms = COUNTS["LLMs"]
@@ -432,7 +441,7 @@ def home():
 <p class="sub">More than 25 years in hardware, and I write the software too. Read my CV, ask a chat agent about my career, or look through the portfolio: explainer sites, deck series and simulators I built for my own learning.</p>
 <div class="btns">
 <a class="btn primary" href="/cv/">Read the CV →</a>
-<a class="btn" href="/sites/">Open the portfolio →</a>
+{twin_btn}<a class="btn" href="/sites/">Open the portfolio →</a>
 </div>
 </div>
 </div>
