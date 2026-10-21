@@ -33,8 +33,13 @@ done
 printf '%s  %s (should be 404)\n' "$(curl -s -o /dev/null -w '%{http_code}' "$URL/tools/build.py")" "$URL/tools/build.py"
 # the Digital Twin is a separate Vercel project (brendan-lynskey-twin), reached through the /twin rewrite in vercel.json
 code=$(curl -s -o /dev/null -w '%{http_code}' "$URL/twin/")
+for _ in 1 2 3; do [ "$code" = 200 ] && break; sleep 10; code=$(curl -s -o /dev/null -w '%{http_code}' "$URL/twin/"); done
 if [ "$code" = 200 ]; then
   printf '%s  %s (Digital Twin, via the rewrite)\n' "$code" "$URL/twin/"
 else
   printf '%s  %s (Digital Twin not answering: deploy it first with tools/deploy_both.sh or its own tools/deploy_twin.sh)\n' "$code" "$URL/twin/"
 fi
+# the chat endpoint ends in a slash, so it needs the catch-all rewrite as well as the page
+chat=$(curl -s -o /dev/null -m 60 -w '%{http_code}' -X POST "$URL/twin/api/chat/" -H 'content-type: application/json' \
+  -d '{"messages":[{"id":"deploy-check","role":"user","parts":[{"type":"text","text":"Hello"}]}]}')
+printf '%s  %s (Digital Twin chat, via the rewrite)\n' "$chat" "$URL/twin/api/chat/"
