@@ -1,19 +1,19 @@
 {
  "LLMs": {
-  "subhubs": 41,
-  "decks": 275
+  "series": 34,
+  "decks": 281
  },
  "Hardware": {
-  "projects": 52
+  "series": 15
  },
  "Software": {
-  "projects": 110
+  "series": 8
  },
  "Mathematics": {
-  "projects": 39
+  "series": 7
  },
  "Miscellaneous": {
-  "projects": 13
+  "series": 3
  },
  "Signal_Integrity": {
   "decks": 17,
@@ -29,6 +29,10 @@
  },
  "DSP_and_Music": {
   "areas": 8,
-  "projects": 50
+  "projects": 50,
+  "series": 3
+ },
+ "library": {
+  "series": 64
  }
 }

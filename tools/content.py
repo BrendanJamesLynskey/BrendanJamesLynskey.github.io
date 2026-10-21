@@ -5,7 +5,11 @@ Every quote below is checked against its source page by tools/check_quotes.py (t
 in the page's text, whitespace normalised). Every link is checked by tools/check_links.py.
 """
 
+import json
+import os
+
 GH = "https://github.com/BrendanJamesLynskey"
+COUNTS = json.load(open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "counts.json")))
 PG = "https://brendanjameslynskey.github.io"
 
 # The owner's home ground. Thumbnails are screenshots of each hub's first screen (tools/thumbs.js).
@@ -115,7 +119,7 @@ SHOWCASES = [
 # The deck library: index hubs. Counts come from data/counts.json.
 INDEXES = [
     dict(key="LLMs", title="LLMs", href=f"{PG}/LLMs/", repo=f"{GH}/LLMs",
-         text="The main index: the interactive sites, then sub-hubs from transformer internals and GPU "
+         text="The main index: the interactive sites, then deck series from transformer internals and GPU "
               "hardware to retrieval, agents, evaluations and safety."),
     dict(key="Hardware", title="Hardware", href=f"{PG}/Hardware/", repo=f"{GH}/Hardware",
          text="RTL, RISC-V and Arm, SoC design, arithmetic units, optical technology, signal integrity "
@@ -225,8 +229,10 @@ DIGITAL_TWIN = {
 # "Browse the library" table of the GitHub profile README. (label, url, in_profile): the profile row shows the
 # hubs marked True and links the index's own "Series in this index" list for the rest; /library/ shows them all.
 LIBRARY = [
-    # total: the deck series in the LLMs README's "Series in this index" block (34 on 2026-10-21); this row shows 16
-    dict(key="LLMs", title="LLMs", href=f"{PG}/LLMs/", series_href=f"{PG}/LLMs/#series-in-this-index", total=34,
+    # total: the LLMs index's series (data/counts.json, from its Sub-hub index; a series is one hub page that lists
+    # its decks); this row shows 16 of them
+    dict(key="LLMs", title="LLMs", href=f"{PG}/LLMs/", series_href=f"{PG}/LLMs/#series-in-this-index",
+         total=COUNTS["LLMs"]["series"],
          text="The interactive sites, then the deck series from transformer internals and GPUs to agents, "
               "evaluations and safety.",
          series=[
@@ -289,6 +295,7 @@ LIBRARY = [
              ("Maths for ML", f"{PG}/MML_Hub/", True),
              ("Historical Mathematicians", f"{PG}/Historical_Mathematicians/", True),
              ("Historical Physicists", f"{PG}/Historical_Physicists/", True),
+             ("Basic Training (Shankar)", f"{PG}/Mathematics/#basic-training", False),
          ], more=False),
     dict(key="DSP_and_Music", title="DSP & Music", href=f"{GH}/DSP_and_Music", series_href=None,
          text="Browser synthesisers, analysis and effects, audio plugins, signal-processing guides and neural "

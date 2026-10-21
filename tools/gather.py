@@ -7,7 +7,8 @@ Nothing on the page is typed in by hand where a source exists:
   (SiteSwitch.tsx, byte-identical on every site), read from GitHub;
 - each site's "How this is checked" line, the link to its evidence, its favicon and its
   link-preview card come from the live landing page;
-- the deck counts come from the index READMEs on GitHub (see count_readme below).
+- the deck counts come from the index READMEs on GitHub (see count_readme below); a series is one hub page that
+  lists its decks (count_llms, count_series).
 
 Writes data/sites.json and data/counts.json, assets/icons/<key>.svg and assets/cards/<key>.webp.
 Needs network access and Pillow (with WebP).
@@ -119,17 +120,47 @@ def count_readme(repo):
 
 
 def count_llms(md):
-    """The LLMs index: its sub-hub rows and the deck counts each row's Status cell states."""
+    """The LLMs index: its series and their decks, from the Sub-hub index table. A series is one hub page that
+    lists its decks; a row counts when its Status cell states "N decks" (the interactive sites, and the single
+    Cloud *aaS deck linked here, have no such count and are not series)."""
     sub = md[md.index("## Sub-hub index"):md.index("## Articles")]
-    hubs, decks = 0, 0
+    series, decks = 0, 0
     for ln in sub.splitlines():
         if not re.match(r"^\|\s*\[", ln):
             continue
-        hubs += 1
         cells = [c.strip() for c in ln.strip("|").split("|")]
         m = re.search(r"(\d+) decks?", cells[1])
-        decks += int(m.group(1)) if m else 0
-    return hubs, decks
+        if m:
+            series += 1
+            decks += int(m.group(1))
+    return series, decks
+
+
+SERIES_LINK = re.compile(r"\]\((?:https://brendanjameslynskey\.github\.io/([A-Za-z0-9_.-]+)/[^)]*|"
+                         r"https://github\.com/BrendanJamesLynskey/([A-Za-z0-9_.-]+)[^)]*|([^)]+))\)")
+
+
+def count_series(md, repo):
+    """The series an index's "Series in this index" block lists (one per table row, or each link of a bulleted
+    list; an "Also linked" bullet is not a series of that index). Returns the set of series keys, so the
+    library total counts a series listed by two indexes once."""
+    lines = md.splitlines()
+    i = next(k for k, l in enumerate(lines) if re.match(r"#+ *Series in this index", l))
+    found, started = [], False
+    for l in lines[i + 1:]:
+        if l.startswith("#") or l.startswith("---"):
+            break
+        if l.startswith("|") or l.startswith("- "):
+            started = True
+            if l.startswith("- **Also linked:**") or re.match(r"^\|[\s:|-]+\|?$", l):
+                continue
+            for a, b, c in SERIES_LINK.findall(l):
+                found.append(a or b or f"{repo}:{c}")
+                if l.startswith("|"):
+                    break
+        elif started and l.strip():
+            break
+    return set(found)
 
 
 def count_si(md):
@@ -177,19 +208,26 @@ def main():
 
     counts = {}
     llms_md, _ = count_readme("LLMs")
-    hubs, decks = count_llms(llms_md)
-    counts["LLMs"] = dict(subhubs=hubs, decks=decks)
+    n_series, decks = count_llms(llms_md)
+    counts["LLMs"] = dict(series=n_series, decks=decks)
+    library = set(count_series(llms_md, "LLMs"))
+    assert len(library) == n_series, (len(library), n_series)  # the Series block and the Sub-hub index agree
     for repo in ["Hardware", "Software", "Mathematics", "Miscellaneous"]:
-        counts[repo] = dict(projects=count_readme(repo)[1])
+        ser = count_series(count_readme(repo)[0], repo)
+        library |= ser
+        counts[repo] = dict(series=len(ser))
     counts["Signal_Integrity"] = count_si(count_readme("Signal_Integrity")[0])
     # DSP_and_Music lists its projects in one page per area
     dsp_md, _ = count_readme("DSP_and_Music")
+    dsp_series = count_series(dsp_md, "DSP_and_Music")
+    library |= dsp_series
     areas = re.findall(r"\]\((\w+\.md)\)", dsp_md)
     n = 0
     for a in dict.fromkeys(areas):
         page = get(f"{RAW}/DSP_and_Music/main/{a}")
         n += len([ln for ln in page.splitlines() if re.match(r"^\|\s*\**\[", ln)])
-    counts["DSP_and_Music"] = dict(areas=len(dict.fromkeys(areas)), projects=n)
+    counts["DSP_and_Music"] = dict(areas=len(dict.fromkeys(areas)), projects=n, series=len(dsp_series))
+    counts["library"] = dict(series=len(library))  # a series is one hub page that lists its decks
     json.dump(counts, open(os.path.join(ROOT, "data", "counts.json"), "w"), indent=1)
     print(json.dumps(counts))
 

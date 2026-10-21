@@ -319,7 +319,7 @@ def dsp_fact():
 
 
 def hw_fact():
-    return f"The Hardware index lists {COUNTS['Hardware']['projects']} projects."
+    return f"The Hardware index lists {COUNTS['Hardware']['series']} series."
 
 
 def hw_card(h):
@@ -353,12 +353,12 @@ def showcase_card(c):
 def index_count(key):
     c = COUNTS[key]
     if key == "LLMs":
-        return f"{c['subhubs']} sub-hubs · {c['decks']} decks"
+        return f"{c['series']} series · {c['decks']} decks"
     if key == "Signal_Integrity":
         return f"{c['decks']} decks · {c['slides']} slides"
     if key == "DSP_and_Music":
         return f"{c['projects']} projects · {c['areas']} areas"
-    return f"{c['projects']} projects"
+    return f"{c['series']} series"
 
 
 def index_row(x):
@@ -436,7 +436,7 @@ def home():
 </div>
 </div>
 </div>
-<p class="facts"><span><b>25+</b> years in hardware</span><span><b>16</b> interactive sites</span><span><b>{llms['subhubs']}</b> LLM sub-hubs, <b>{llms['decks']}</b> decks</span><span><b>{COUNTS['Signal_Integrity']['decks']}</b> signal-integrity decks</span></p>
+<p class="facts"><span><b>25+</b> years in hardware</span><span><b>16</b> interactive sites</span><span><b>{llms['series']}</b> LLM deck series, <b>{llms['decks']}</b> decks</span><span><b>{COUNTS['Signal_Integrity']['decks']}</b> signal-integrity decks</span></p>
 </div></section>
 
 {strip()}
@@ -1326,7 +1326,8 @@ def library_row(x):
 
 
 def library_page():
-    n = sum(len(x["series"]) for x in LIBRARY)
+    shown = len({u for x in LIBRARY for _, u, _ in x["series"]})  # a hub listed by two indexes counts once
+    lib = COUNTS["library"]["series"]
     desc = ("Brendan Lynskey's deck library: six subject indexes and the series hubs in each, from LLMs and "
             "hardware to software, mathematics, DSP and interview preparation.")
     return head(f"Library · {NAME}", desc, "/library/") + f"""<main id="main">
@@ -1334,7 +1335,7 @@ def library_page():
 <p class="eyebrow">Library</p>
 <h1>The deck library</h1>
 <p class="lede">Six subject indexes, and the series hubs in each.</p>
-<p class="sub">The lecture-style slide decks behind the sites. Each index lists everything in it; each series hub lists its decks in reading order. {n} series are linked below; the LLMs index has more.</p>
+<p class="sub">The lecture-style slide decks behind the sites. Each index lists everything in it; each series hub lists its decks in reading order. The six indexes hold {lib} series between them (a series is one hub page that lists its decks); {shown} are linked below, and the LLMs index lists the other {lib - shown}.</p>
 </div></section>
 <section class="block" aria-label="Indexes and their series"><div class="wrap">
 <div class="lib">
