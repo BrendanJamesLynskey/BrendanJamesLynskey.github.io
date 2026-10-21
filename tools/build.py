@@ -1,7 +1,7 @@
 """Build the static site from data/ and tools/content.py.
 
     python3 tools/gather.py      # refresh data/ and the site icons and cards from their live sources
-    python3 tools/build.py       # write index.html, checks/index.html, cv/index.html, 404.html, sitemap.xml,
+    python3 tools/build.py       # write index.html, sites/, library/, checks/, cv/index.html, 404.html, sitemap.xml,
                                  # robots.txt
 
 The CSS is inlined into every page (one small stylesheet, so no extra request). The only script is
@@ -16,7 +16,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from optalysys import SECTIONS as O_SECTIONS, SOURCES as O_SOURCES  # noqa: E402
-from content import DIGITAL_TWIN, HARDWARE, INDEXES, QUOTES, SHOWCASES, GH  # noqa: E402
+from content import DIGITAL_TWIN, HARDWARE, INDEXES, LIBRARY, QUOTES, SHOWCASES, GH  # noqa: E402
 from cv import CV, DOMAIN_LABEL, PROFILE  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -270,6 +270,7 @@ def head(title, description, path, extra="", noindex=False):
 <nav class="top" aria-label="Main">
 <a href="/sites/">Portfolio</a>
 <a href="/sites/#sites" class="wide">Sites</a>
+<a href="/library/" class="wide">Library</a>
 <a href="/checks/" class="mid">Checks</a>
 <a href="/cv/">CV</a>
 <a href="{GH}">GitHub</a>
@@ -519,6 +520,7 @@ def sites_page():
 <div class="list">
 {"".join(index_row(x) for x in INDEXES)}
 </div>
+<div class="btns"><a class="btn primary" href="/library/">Browse the library: every index and its series →</a></div>
 </div></section>
 
 <section class="block" id="built" aria-labelledby="built-h"><div class="wrap">
@@ -1298,13 +1300,59 @@ def cv_page():
 """ + foot()
 
 
+# ---------------------------------------------------------------- the library page (brief 45)
+
+LIB_CSS = (".lib{border-top:1px solid var(--border)}"
+           ".lib-row{display:grid;grid-template-columns:minmax(0,13rem) minmax(0,1fr);gap:.5rem 1.5rem;padding:1.1rem 0;"
+           "border-bottom:1px solid var(--border)}"
+           ".lib-row h2{font-size:1.2rem;margin:0}.lib-row h2 a{text-decoration:none}.lib-row h2 a:hover{text-decoration:underline}"
+           ".lib-row p{color:var(--muted);font-size:.93rem;margin-top:.3rem}"
+           ".lib-row ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;align-content:flex-start;gap:.35rem .5rem}"
+           ".lib-row li a{display:inline-flex;align-items:center;min-height:36px;padding:.2rem .7rem;border:1px solid var(--border);"
+           "border-radius:999px;font-size:.88rem;color:var(--text);text-decoration:none;background:var(--surface,transparent)}"
+           ".lib-row li a:hover,.lib-row li a:focus-visible{border-color:var(--accent-text);color:var(--accent-text)}"
+           ".lib-row li.all a{border-style:dashed;color:var(--accent-text)}"
+           "@media (max-width:700px){.lib-row{grid-template-columns:minmax(0,1fr)}}")
+
+
+def library_row(x):
+    chips = "".join(f'<li><a href="{e(u)}">{e(t)}</a></li>' for t, u, _ in x["series"])
+    if x.get("total") and x["total"] > len(x["series"]):
+        chips += f'<li class="all"><a href="{e(x["series_href"])}">All {x["total"]} series →</a></li>'
+    return f"""<div class="lib-row">
+<div><h2><a href="{e(x["href"])}">{e(x["title"])}</a></h2><p>{e(x["text"])}</p></div>
+<ul aria-label="{e(x["title"])} series">{chips}</ul>
+</div>"""
+
+
+def library_page():
+    n = sum(len(x["series"]) for x in LIBRARY)
+    desc = ("Brendan Lynskey's deck library: six subject indexes and the series hubs in each, from LLMs and "
+            "hardware to software, mathematics, DSP and interview preparation.")
+    return head(f"Library · {NAME}", desc, "/library/") + f"""<main id="main">
+<section class="hero page"><div class="wrap">
+<p class="eyebrow">Library</p>
+<h1>The deck library</h1>
+<p class="lede">Six subject indexes, and the series hubs in each.</p>
+<p class="sub">The lecture-style slide decks behind the sites. Each index lists everything in it; each series hub lists its decks in reading order. {n} series are linked below; the LLMs index has more.</p>
+</div></section>
+<section class="block" aria-label="Indexes and their series"><div class="wrap">
+<div class="lib">
+{"".join(library_row(x) for x in LIBRARY)}
+</div>
+<div class="btns"><a class="btn" href="/sites/">The interactive sites →</a><a class="btn" href="/checks/">How I check the numbers →</a></div>
+</div></section>
+</main>
+""" + foot()
+
+
 SR_CSS = ".sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}"
 
 
 def main():
     global CSS
-    CSS = CSS + SR_CSS
-    pages = {"index.html": home(), "sites/index.html": sites_page(), "checks/index.html": checks_page(), "cv/index.html": cv_page(),
+    CSS = CSS + SR_CSS + LIB_CSS
+    pages = {"index.html": home(), "sites/index.html": sites_page(), "library/index.html": library_page(), "checks/index.html": checks_page(), "cv/index.html": cv_page(),
              "optalysys/index.html": optalysys_page(),
              "404.html": not_found()}
     for p, s in pages.items():
@@ -1312,7 +1360,7 @@ def main():
         open(os.path.join(ROOT, p), "w").write(s)
         print("wrote", p, len(s))
     open(os.path.join(ROOT, "robots.txt"), "w").write(f"User-agent: *\nAllow: /\n\nSitemap: {BASE}/sitemap.xml\n")
-    urls = "".join(f"  <url><loc>{BASE}{u}</loc><lastmod>{BUILT}</lastmod></url>\n" for u in ["/", "/sites/", "/cv/", "/checks/"])
+    urls = "".join(f"  <url><loc>{BASE}{u}</loc><lastmod>{BUILT}</lastmod></url>\n" for u in ["/", "/sites/", "/library/", "/cv/", "/checks/"])
     open(os.path.join(ROOT, "sitemap.xml"), "w").write(
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         + urls + "</urlset>\n")

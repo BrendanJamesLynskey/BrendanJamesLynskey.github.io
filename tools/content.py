@@ -220,3 +220,89 @@ DIGITAL_TWIN = {
     "text": "A chat agent, trained on my career, that answers questions about it. Built in Ed Donner's "
             "Proficient AI Engineer curriculum.",
 }
+
+# The library (brief 45): one row per subject index with its series hubs, used by the /library/ page and the
+# "Browse the library" table of the GitHub profile README. (label, url, in_profile): the profile row shows the
+# hubs marked True and links the index's own "Series in this index" list for the rest; /library/ shows them all.
+LIBRARY = [
+    # total: the deck series in the LLMs README's "Series in this index" block (34 on 2026-10-21); this row shows 16
+    dict(key="LLMs", title="LLMs", href=f"{PG}/LLMs/", series_href=f"{PG}/LLMs/#series-in-this-index", total=34,
+         text="The interactive sites, then the deck series from transformer internals and GPUs to agents, "
+              "evaluations and safety.",
+         series=[
+             ("Transformer Architecture", f"{GH}/LLM_Hub_Transformer_Architecture", True),
+             ("Transformer Training", f"{PG}/LLM_Hub_Transformer_Training/", True),
+             ("Karpathy: Zero to Hero", f"{GH}/LLM_Hub_Karpathy_Zero_to_Hero", False),
+             ("Modern Architectures", f"{GH}/LLM_Hub_Modern_Architectures", True),
+             ("NVIDIA GPUs", f"{GH}/LLM_Hub_NVIDIA_GPUs", True),
+             ("Google TPUs", f"{GH}/LLM_Hub_Google_TPUs", True),
+             ("AI Accelerators", f"{GH}/LLM_Hub_AI_Accelerators", False),
+             ("CUDA", f"{GH}/LLM_Hub_CUDA", False),
+             ("Inference Simulators", f"{GH}/LLM_Hub_Inference_Simulators", True),
+             ("Local LLM Hosting", f"{GH}/LLM_Hub_Local_LLM_Hosting", False),
+             ("RAG & Retrieval", f"{GH}/LLM_Hub_RAG_Retrieval", False),
+             ("Agents & Orchestration", f"{GH}/LLM_Hub_Agents", True),
+             ("Model Context Protocol", f"{GH}/LLM_Hub_MCP", True),
+             ("Coding Agents", f"{GH}/LLM_Hub_Coding_Agents", False),
+             ("LLM Evaluations", f"{GH}/LLM_Hub_Evaluations", False),
+             ("Key Publications", f"{GH}/LLM_Hub_Key_Publications", False),
+         ], more=True),
+    dict(key="Hardware", title="Hardware", href=f"{PG}/Hardware/", series_href=f"{GH}/Hardware#series-in-this-index",
+         text="Signal integrity, optical technology, accelerator simulators, Arm and RISC-V, SoC design and RTL.",
+         series=[
+             ("Signal Integrity", f"{PG}/Signal_Integrity/", True),
+             ("Silicon Photonics", f"{PG}/Optical_Hub_Silicon_Photonics/", True),
+             ("Optics for Data Centres", f"{PG}/Optical_Hub_Data_Centres/", True),
+             ("Optics for AI Processing", f"{PG}/Optical_Hub_AI_Processing/", False),
+             ("Fourier Optics for Inference", f"{PG}/LLM_Hub_Fourier_Optics_Inference/", False),
+             ("Fourier Optics for Training", f"{PG}/LLM_Hub_Fourier_Optics_Training/", False),
+             ("Compute in Transit", f"{PG}/LLM_Hub_Compute_in_Transit/", False),
+             ("FHE Accelerator Simulators", f"{PG}/FHE_Hub_Accelerator_Simulators/", True),
+             ("Simulation Engineering Toolkit", f"{PG}/SimEng_Hub_Toolkit/", True),
+             ("Arm Cortex-M", f"{PG}/Cortex_M/", True),
+             ("Arm Cortex-A", f"{PG}/Cortex_A/", False),
+             ("Arm Neoverse", f"{PG}/Neoverse/", False),
+             ("Arm AMBA", f"{PG}/AMBA/", True),
+             ("Arm System IP", f"{PG}/Arm_System_IP/", False),
+             ("Modern SoC Design", f"{GH}/SoC", True),
+         ], more=True),
+    dict(key="Software", title="Software", href=f"{PG}/Software/", series_href=f"{PG}/Software/#series-in-this-index",
+         text="Identity and authorisation, CI/CD and DevOps, web development, algorithms, compilers and cloud.",
+         series=[
+             ("Identity & Authorisation", f"{PG}/SW_Hub_Identity_Authorisation/", True),
+             ("CI/CD & DevOps", f"{PG}/SW_Hub_CI_CD_DevOps/", True),
+             ("Web Development", f"{PG}/SW_Hub_Web_Development/", True),
+             ("Algorithms & Data Structures", f"{PG}/SW_Hub_Algorithms_Data_Structures/", True),
+             ("Compilers", f"{PG}/Compilers/", True),
+             ("Cloud *aaS", f"{GH}/Cloud_aaS_Hub", True),
+             ("Simulation Engineering Toolkit", f"{PG}/SimEng_Hub_Toolkit/", False),
+             ("Writing VS Code Extensions", f"{PG}/Writing_VSCode_Extensions/", False),
+         ], more=True),
+    dict(key="Mathematics", title="Mathematics", href=f"{PG}/Mathematics/",
+         series_href=f"{GH}/Mathematics#series-in-this-index",
+         text="Cryptography, coding theory, quantitative finance, mathematics for machine learning and the "
+              "historical series.",
+         series=[
+             ("Cryptography", f"{PG}/Cryptography/", True),
+             ("Coding Theory", f"{PG}/Coding/", True),
+             ("Quantitative Finance", f"{PG}/Wilmott_QF_Hub/", True),
+             ("Maths for ML", f"{PG}/MML_Hub/", True),
+             ("Historical Mathematicians", f"{PG}/Historical_Mathematicians/", True),
+             ("Historical Physicists", f"{PG}/Historical_Physicists/", True),
+         ], more=False),
+    dict(key="DSP_and_Music", title="DSP & Music", href=f"{GH}/DSP_and_Music", series_href=None,
+         text="Browser synthesisers, analysis and effects, audio plugins, signal-processing guides and neural "
+              "audio synthesis.",
+         series=[
+             ("Neural Sound Synthesis", f"{PG}/Neural_Sound_Synthesis/", True),
+             ("Audio Plugins", f"{PG}/Audio_Plugins/", True),
+             ("J. O. Smith companions", f"{GH}/DSP_and_Music/blob/main/JOS_Companions.md", True),
+         ], more=False),
+    dict(key="Miscellaneous", title="Miscellaneous", href=f"{GH}/Miscellaneous", series_href=None,
+         text="Interview preparation, psychology and philosophy, early music, and personal projects.",
+         series=[
+             ("Interview Preparation", f"{PG}/Interview_Prep_Hub/", True),
+             ("Psychology & Philosophy", f"{PG}/Psychology_Philosophy/", True),
+             ("Early Music", f"{PG}/Early_Music/", True),
+         ], more=False),
+]

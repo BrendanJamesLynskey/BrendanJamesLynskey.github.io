@@ -15,12 +15,14 @@ import urllib.error
 import urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PAGES = ["index.html", "sites/index.html", "checks/index.html", "cv/index.html", "optalysys/index.html", "404.html"]
+PAGES = ["index.html", "sites/index.html", "library/index.html", "checks/index.html", "cv/index.html", "optalysys/index.html", "404.html"]
 # the site's own pages (at the canonical Vercel address and on GitHub Pages) and repositories: exist only once
 # published
 PENDING = re.compile(r"^https://(brendan-lynskey\.vercel\.app|brendanjameslynskey\.github\.io)"
-                     r"/(checks/|cv/|sites/|optalysys/|cv/Brendan_Lynskey_CV\.pdf|og\.png|sitemap\.xml|#[\w-]+)?$"
-                     r"|^https://github\.com/BrendanJamesLynskey/BrendanJamesLynskey(\.github\.io)?$")
+                     r"/(checks/|cv/|sites/|library/|optalysys/|cv/Brendan_Lynskey_CV\.pdf|og\.png|sitemap\.xml|#[\w-]+)?$"
+                     r"|^https://github\.com/BrendanJamesLynskey/BrendanJamesLynskey(\.github\.io)?$"
+                     # the series hubs added by brief 45, until their repos and Pages sites exist
+                     r"|^https://(brendanjameslynskey\.github\.io|github\.com/BrendanJamesLynskey)/(SW_Hub_\w+|Interview_Prep_Hub)/?$")
 # LinkedIn (999) and optalysys.com (403) answer automated requests with an error whatever the page; reported, not counted as a failure
 BLOCKS_BOTS = re.compile(r"^https://(www\.linkedin\.com|optalysys\.com)/")
 

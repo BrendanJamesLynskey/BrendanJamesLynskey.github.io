@@ -16,10 +16,23 @@ GH = "https://github.com/BrendanJamesLynskey"
 DATA = json.load(open(os.path.join(ROOT, "data", "sites.json")))
 COUNTS = json.load(open(os.path.join(ROOT, "data", "counts.json")))
 SITES = {s["key"]: s for s in DATA["sites"]}
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from content import LIBRARY  # noqa: E402  (the same rows as the home page's /library/)
+
+
+def browse():
+    """One row per subject index: its series hubs (the profile's subset), then the index's full list."""
+    rows = []
+    for x in LIBRARY:
+        hubs = [f"[{t}]({u})" for t, u, show in x["series"] if show]
+        if x["more"]:
+            hubs.append(f'[all {x.get("total", len(x["series"]))} →]({x["series_href"]})')
+        rows.append(f'| **[{x["title"]}]({x["href"]})** | {" · ".join(hubs)} |')
+    return "\n".join(rows)
 
 
 def main(out):
-    si, llms = COUNTS["Signal_Integrity"], COUNTS["LLMs"]
+    si = COUNTS["Signal_Integrity"]
     tracks = []
     for g in DATA["groups"]:
         links = " · ".join(f'[{s["label"]}]({s["landing"]})' for s in DATA["sites"] if s.get("group") == g["key"])
@@ -38,8 +51,9 @@ def main(out):
          "Real LangGraph 1.2.14: 39 sessions, checkpoint history equal after every one of 71 operations"),
         (f'[Transformer Decoder Explained]({SITES["decoder"]["landing"]})', "How one forward pass works, live in the browser",
          "PyTorch, operation by operation, to within 1e-5"),
-        (f"[LLMs index]({PG}/LLMs/)", f'{llms["subhubs"]} sub-hubs listing {llms["decks"]} decks',
-         "The deck library behind the sites"),
+        (f"[Transformer decoder in RTL]({GH}/LLM_Transformer_Decoder_RTL)",
+         "A synthesisable SystemVerilog pre-norm decoder block with a KV cache, in Q8.8 fixed point",
+         "84 passing tests: 54 bit-accurate against a Python golden model, 30 RTL simulations"),
     ]
     rows = "\n".join(f"| {a} | {b} | {c} |" for a, b, c in featured)
     md = f"""# Brendan Lynskey
@@ -56,6 +70,15 @@ Each site is computed and animated by a tested model, and each is checked agains
 | Track | Sites |
 |---|---|
 {chr(10).join(tracks)}
+
+## Browse the library
+
+The slide-deck series behind the sites, by subject (also on the [home page]({HOME}/library/)). Each index lists
+everything in it; each series hub lists its decks in reading order.
+
+| Index | Series hubs |
+|---|---|
+{browse()}
 
 ## Featured
 

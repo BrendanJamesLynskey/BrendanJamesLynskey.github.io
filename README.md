@@ -10,6 +10,9 @@ tags point to Vercel.
 - [`sites/index.html`](sites/index.html): the **portfolio**, built for my own learning: hardware, DSP and signal
   integrity first, then the sixteen interactive sites in their four tracks, the showcases, the verification summary,
   the deck library and how the work is built.
+- [`library/index.html`](library/index.html): the **library**, one row per subject index (LLMs, Hardware, Software,
+  Mathematics, DSP & Music, Miscellaneous) with links to its series hubs, from `LIBRARY` in
+  [`tools/content.py`](tools/content.py); the GitHub profile README's "Browse the library" table uses the same rows.
 - [`optalysys/index.html`](optalysys/index.html): a landing page for the work built while learning the areas
   Optalysys works in (the photonic link module site, silicon photonics, FHE, compute in transit, Fourier optics and
   simulation engineering), with what each does and why it was built. The entries are in

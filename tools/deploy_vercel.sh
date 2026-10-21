@@ -24,7 +24,7 @@ cd "$tmp"
 vercel link --yes --scope "$SCOPE" --project "$PROJECT" >/dev/null
 vercel deploy --prod --yes --scope "$SCOPE"
 
-for path in / /sites/ /optalysys/ /cv/ /cv/Brendan_Lynskey_CV.pdf /checks/ /og.png /sitemap.xml; do
+for path in / /sites/ /library/ /optalysys/ /cv/ /cv/Brendan_Lynskey_CV.pdf /checks/ /og.png /sitemap.xml; do
   code=$(curl -s -o /dev/null -w '%{http_code}' "$URL$path")
   # a page that was checked before it existed can serve a cached 404 for a few seconds after the deploy
   for _ in 1 2 3; do [ "$code" = 200 ] && break; sleep 10; code=$(curl -s -o /dev/null -w '%{http_code}' "$URL$path"); done
