@@ -137,9 +137,9 @@ SOURCES = [
     ("Patents", [
         ("WO2025168828A1, Calibration and stabilisation of photonic circuits",
          "https://patents.google.com/patent/WO2025168828A1/en", "the calibration loop in the simulator and the explainer site"),
-        ("WO2025168827A1, Dense data packing and transceiver circuit for OFT",
+        ("WO2025168827A1, Dense data packing and transceiver circuit for optical Fourier transform using integrated photonics",
          "https://patents.google.com/patent/WO2025168827A1/en", "the module's hardware"),
-        ("WO2026057669A1, Arbitrary size and precision Fourier transforms via OFT",
+        ("WO2026057669A1, Arbitrary size and precision Fourier transforms via optical Fourier transforms",
          "https://patents.google.com/patent/WO2026057669A1/en", "the module's hardware"),
         ("WO2026057668A1, Data transfer and processing",
          "https://patents.google.com/patent/WO2026057668A1/en", "the module's hardware"),
