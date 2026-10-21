@@ -19,7 +19,7 @@ PAGES = ["index.html", "sites/index.html", "library/index.html", "checks/index.h
 # the site's own pages (at the canonical Vercel address and on GitHub Pages) and repositories: exist only once
 # published
 PENDING = re.compile(r"^https://(brendan-lynskey\.vercel\.app|brendanjameslynskey\.github\.io)"
-                     r"/(checks/|cv/|sites/|library/|optalysys/|cv/Brendan_Lynskey_CV\.pdf|og\.png|sitemap\.xml|#[\w-]+)?$"
+                     r"/(checks/|cv/|sites/|library/|optalysys/|twin/|cv/Brendan_Lynskey_CV\.pdf|og\.png|sitemap\.xml|#[\w-]+)?$"
                      r"|^https://github\.com/BrendanJamesLynskey/BrendanJamesLynskey(\.github\.io)?$"
                      # the series hubs added by brief 45, until their repos and Pages sites exist
                      r"|^https://(brendanjameslynskey\.github\.io|github\.com/BrendanJamesLynskey)/(SW_Hub_\w+|Interview_Prep_Hub)/?$")

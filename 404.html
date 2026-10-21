@@ -113,6 +113,11 @@ section.strip{padding-top:2rem}
 .card h2 a{text-decoration:none}
 .card h2 a::after{content:"";position:absolute;inset:0;z-index:1}
 .pill{display:inline-block;margin-left:.4rem;padding:.05rem .45rem;border-radius:999px;border:1px solid var(--border);background:var(--accent-soft);color:var(--accent-text);letter-spacing:.06em}
+.pill.live::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--ok);margin:0 .35rem .1rem 0;vertical-align:middle}
+.card.twin{border-color:var(--accent-line);box-shadow:0 12px 32px -20px var(--accent);background:linear-gradient(180deg,var(--accent-soft),var(--raised) 70%)}
+.card.twin .place{color:var(--accent-text)}
+.card .more a.btn{color:var(--accent-fg);text-decoration:none;min-height:40px;padding:.45rem 1rem;margin-top:.15rem}
+.card .more a.btn:hover{opacity:.92}
 @media (min-width:760px){.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .hgrid{display:grid;gap:1rem;grid-template-columns:minmax(0,1fr)}
 @media (min-width:980px){.hgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}

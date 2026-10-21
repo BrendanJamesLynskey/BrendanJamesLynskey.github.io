@@ -54,17 +54,22 @@ Checks (run before publishing):
 
 ## The Digital Twin card
 
-The home page's Digital Twin card comes from `DIGITAL_TWIN` in [`tools/content.py`](tools/content.py). While its
-`"url"` is `None`, the card says a new version is coming soon and links the earlier one (`"interim_url"`, the
-CareerConversation Space). To switch it live, set `"url"` to the new twin's address and run
-`python3 tools/build.py`.
+The Digital Twin is a chat agent that answers questions about my career in my voice. It lives in its own private
+repository (BrendanJamesLynskey/Digital_Twin, a Next.js app on the Vercel project `brendan-lynskey-twin`) and is
+served at [brendan-lynskey.vercel.app/twin/](https://brendan-lynskey.vercel.app/twin/) through the rewrites in
+[`vercel.json`](vercel.json). The home page's Digital Twin card, the hero's "Ask my Digital Twin" button and the
+CV page's link all come from `DIGITAL_TWIN` in [`tools/content.py`](tools/content.py). With `"url"` set to `None`
+the card falls back to "new version coming soon" and links the earlier version (`"interim_url"`, the
+CareerConversation Space); change it and run `python3 tools/build.py`.
 
 ## Deploying
 
 The owner deploys: [`tools/deploy_vercel.sh`](tools/deploy_vercel.sh) takes a `git archive` of `origin/main` and
 deploys it to the Vercel project `brendan-lynskey` ([`vercel.json`](vercel.json): static, no build step, clean URLs,
 trailing slashes; [`.vercelignore`](.vercelignore) keeps `tools/`, `docs/`, `src/` and `data/` out), then checks the
-live pages answer.
+live pages answer, including the Digital Twin at `/twin/`. To deploy both projects, the twin first:
+[`tools/deploy_both.sh`](tools/deploy_both.sh) runs the twin's own `tools/deploy_twin.sh` (from a clone of the
+twin repository next to this one, or `TWIN_REPO=...`) and then `tools/deploy_vercel.sh`.
 
 The thumbnails in [`assets/shots/`](assets/shots/) are screenshots of each page's first screen
 ([`tools/thumbs.js`](tools/thumbs.js)), resized to 640×360 WebP.
