@@ -132,9 +132,6 @@ section.strip{padding-top:2rem}
 .card h2 a{text-decoration:none}
 .card h2 a::after{content:"";position:absolute;inset:0;z-index:1}
 .pill{display:inline-block;margin-left:.4rem;padding:.05rem .45rem;border-radius:999px;border:1px solid var(--border);background:var(--accent-soft);color:var(--accent-text);letter-spacing:.06em}
-.pill.live::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--ok);margin:0 .35rem .1rem 0;vertical-align:middle}
-.card.twin{border-color:var(--accent-line);box-shadow:0 12px 32px -20px var(--accent);background:linear-gradient(180deg,var(--accent-soft),var(--raised) 70%)}
-.card.twin .place{color:var(--accent-text)}
 .card .more a.btn{color:var(--accent-fg);text-decoration:none;min-height:40px;padding:.45rem 1rem;margin-top:.15rem}
 .card .more a.btn:hover{opacity:.92}
 @media (min-width:760px){.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -249,15 +246,6 @@ TWIN_CSS = r"""
 .tw-launch .tw-sub{display:block;font:500 .62rem/1.2 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent-text);margin-bottom:.2rem}
 html.tw-open .tw-launch{opacity:0;visibility:hidden;transform:translateY(6px);transition:opacity .15s,transform .15s,visibility 0s linear .15s}
 body.tw-has footer.site{padding-bottom:6.5rem}
-.tw-nudge{position:fixed;right:1.25rem;bottom:calc(1.25rem + 48px + .6rem);z-index:40;display:flex;align-items:flex-start;gap:.15rem;max-width:min(17rem,calc(100vw - 2.5rem));padding:.3rem .3rem .3rem .25rem;border:1px solid var(--border);border-radius:.75rem;background:var(--raised);box-shadow:0 14px 34px -18px rgba(0,0,0,.45);opacity:0;transform:translateY(4px);transition:opacity .3s,transform .3s}
-.tw-nudge.on{opacity:1;transform:none}
-.tw-nudge::after{content:"";position:absolute;right:1.6rem;bottom:-6px;width:10px;height:10px;background:var(--raised);border-right:1px solid var(--border);border-bottom:1px solid var(--border);transform:rotate(45deg)}
-.tw-nudge button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;border-radius:.5rem}
-.tw-nudge .tw-nudge-open{flex:1;text-align:left;padding:.45rem .55rem;font-size:.86rem;line-height:1.4;color:var(--muted)}
-.tw-nudge .tw-nudge-open b{color:var(--accent-text);font-weight:600}
-.tw-nudge .tw-nudge-x{flex:none;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;color:var(--faint)}
-.tw-nudge .tw-nudge-x:hover,.tw-nudge .tw-nudge-open:hover b{color:var(--text)}
-html.tw-open .tw-nudge{display:none}
 .tw-scrim{display:none}
 .tw-panel{position:fixed;z-index:50;top:4.5rem;right:.75rem;bottom:.75rem;width:min(26.5rem,calc(100vw - 1.5rem));display:flex;flex-direction:column;background:var(--bg);border:1px solid var(--border);border-radius:.9rem;overflow:hidden;box-shadow:0 28px 70px -28px rgba(0,0,0,.45),0 18px 40px -26px var(--accent);visibility:hidden;transform:translateX(calc(100% + 1.5rem));transition:transform .28s cubic-bezier(.2,.8,.2,1),visibility 0s linear .28s}
 html.tw-open .tw-panel{visibility:visible;transform:none;transition:transform .32s cubic-bezier(.2,.8,.2,1),visibility 0s}
@@ -279,7 +267,7 @@ html.tw-open .tw-panel{visibility:visible;transform:none;transition:transform .3
 .tw-body.ready .tw-wait{display:none}
 @media (max-width:640px){
  .tw-launch{right:1rem;bottom:1rem}
- .tw-nudge{right:1rem;bottom:calc(1rem + 48px + .6rem)}
+
  .tw-scrim{display:block;position:fixed;inset:0;z-index:49;background:rgba(10,10,10,.45);opacity:0;visibility:hidden;transition:opacity .25s,visibility 0s linear .25s}
  html.tw-open .tw-scrim{opacity:1;visibility:visible;transition:opacity .25s,visibility 0s}
  html.tw-lock,html.tw-lock body{overflow:hidden}
@@ -287,8 +275,8 @@ html.tw-open .tw-panel{visibility:visible;transform:none;transition:transform .3
  .tw-head{padding-left:1rem}
  .tw-head::before{content:"";position:absolute;left:50%;top:5px;width:36px;height:4px;margin-left:-18px;border-radius:2px;background:var(--border)}
 }
-@media (prefers-reduced-motion:reduce){.tw-launch,.tw-nudge,.tw-panel,.tw-scrim,.tw-body iframe{transition:none!important}.tw-wait i{animation:none;opacity:.7}}
-@media print{.tw-launch,.tw-nudge,.tw-panel,.tw-scrim{display:none!important}}
+@media (prefers-reduced-motion:reduce){.tw-launch,.tw-panel,.tw-scrim,.tw-body iframe{transition:none!important}.tw-wait i{animation:none;opacity:.7}}
+@media print{.tw-launch,.tw-panel,.tw-scrim{display:none!important}}
 """
 
 TWIN_ICON_OUT = ('<svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M9.5 2.5h4v4M13.5 2.5 8 8M6.5 3.5h-3v9h9v-3" '
@@ -298,10 +286,9 @@ TWIN_ICON_X = ('<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="tru
 
 
 def twin_panel():
-    """The launcher, the one-time nudge and the (empty, hidden) panel, at the end of <body>."""
+    """The launcher and the (empty, hidden) panel, at the end of <body>."""
     url = e(DIGITAL_TWIN["url"])
     return f"""<a class="tw-launch" id="tw-launch" href="{url}" data-twin><span class="tw-mark"><img src="/favicon.svg" alt="" width="36" height="36"></span><span><span class="tw-sub">Digital Twin</span>Ask my twin</span></a>
-<div class="tw-nudge" id="tw-nudge" hidden><button type="button" class="tw-nudge-open">Questions about my career? <b>Ask my twin</b></button><button type="button" class="tw-nudge-x" aria-label="Dismiss this suggestion">{TWIN_ICON_X}</button></div>
 <div class="tw-scrim" id="tw-scrim" hidden></div>
 <div class="tw-panel" id="tw-panel" role="dialog" aria-labelledby="tw-title" tabindex="-1" hidden>
 <div class="tw-head"><h2 id="tw-title" class="sr">Brendan Lynskey's Digital Twin</h2><span class="tw-head-k" aria-hidden="true">Chat</span><a class="tw-full" href="{url}" target="_blank" rel="noopener">Open full page<span class="sr"> (opens in a new tab)</span>{TWIN_ICON_OUT}</a><button type="button" class="tw-close" id="tw-close" aria-label="Close the Digital Twin">{TWIN_ICON_X}</button></div>
@@ -452,18 +439,22 @@ def index_row(x):
 
 
 def strip():
-    """CV · Digital Twin · Contact: three cards near the top of the home page."""
+    """CV · Contact near the top of the home page; while the twin is not live, a Digital Twin card between them."""
     t = DIGITAL_TWIN
-    if t["url"]:
-        twin_href, cls = t["url"], "card mini twin"
-        status = '<span class="pill live">Live</span>'
-        more = f'<a class="btn primary" href="{e(t["url"])}" data-twin>Talk to my Digital Twin →</a>'
-    else:
-        twin_href, cls = t["interim_url"], "card mini"
-        status = '<span class="pill">New version coming soon</span>'
-        more = f'<a href="{e(t["interim_url"])}">Try the earlier version →</a>'
-    return f"""<section class="block strip" id="cv-twin" aria-label="CV, Digital Twin and contact"><div class="wrap">
-<div class="grid three">
+    twin_card = ""
+    if not t["url"]:   # once live, the hero button and the side panel's launcher reach the twin instead
+        twin_card = f"""<article class="card mini">
+<div class="body">
+<p class="place">{e(t["label"])} <span class="pill">New version coming soon</span></p>
+<h2 class="h3"><a href="{e(t["interim_url"])}">Ask about my career</a></h2>
+<p class="blurb">{e(t["text"])}</p>
+<p class="more"><a href="{e(t["interim_url"])}">Try the earlier version →</a></p>
+</div>
+</article>
+"""
+    grid, label = ("two", "CV and contact") if t["url"] else ("three", "CV, Digital Twin and contact")
+    return f"""<section class="block strip" id="cv-twin" aria-label="{label}"><div class="wrap">
+<div class="grid {grid}">
 <article class="card mini">
 <div class="body">
 <p class="place">CV</p>
@@ -472,15 +463,7 @@ def strip():
 <p class="more"><a href="/cv/">Read the CV →</a><a href="{PDF}">Download the PDF</a></p>
 </div>
 </article>
-<article class="{cls}">
-<div class="body">
-<p class="place">{e(t["label"])} {status}</p>
-<h2 class="h3"><a href="{e(twin_href)}"{" data-twin" if t["url"] else ""}>Ask about my career</a></h2>
-<p class="blurb">{e(t["text"])}</p>
-<p class="more">{more}</p>
-</div>
-</article>
-<article class="card mini">
+{twin_card}<article class="card mini">
 <div class="body">
 <p class="place">Contact</p>
 <h2 class="h3"><a href="{e(CV["linkedin"])}">LinkedIn</a></h2>
@@ -490,7 +473,6 @@ def strip():
 </article>
 </div>
 </div></section>"""
-
 
 def home():
     twin_btn = (f'<a class="btn" href="{e(DIGITAL_TWIN["url"])}" data-twin>Ask my Digital Twin →</a>\n'
@@ -507,7 +489,7 @@ def home():
 <div class="intro">
 <p class="eyebrow">Hardware and agentic AI</p>
 <h1>{NAME}</h1>
-<p class="lede">A staff-level engineer across hardware (RTL and FPGA, DSP, signal integrity) and agentic AI.</p>
+<p class="lede">A staff-level engineer across hardware (RTL and FPGA, DSP, signal integrity), software and agentic AI.</p>
 </div>
 <figure class="hero-fig">
 <canvas id="hero-canvas" width="560" height="300" role="img" aria-label="Animation: an agent loop sends operands into a four-by-four systolic array; the operands move one cell per cycle and each cell fills as it accumulates; the results drain back to the loop, which checks them against a reference before planning the next step."></canvas>

@@ -10,7 +10,6 @@
  *     and is kept when the panel closes, so the conversation lasts while you stay on the page;
  *   - closes with its button, Escape (the twin posts a message, as key presses inside an iframe never reach
  *     this page) and, on a phone, a tap on the backdrop; focus moves into the panel and back to the opener;
- *   - a one-time nudge after a few seconds, remembered in localStorage (wrapped: storage can be blocked).
  *
  * On GitHub Pages there is no /twin/, so the links are left alone.
  */
@@ -22,14 +21,12 @@
 
   var SRC = "/twin/?embed=1";
   var MSG_READY = "bl-twin:ready", MSG_CLOSE = "bl-twin:close", MSG_FOCUS = "bl-twin:focus";
-  var NUDGE_KEY = "bl-twin-nudge", NUDGE_DELAY = 6000;
   var body = document.getElementById("tw-body");
   var scrim = document.getElementById("tw-scrim");
-  var nudge = document.getElementById("tw-nudge");
   var closeBtn = document.getElementById("tw-close");
   var root = document.documentElement;
   var phoneQ = window.matchMedia("(max-width: 640px)");
-  var frame = null, ready = false, open = false, opener = null, modal = false, nudgeTimer = 0;
+  var frame = null, ready = false, open = false, opener = null, modal = false;
 
   panel.hidden = false;
   scrim.hidden = false;
@@ -37,14 +34,6 @@
   launcher.setAttribute("aria-haspopup", "dialog");
   launcher.setAttribute("aria-controls", "tw-panel");
   launcher.setAttribute("aria-expanded", "false");
-
-  function store(get, val) {
-    try {
-      if (get) return localStorage.getItem(NUDGE_KEY);
-      localStorage.setItem(NUDGE_KEY, val);
-    } catch (e) { /* storage blocked: the nudge may show again */ }
-    return null;
-  }
 
   function ensureFrame() {
     if (frame) return;
@@ -81,7 +70,6 @@
 
   function show(from) {
     if (open) return;
-    hideNudge(true);
     ensureFrame();
     open = true;
     opener = from || launcher;
@@ -153,27 +141,5 @@
       // focus was parked on the panel while the twin loaded; hand it to the message box
       if (open && !modal && document.activeElement === panel) focusTwin();
     } else if (ev.data.type === MSG_CLOSE && open) hide();
-  });
-
-  // the nudge: once, a few seconds in, never while the panel is or has been open
-  function hideNudge(remember) {
-    clearTimeout(nudgeTimer);
-    if (remember) store(false, "1");
-    if (nudge.hidden) return;
-    nudge.classList.remove("on");
-    nudge.hidden = true;
-  }
-  if (!store(true)) {
-    nudgeTimer = setTimeout(function () {
-      if (open || frame) return;
-      store(false, "1");
-      nudge.hidden = false;
-      requestAnimationFrame(function () { requestAnimationFrame(function () { nudge.classList.add("on"); }); });
-    }, NUDGE_DELAY);
-  }
-  nudge.querySelector(".tw-nudge-open").addEventListener("click", function () { show(launcher); });
-  nudge.querySelector(".tw-nudge-x").addEventListener("click", function () {
-    hideNudge(true);
-    launcher.focus({ preventScroll: true });
   });
 })();
