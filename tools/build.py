@@ -1014,8 +1014,8 @@ def not_found():
 # ---------------------------------------------------------------- the CV page
 
 CV_CSS = r"""
-:root{--d-hardware:#2b6a8c;--d-fpga:#1f3b5c;--d-dsp:#2f7566;--d-crypto:#6b5848;--d-sw:#44403c;--d-ai:#8a5a12;--d-fg:#ffffff;--d-edu:#8a8a8a}
-@media (prefers-color-scheme:dark){:root{--d-hardware:#6fbad0;--d-fpga:#a3bde0;--d-dsp:#82c9b2;--d-crypto:#cdb59c;--d-sw:#bdb5a8;--d-ai:#e2b45e;--d-fg:#0a0a0a;--d-edu:#737373}}
+:root{--d-hardware:#9c4a26;--d-fpga:#1f3b5c;--d-dsp:#24756a;--d-crypto:#5f3a78;--d-sw:#4f6b1f;--d-ai:#8a6510;--d-hatch:rgba(255,255,255,.3);--d-fg:#ffffff;--d-edu:#8a8a8a}
+@media (prefers-color-scheme:dark){:root{--d-hardware:#e39a5b;--d-fpga:#a3bde0;--d-dsp:#7cc7b6;--d-crypto:#bfa3d8;--d-sw:#a9c46e;--d-ai:#e0bf5c;--d-hatch:rgba(0,0,0,.22);--d-fg:#0a0a0a;--d-edu:#737373}}
 .cv-head{padding:3rem 0 0}
 .cv-head h1{margin-top:.5rem}
 .cv-head .lede{max-width:44rem}
@@ -1098,7 +1098,7 @@ CV_CSS = r"""
 @media print{
  :root{color-scheme:light;--bg:#fff;--surface:#f5f5f5;--raised:#fff;--border:#d4d4d4;--text:#111;--muted:#333;--faint:#555;
   --accent:#4338ca;--accent-text:#3730a3;--accent-line:#4f46e5;--accent-soft:#eef2ff;
-  --d-hardware:#2b6a8c;--d-fpga:#1f3b5c;--d-dsp:#2f7566;--d-crypto:#6b5848;--d-sw:#44403c;--d-ai:#8a5a12;--d-fg:#fff;--d-edu:#8a8a8a}
+  --d-hardware:#9c4a26;--d-fpga:#1f3b5c;--d-dsp:#24756a;--d-crypto:#5f3a78;--d-sw:#4f6b1f;--d-ai:#8a6510;--d-hatch:rgba(255,255,255,.3);--d-fg:#fff;--d-edu:#8a8a8a}
  html{font-size:12px}
  body{font-size:8.6pt;line-height:1.36;-webkit-print-color-adjust:exact;print-color-adjust:exact}
  .wrap{max-width:none;padding:0}
@@ -1153,6 +1153,16 @@ CV_CSS = r"""
 """
 
 DOMAIN_VAR = {d: f"var(--d-{d})" for d in DOMAIN_LABEL}
+# the software-side domains are hatched as well as coloured (AI at +45°, Software at -45°), so neighbouring bands
+# differ in texture too; the hardware-side domains stay solid
+HATCH = {"ai": 45, "sw": -45}
+DOMAIN_BG = {d: (f"repeating-linear-gradient({HATCH[d]}deg,var(--d-hatch) 0 2px,transparent 2px 6px),var(--d-{d})"
+                 if d in HATCH else f"var(--d-{d})") for d in DOMAIN_LABEL}
+DOMAIN_FILL = {d: (f"url(#tl-h-{d})" if d in HATCH else f"var(--d-{d})") for d in DOMAIN_LABEL}
+TL_DEFS = "<defs>" + "".join(
+    f'<pattern id="tl-h-{d}" patternUnits="userSpaceOnUse" width="7" height="7" patternTransform="rotate({-a})">'
+    f'<rect width="7" height="7" fill="var(--d-{d})"/><rect width="2.4" height="7" fill="var(--d-hatch)"/></pattern>'
+    for d, a in HATCH.items()) + "</defs>"
 
 
 def now_year():
@@ -1205,7 +1215,7 @@ def timeline():
     for r in roles:
         a, b = x(r["t0"]), x(end_of(r["t0"]))
         n = len(r["domains"])
-        rects = "".join(f'<rect x="{a:.1f}" y="{i * 40 / n:.1f}" width="{b - a:.1f}" height="{40 / n:.1f}" fill="{DOMAIN_VAR[d]}"{sep}/>'
+        rects = "".join(f'<rect x="{a:.1f}" y="{i * 40 / n:.1f}" width="{b - a:.1f}" height="{40 / n:.1f}" fill="{DOMAIN_FILL[d]}"{sep}/>'
                         for i, d in enumerate(r["domains"]))
         label = role_label(r)
         bands.append(f'<a href="#r-{r["id"]}" data-r="{r["id"]}" aria-label="{e(label)}"><title>{e(label)}</title>{rects}</a>')
@@ -1238,14 +1248,14 @@ def timeline():
     axis.append(f'<span class="last" style="left:100%">now</span>')
     css = (",\n".join(rules) + "{display:block}\n"
            ".tl:has(.tl-svg a:is(:hover,:focus-visible)) .tl-hint{display:none}")
-    legend = "".join(f'<li><span class="sw" style="background:{DOMAIN_VAR[d]}"></span>{e(lbl)}</li>'
+    legend = "".join(f'<li><span class="sw" style="background:{DOMAIN_BG[d]}"></span>{e(lbl)}</li>'
                      for d, lbl in DOMAIN_LABEL.items())
     legend += '<li><span class="sw edu" style="background:var(--d-edu)"></span>Study</li>'
     return css, f"""<figure class="tl" aria-labelledby="tl-cap">
 <p id="tl-cap" class="sr">Career timeline from 1994 to now: one band per role, coloured by domain, with study below. The same information is in the list under “The timeline as text” and in Experience.</p>
 <div class="tl-strip">
 <svg class="tl-svg" viewBox="0 0 1000 60" preserveAspectRatio="none" role="group" aria-label="Career timeline, 1994 to now">
-{"".join(bands)}
+{TL_DEFS}{"".join(bands)}
 </svg>
 <div class="tl-names" aria-hidden="true">{"".join(names)}</div>
 </div>
@@ -1257,7 +1267,7 @@ def timeline():
 
 
 def role_html(r):
-    doms = "".join(f'<span class="dom"><span class="sw" style="background:{DOMAIN_VAR[d]}"></span>{e(DOMAIN_LABEL[d])}</span>'
+    doms = "".join(f'<span class="dom"><span class="sw" style="background:{DOMAIN_BG[d]}"></span>{e(DOMAIN_LABEL[d])}</span>'
                    for d in r["domains"])
     lis = "".join(f"<li>{e(b)}</li>" for b in r["bullets"])
     return f"""<article class="role" id="r-{r["id"]}" data-title="{e(r["title"])}" data-company="{e(r["company"])}">
