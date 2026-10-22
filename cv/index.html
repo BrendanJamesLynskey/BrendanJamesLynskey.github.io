@@ -113,9 +113,6 @@ section.strip{padding-top:2rem}
 .card h2 a{text-decoration:none}
 .card h2 a::after{content:"";position:absolute;inset:0;z-index:1}
 .pill{display:inline-block;margin-left:.4rem;padding:.05rem .45rem;border-radius:999px;border:1px solid var(--border);background:var(--accent-soft);color:var(--accent-text);letter-spacing:.06em}
-.pill.live::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--ok);margin:0 .35rem .1rem 0;vertical-align:middle}
-.card.twin{border-color:var(--accent-line);box-shadow:0 12px 32px -20px var(--accent);background:linear-gradient(180deg,var(--accent-soft),var(--raised) 70%)}
-.card.twin .place{color:var(--accent-text)}
 .card .more a.btn{color:var(--accent-fg);text-decoration:none;min-height:40px;padding:.45rem 1rem;margin-top:.15rem}
 .card .more a.btn:hover{opacity:.92}
 @media (min-width:760px){.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -208,15 +205,6 @@ svg text{font-family:var(--mono)}
 .tw-launch .tw-sub{display:block;font:500 .62rem/1.2 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent-text);margin-bottom:.2rem}
 html.tw-open .tw-launch{opacity:0;visibility:hidden;transform:translateY(6px);transition:opacity .15s,transform .15s,visibility 0s linear .15s}
 body.tw-has footer.site{padding-bottom:6.5rem}
-.tw-nudge{position:fixed;right:1.25rem;bottom:calc(1.25rem + 48px + .6rem);z-index:40;display:flex;align-items:flex-start;gap:.15rem;max-width:min(17rem,calc(100vw - 2.5rem));padding:.3rem .3rem .3rem .25rem;border:1px solid var(--border);border-radius:.75rem;background:var(--raised);box-shadow:0 14px 34px -18px rgba(0,0,0,.45);opacity:0;transform:translateY(4px);transition:opacity .3s,transform .3s}
-.tw-nudge.on{opacity:1;transform:none}
-.tw-nudge::after{content:"";position:absolute;right:1.6rem;bottom:-6px;width:10px;height:10px;background:var(--raised);border-right:1px solid var(--border);border-bottom:1px solid var(--border);transform:rotate(45deg)}
-.tw-nudge button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;border-radius:.5rem}
-.tw-nudge .tw-nudge-open{flex:1;text-align:left;padding:.45rem .55rem;font-size:.86rem;line-height:1.4;color:var(--muted)}
-.tw-nudge .tw-nudge-open b{color:var(--accent-text);font-weight:600}
-.tw-nudge .tw-nudge-x{flex:none;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;color:var(--faint)}
-.tw-nudge .tw-nudge-x:hover,.tw-nudge .tw-nudge-open:hover b{color:var(--text)}
-html.tw-open .tw-nudge{display:none}
 .tw-scrim{display:none}
 .tw-panel{position:fixed;z-index:50;top:4.5rem;right:.75rem;bottom:.75rem;width:min(26.5rem,calc(100vw - 1.5rem));display:flex;flex-direction:column;background:var(--bg);border:1px solid var(--border);border-radius:.9rem;overflow:hidden;box-shadow:0 28px 70px -28px rgba(0,0,0,.45),0 18px 40px -26px var(--accent);visibility:hidden;transform:translateX(calc(100% + 1.5rem));transition:transform .28s cubic-bezier(.2,.8,.2,1),visibility 0s linear .28s}
 html.tw-open .tw-panel{visibility:visible;transform:none;transition:transform .32s cubic-bezier(.2,.8,.2,1),visibility 0s}
@@ -238,7 +226,7 @@ html.tw-open .tw-panel{visibility:visible;transform:none;transition:transform .3
 .tw-body.ready .tw-wait{display:none}
 @media (max-width:640px){
  .tw-launch{right:1rem;bottom:1rem}
- .tw-nudge{right:1rem;bottom:calc(1rem + 48px + .6rem)}
+
  .tw-scrim{display:block;position:fixed;inset:0;z-index:49;background:rgba(10,10,10,.45);opacity:0;visibility:hidden;transition:opacity .25s,visibility 0s linear .25s}
  html.tw-open .tw-scrim{opacity:1;visibility:visible;transition:opacity .25s,visibility 0s}
  html.tw-lock,html.tw-lock body{overflow:hidden}
@@ -246,8 +234,8 @@ html.tw-open .tw-panel{visibility:visible;transform:none;transition:transform .3
  .tw-head{padding-left:1rem}
  .tw-head::before{content:"";position:absolute;left:50%;top:5px;width:36px;height:4px;margin-left:-18px;border-radius:2px;background:var(--border)}
 }
-@media (prefers-reduced-motion:reduce){.tw-launch,.tw-nudge,.tw-panel,.tw-scrim,.tw-body iframe{transition:none!important}.tw-wait i{animation:none;opacity:.7}}
-@media print{.tw-launch,.tw-nudge,.tw-panel,.tw-scrim{display:none!important}}</style>
+@media (prefers-reduced-motion:reduce){.tw-launch,.tw-panel,.tw-scrim,.tw-body iframe{transition:none!important}.tw-wait i{animation:none;opacity:.7}}
+@media print{.tw-launch,.tw-panel,.tw-scrim{display:none!important}}</style>
 <style>:root{--d-hardware:#0369a1;--d-fpga:#6d28d9;--d-dsp:#c2410c;--d-crypto:#be185d;--d-sw:#a16207;--d-ai:#4d7c0f;--d-fg:#ffffff;--d-edu:#8a8a8a}
 @media (prefers-color-scheme:dark){:root{--d-hardware:#38bdf8;--d-fpga:#a78bfa;--d-dsp:#fb923c;--d-crypto:#f472b6;--d-sw:#facc15;--d-ai:#4ade80;--d-fg:#0a0a0a;--d-edu:#737373}}
 .cv-head{padding:3rem 0 0}
@@ -583,7 +571,6 @@ html.tw-open .tw-panel{visibility:visible;transform:none;transition:transform .3
 <span>A static page, built 2026-10-22 from its <a href="https://github.com/BrendanJamesLynskey/BrendanJamesLynskey.github.io">source</a>.</span>
 </div></footer>
 <a class="tw-launch" id="tw-launch" href="https://brendan-lynskey.vercel.app/twin/" data-twin><span class="tw-mark"><img src="/favicon.svg" alt="" width="36" height="36"></span><span><span class="tw-sub">Digital Twin</span>Ask my twin</span></a>
-<div class="tw-nudge" id="tw-nudge" hidden><button type="button" class="tw-nudge-open">Questions about my career? <b>Ask my twin</b></button><button type="button" class="tw-nudge-x" aria-label="Dismiss this suggestion"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button></div>
 <div class="tw-scrim" id="tw-scrim" hidden></div>
 <div class="tw-panel" id="tw-panel" role="dialog" aria-labelledby="tw-title" tabindex="-1" hidden>
 <div class="tw-head"><h2 id="tw-title" class="sr">Brendan Lynskey's Digital Twin</h2><span class="tw-head-k" aria-hidden="true">Chat</span><a class="tw-full" href="https://brendan-lynskey.vercel.app/twin/" target="_blank" rel="noopener">Open full page<span class="sr"> (opens in a new tab)</span><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M9.5 2.5h4v4M13.5 2.5 8 8M6.5 3.5h-3v9h9v-3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a><button type="button" class="tw-close" id="tw-close" aria-label="Close the Digital Twin"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button></div>
