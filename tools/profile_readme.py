@@ -10,7 +10,7 @@ import os
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-HOME = "https://brendan-lynskey.vercel.app"  # the portfolio home, CV and Digital Twin card
+HOME = "https://brendanlynskey.com"  # the portfolio home, CV and Digital Twin card
 PG = "https://brendanjameslynskey.github.io"  # GitHub Pages: the deck hubs live here, one repo each
 GH = "https://github.com/BrendanJamesLynskey"
 DATA = json.load(open(os.path.join(ROOT, "data", "sites.json")))

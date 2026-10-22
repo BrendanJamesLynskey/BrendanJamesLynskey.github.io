@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Deploy origin/main (or another ref) to https://brendan-lynskey.vercel.app (the owner runs this; nothing deploys
+# Deploy origin/main (or another ref) to https://brendanlynskey.com (the owner runs this; nothing deploys
 # from CI).
 #
 #   tools/deploy_vercel.sh                    # origin/main
@@ -13,7 +13,7 @@ set -euo pipefail
 
 SCOPE=brendan-lynskeys-projects
 PROJECT=brendan-lynskey
-URL=https://brendan-lynskey.vercel.app
+URL=https://brendanlynskey.com
 
 repo=$(git rev-parse --show-toplevel)
 ref=${1:-origin/main}

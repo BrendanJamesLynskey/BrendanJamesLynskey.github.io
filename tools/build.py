@@ -25,7 +25,7 @@ from cv import CV, DOMAIN_LABEL, PROFILE  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # the canonical address; GitHub Pages serves the same files from main, and its pages point here
-BASE = "https://brendan-lynskey.vercel.app"
+BASE = "https://brendanlynskey.com"
 PDF = "/cv/Brendan_Lynskey_CV.pdf"
 NAME = "Brendan Lynskey"
 DATA = json.load(open(os.path.join(ROOT, "data", "sites.json")))
@@ -710,7 +710,7 @@ def home():
 <p class="ds-k">General description</p>
 <h1 class="ds-name" id="name-h">Brendan<br>Lynskey</h1>
 <p class="lede">A staff-level engineer across hardware (RTL and FPGA, DSP, signal integrity), software and agentic AI.</p>
-<p class="sub">More than 25 years in hardware, and I write the software too. Read my CV, ask a chat agent about my career, or look through the portfolio: explainer sites, deck series and simulators I built for my own learning.</p>
+<p class="sub">More than 25 years in hardware; for the last two years, almost entirely software (agentic AI in Python). Read my CV, ask a chat agent about my career, or look through the portfolio: explainer sites, deck series and simulators I built for my own learning.</p>
 <div class="btns">
 {twin_btn}<a class="btn{"" if twin_btn else " primary"}" href="/cv/">Read the CV</a>
 </div>

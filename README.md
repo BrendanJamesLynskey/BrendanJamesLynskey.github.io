@@ -1,6 +1,6 @@
 # brendanjameslynskey.github.io
 
-The portfolio home page, CV and Digital Twin card: **[brendan-lynskey.vercel.app](https://brendan-lynskey.vercel.app/)**
+The portfolio home page, CV and Digital Twin card: **[brendanlynskey.com](https://brendanlynskey.com/)**
 (the canonical address). GitHub Pages serves the same files from `main` at
 [brendanjameslynskey.github.io](https://brendanjameslynskey.github.io/), so old links still work; their canonical
 tags point to Vercel.
@@ -26,7 +26,7 @@ tags point to Vercel.
   [`cv/Brendan_Lynskey_CV.pdf`](cv/Brendan_Lynskey_CV.pdf).
 - [`src/cv_source.md`](src/cv_source.md): the facts behind the CV page (the only source for `/cv/`), and
   [`docs/landing_brief.md`](docs/landing_brief.md): the brief for the CV page, the Digital Twin card and the move to
-  brendan-lynskey.vercel.app.
+  brendanlynskey.com.
 - [`404.html`](404.html), [`sitemap.xml`](sitemap.xml), [`robots.txt`](robots.txt), [`og.png`](og.png) (the
   link-preview card), [`favicon.svg`](favicon.svg) and [`apple-touch-icon.png`](apple-touch-icon.png).
 
@@ -60,7 +60,7 @@ Checks (run before publishing):
 
 The Digital Twin is a chat agent that answers questions about my career in my voice. It lives in its own private
 repository (BrendanJamesLynskey/Digital_Twin, a Next.js app on the Vercel project `brendan-lynskey-twin`) and is
-served at [brendan-lynskey.vercel.app/twin/](https://brendan-lynskey.vercel.app/twin/) through the rewrites in
+served at [brendanlynskey.com/twin/](https://brendanlynskey.com/twin/) through the rewrites in
 [`vercel.json`](vercel.json). The home page's Digital Twin card, the hero's "Ask my Digital Twin" button and the
 CV page's link all come from `DIGITAL_TWIN` in [`tools/content.py`](tools/content.py). With `"url"` set to `None`
 the card falls back to "new version coming soon" and links the earlier version (`"interim_url"`, the
@@ -75,11 +75,10 @@ on a desktop, with the page usable beside it, and a modal sheet on a phone. The 
 (or when the pointer reaches the launcher), never on page load, and kept when the panel closes, so the
 conversation lasts while you stay on the page. It closes with its button, Escape (the twin posts a message, since
 key presses inside an iframe never reach the page) and, on a phone, a tap on the backdrop; focus moves into the
-panel and back to whatever opened it. A one-time nudge ("Questions about my career? Ask my twin") appears after
-six seconds and is remembered in `localStorage`. Without JavaScript, and on GitHub Pages (which has no `/twin/`),
+panel and back to whatever opened it. Without JavaScript, and on GitHub Pages (which has no `/twin/`),
 every opener stays a plain link to the twin. The markup and styles are `twin_panel()` and `TWIN_CSS` in
-[`tools/build.py`](tools/build.py); the twin allows framing only by itself and brendan-lynskey.vercel.app
-(`frame-ancestors`).
+[`tools/build.py`](tools/build.py); the twin allows framing only by itself and this site (brendanlynskey.com, www, and the original
+brendan-lynskey.vercel.app) (`frame-ancestors`).
 
 ## Deploying
 

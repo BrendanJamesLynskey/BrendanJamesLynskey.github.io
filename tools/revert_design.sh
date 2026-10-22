@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Put the previous ("classic") design back on https://brendan-lynskey.vercel.app (the owner runs this).
+# Put the previous ("classic") design back on https://brendanlynskey.com (the owner runs this).
 #
 #   tools/revert_design.sh
 #
