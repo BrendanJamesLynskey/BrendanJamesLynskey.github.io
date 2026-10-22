@@ -4,9 +4,12 @@
     python3 tools/build.py       # write index.html, sites/, library/, checks/, cv/index.html, 404.html, sitemap.xml,
                                  # robots.txt
 
-The CSS is inlined into every page (one small stylesheet, so no extra request). The scripts are assets/hero.js
-(the home page's animation) and assets/twin.js (the Digital Twin side panel on the home, /sites/ and /cv/ pages).
-No external requests: system fonts, local images; the panel loads /twin/, which is same-origin through the rewrite.
+The CSS is inlined into every page (one small stylesheet, so no extra request). The look is a component datasheet
+(the "Datasheet" design, 2026-10; the previous design is the git tag design-classic): a mono header band, ruled
+sections, square cards, IBM Plex Sans Condensed and IBM Plex Mono, self-hosted in assets/fonts/ (OFL). The scripts
+are assets/hero.js (the home page's animation) and assets/twin.js (the Digital Twin side panel on the home, /sites/
+and /cv/ pages). No external requests: local fonts and images; the panel loads /twin/, which is same-origin through
+the rewrite.
 """
 import datetime
 import html
@@ -22,7 +25,7 @@ from cv import CV, DOMAIN_LABEL, PROFILE  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # the canonical address; GitHub Pages serves the same files from main, and its pages point here
-BASE = "https://brendan-lynskey.vercel.app"
+BASE = "https://brendanlynskey.com"
 PDF = "/cv/Brendan_Lynskey_CV.pdf"
 NAME = "Brendan Lynskey"
 DATA = json.load(open(os.path.join(ROOT, "data", "sites.json")))
@@ -34,6 +37,16 @@ HOW_BUILT = re.sub(r"<!--.*?-->\s*", "", open(os.path.join(ROOT, "src", "how-thi
 
 e = html.escape
 
+# the datasheet's header band: a part number (the year the career starts), the revision (the build month) and where
+PART = "BL-1994"
+REV = BUILT[:7].replace("-", ".")
+DATE_CODE = BUILT[2:4] + BUILT[5:7]                  # yymm, as printed on a package
+WHERE = (lambda p: f"{p[0]}, {p[-1]}")([x.strip() for x in CV["location"].split(",")]).upper()   # "LEEDS, UK"
+# the numbered pages of the datasheet, for the footer's "PAGE n OF m"
+PAGES = ["/", "/sites/", "/library/", "/checks/", "/cv/"]
+NAV = [("Portfolio", "/sites/"), ("Sites", "/sites/#sites"), ("Library", "/library/"), ("Checks", "/checks/"),
+       ("CV", "/cv/"), ("GitHub", GH)]
+
 
 def q(qid):
     """A quote from content.QUOTES, escaped, and its source link."""
@@ -43,72 +56,81 @@ def q(qid):
 
 
 CSS = r"""
+@font-face{font-family:"IBM Plex Sans Condensed";font-style:normal;font-weight:400;font-display:swap;src:url(/assets/fonts/ibm-plex-sans-condensed-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Sans Condensed";font-style:normal;font-weight:600;font-display:swap;src:url(/assets/fonts/ibm-plex-sans-condensed-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Sans Condensed";font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/ibm-plex-sans-condensed-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:400;font-display:swap;src:url(/assets/fonts/ibm-plex-mono-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:600;font-display:swap;src:url(/assets/fonts/ibm-plex-mono-latin-600-normal.woff2) format("woff2")}
 :root{color-scheme:light dark;
- --bg:#ffffff;--surface:#fafafa;--raised:#ffffff;--border:#e5e5e5;--text:#171717;--muted:#525252;--faint:#6b6b6b;
- --accent:#4f46e5;--accent-fg:#ffffff;--accent-text:#4338ca;--accent-line:#4f46e5;--accent-soft:#eef2ff;
- --hw:#0284c7;--hw2:#ea580c;--ok:#15803d;
- --t-foundations:#0891b2;--t-hardware:#0284c7;--t-inference:#4f46e5;--t-agents:#dc2626;
- --sans:Inter,"Noto Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
- --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+ --bg:#f6f5f0;--surface:#ecebe4;--raised:#fbfaf7;--border:#c8c6bb;--rule:#111111;--text:#111111;--muted:#333333;--faint:#5c5a52;
+ --accent:#f2a33a;--accent-fg:#111111;--accent-text:#9a3d06;--accent-line:#b3410a;--accent-soft:#fbe7c6;
+ --chip:#1b1b1b;--chip-fg:#f6f5f0;--chip-muted:#c9c9c2;--lead:#111111;
+ --hw:#0369a1;--hw2:#c2410c;--ok:#166534;
+ --t-foundations:#0e7490;--t-hardware:#0369a1;--t-inference:#4f46e5;--t-agents:#b91c1c;
+ --sans:"IBM Plex Sans Condensed","Arial Narrow","Roboto Condensed",ui-sans-serif,system-ui,sans-serif;
+ --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
 @media (prefers-color-scheme:dark){:root{
- --bg:#0a0a0a;--surface:#171717;--raised:#121212;--border:#2a2a2a;--text:#f5f5f5;--muted:#d4d4d4;--faint:#a3a3a3;
- --accent:#4f46e5;--accent-fg:#ffffff;--accent-text:#a5b4fc;--accent-line:#818cf8;--accent-soft:#1e1b4b;
+ --bg:#121211;--surface:#1c1c1a;--raised:#171716;--border:#3a3935;--rule:#eeece4;--text:#eeece4;--muted:#c9c7bd;--faint:#a3a199;
+ --accent:#f2a33a;--accent-fg:#111111;--accent-text:#f2a33a;--accent-line:#f2a33a;--accent-soft:#3a2a12;
+ --chip:#050505;--chip-fg:#eeece4;--chip-muted:#a3a199;--lead:#eeece4;
  --hw:#38bdf8;--hw2:#fb923c;--ok:#4ade80;
  --t-foundations:#22d3ee;--t-hardware:#38bdf8;--t-inference:#a5b4fc;--t-agents:#f87171}}
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;scroll-padding-top:4.5rem}
-body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 var(--sans)}
-a{color:inherit}
+html{-webkit-text-size-adjust:100%;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;scroll-padding-top:1rem}
+body{margin:0;background:var(--bg);color:var(--text);font:17px/1.55 var(--sans)}
+a{color:inherit;text-underline-offset:3px}
+a:hover{color:var(--accent-text)}
 img{max-width:100%;height:auto;display:block}
-.wrap{max-width:68rem;margin:0 auto;padding:0 1.5rem}
-@media (max-width:480px){.wrap{padding:0 1rem}}
-.skip{position:absolute;left:-999px;top:0;background:var(--accent);color:var(--accent-fg);padding:.5rem 1rem;z-index:10}
+.wrap{max-width:77.5rem;margin:0 auto;padding:0 2rem}
+@media (max-width:600px){.wrap{padding:0 1rem}}
+.skip{position:absolute;left:-999px;top:0;background:var(--text);color:var(--bg);padding:.5rem 1rem;z-index:60}
 .skip:focus{left:1rem;top:.5rem}
-:focus-visible{outline:2px solid var(--accent-line);outline-offset:2px;border-radius:4px}
-header.site{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);
- backdrop-filter:saturate(1.4) blur(8px);-webkit-backdrop-filter:saturate(1.4) blur(8px);border-bottom:1px solid var(--border)}
-header.site .wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:3.75rem}
-.brand{display:flex;align-items:center;gap:.6rem;text-decoration:none;font-weight:600;font-size:.95rem;white-space:nowrap}
-.brand img{width:24px;height:24px}
-nav.top{display:flex;gap:1.25rem;font-size:.9rem}
-nav.top a{text-decoration:none;color:var(--muted);padding:.4rem 0}
-nav.top a:hover{color:var(--text)}
-@media (max-width:520px){nav.top{gap:.9rem}nav.top .wide{display:none}}
-@media (max-width:420px){nav.top .mid{display:none}}
-.eyebrow{font:500 .75rem/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-text);margin:0}
-h1,h2,h3,h4{line-height:1.2;letter-spacing:-.015em;margin:0}
-h1{font-size:clamp(2.4rem,6vw,3.5rem);font-weight:650;margin-top:.75rem}
-h2{font-size:clamp(1.5rem,3vw,1.9rem);font-weight:650}
-h3{font-size:1.1rem;font-weight:600}
+:focus-visible{outline:2px solid var(--accent-line);outline-offset:2px}
+header.site .wrap{display:flex;flex-direction:column}
+.band{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.5rem 1rem;border-bottom:3px solid var(--rule);padding:1.1rem 0 .7rem;font:400 .85rem/1.3 var(--mono);letter-spacing:.06em;text-transform:uppercase}
+.brand{display:inline-flex;align-items:center;min-height:44px;font-weight:600;text-decoration:none;white-space:nowrap}
+.band .rev{color:var(--muted)}
+.badge{display:inline-block;background:var(--accent);color:var(--accent-fg);padding:.25rem .65rem;font-weight:600;letter-spacing:.08em}
+@media (max-width:600px){.band{font-size:.74rem;padding-top:.6rem}.band .rev{order:3;flex-basis:100%;margin-top:-.4rem}}
+nav.top{display:flex;flex-wrap:wrap;gap:0 1.4rem;border-bottom:1px solid var(--rule);font:400 .82rem/1 var(--mono);letter-spacing:.08em;text-transform:uppercase}
+nav.top a{display:inline-flex;align-items:center;min-height:44px;text-decoration:none;color:var(--muted)}
+nav.top a:hover{color:var(--accent-text)}
+nav.top a[aria-current]{color:var(--text);font-weight:600;box-shadow:inset 0 -3px 0 var(--accent)}
+@media (max-width:600px){nav.top{gap:0 .95rem;font-size:.74rem}}
+.eyebrow{font:600 .8rem/1.4 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--text);margin:0}
+h1,h2,h3,h4{line-height:1.15;margin:0}
+h1{font-size:clamp(2.6rem,7vw,4.6rem);font-weight:700;line-height:.92;letter-spacing:-.02em;text-transform:uppercase;margin-top:.6rem}
+h2{font-size:clamp(1.55rem,3vw,2rem);font-weight:700;letter-spacing:-.01em}
+h3{font-size:1.2rem;font-weight:600}
 p{margin:0}
-.lede{font-size:clamp(1.15rem,2.2vw,1.35rem);line-height:1.5;color:var(--text);max-width:40rem;margin-top:1rem}
-.sub{color:var(--muted);max-width:40rem;margin-top:.9rem}
-.hero{padding:3.5rem 0 1rem}
+.lede{font-size:clamp(1.25rem,2.4vw,1.6rem);line-height:1.3;color:var(--text);max-width:42rem;margin-top:1.1rem}
+.sub{color:var(--muted);max-width:42rem;margin-top:.9rem;font-size:1.06rem}
+.hero{padding:3rem 0 1rem}
 .hero-grid{display:grid;gap:1.75rem 2.5rem;grid-template-columns:minmax(0,1fr)}
 .rest{display:flex;flex-direction:column}
 @media (min-width:900px){.hero-grid{grid-template-columns:minmax(0,1fr) minmax(0,30rem);grid-template-areas:"intro fig" "rest fig";row-gap:0}
  .intro{grid-area:intro}.hero-fig{grid-area:fig;align-self:center}.rest{grid-area:rest}}
 @media (max-width:899px){.rest .btns{order:-1;margin-top:0}.rest .sub{margin-top:1.25rem}}
-.btns{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.5rem}
-.btn{display:inline-flex;align-items:center;min-height:44px;padding:.55rem 1.15rem;border-radius:.4rem;font-size:.92rem;font-weight:550;text-decoration:none;border:1px solid var(--border);background:var(--raised);color:var(--text)}
-.btn:hover{border-color:var(--faint)}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
-.btn.primary:hover{opacity:.92}
+.btns{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.6rem}
+.btn{display:inline-flex;align-items:center;min-height:48px;padding:.5rem 1.3rem;font-size:1.06rem;font-weight:600;text-decoration:none;border:2px solid var(--rule);background:transparent;color:var(--text)}
+.btn:hover{color:var(--text);box-shadow:4px 4px 0 var(--accent)}
+.btn.primary{background:var(--text);border-color:var(--text);color:var(--bg)}
+.btn.primary:hover{color:var(--bg)}
 figure{margin:0}
-.hero-fig{border:1px solid var(--border);border-radius:.6rem;padding:.75rem;background:var(--raised);position:relative}
+.hero-fig{border:1px solid var(--rule);padding:.75rem;background:var(--raised);position:relative}
 .hero-fig canvas{width:100%;aspect-ratio:560/300;display:block}
-.hero-fig figcaption{font-size:.8rem;color:var(--faint);margin-top:.4rem;padding-right:4.5rem}
-.hero-fig button{position:absolute;right:.75rem;bottom:.6rem;font:500 .75rem var(--mono);color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:.3rem;padding:.3rem .6rem;min-height:32px;cursor:pointer}
-.facts{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;margin-top:2rem;padding:1rem 0 0;border-top:1px solid var(--border);font-size:.88rem;color:var(--muted)}
-.facts b{color:var(--text);font-weight:650}
-section.block{padding:3.5rem 0 0}
-.block-head{margin-bottom:1.25rem}
-.block-head h2{margin-top:.35rem}
-.block-head>p{color:var(--muted);max-width:44rem;margin-top:.6rem}
+.hero-fig figcaption{font-size:.9rem;color:var(--faint);margin-top:.4rem;padding-right:5rem}
+.hero-fig button{position:absolute;right:.75rem;bottom:.6rem;font:600 .78rem var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--text);background:var(--bg);border:1px solid var(--rule);padding:.3rem .7rem;min-height:44px;min-width:4.5rem;cursor:pointer}
+.hero-fig button:hover{box-shadow:3px 3px 0 var(--accent)}
+section.block{padding:3.25rem 0 0}
+.block-head{margin-bottom:1.4rem;border-top:2px solid var(--rule);padding-top:.9rem}
+.block-head h2{margin-top:.4rem}
+.block-head>p{color:var(--muted);max-width:46rem;margin-top:.6rem}
+main>.wrap>section.block>h2:first-child{border-top:2px solid var(--rule);padding-top:.9rem}
 .grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(min(100%,19rem),1fr))}
-.card{position:relative;display:flex;flex-direction:column;border:1px solid var(--border);border-radius:.6rem;background:var(--raised);overflow:hidden;transition:border-color .15s,transform .15s}
-.card:hover{border-color:var(--faint)}
-.card .thumb{aspect-ratio:1200/630;width:100%;object-fit:cover;background:var(--surface);border-bottom:1px solid var(--border)}
+.card{position:relative;display:flex;flex-direction:column;border:1px solid var(--rule);background:var(--raised);overflow:hidden;transition:box-shadow .15s,transform .15s}
+.card:hover{box-shadow:5px 5px 0 var(--accent);transform:translate(-2px,-2px)}
+.card .thumb{aspect-ratio:1200/630;width:100%;object-fit:cover;background:var(--surface);border-bottom:1px solid var(--rule)}
 .card .thumb.wide{aspect-ratio:16/9;object-position:top}
 .hgrid .card .thumb.wide{aspect-ratio:2/1}
 .card .body{padding:.9rem 1rem 1rem;display:flex;flex-direction:column;gap:.5rem;flex:1}
@@ -116,78 +138,81 @@ section.block{padding:3.5rem 0 0}
 .card h3 a::after{content:"";position:absolute;inset:0;z-index:1}
 .card .title{display:flex;align-items:center;gap:.55rem}
 .card .title img{width:22px;height:22px;flex:none}
-.card .place{font:500 .7rem/1.3 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
-.card .blurb{color:var(--muted);font-size:.93rem}
-.card .fact{font-size:.86rem;color:var(--text)}
-.card .checked{font-size:.82rem;line-height:1.5;color:var(--muted);border-left:2px solid var(--border);padding-left:.6rem}
-.card .checked b{font:500 .68rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);display:block}
-.card .more{margin-top:auto;padding-top:.4rem;display:flex;flex-wrap:wrap;gap:.25rem .9rem;font-size:.85rem;position:relative;z-index:2}
-.card .more a{color:var(--accent-text);text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--accent-text) 35%,transparent);text-underline-offset:3px}
+.card .place{font:400 .74rem/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.card .blurb{color:var(--muted);font-size:1rem}
+.card .fact{font-size:.95rem;color:var(--text)}
+.card .checked{font-size:.92rem;line-height:1.45;color:var(--muted);border-left:3px solid var(--accent);padding-left:.6rem}
+.card .checked b{font:600 .7rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);display:block}
+.card .more{margin-top:auto;padding-top:.4rem;display:flex;flex-wrap:wrap;gap:.25rem .9rem;font-size:.95rem;position:relative;z-index:2}
+.card .more a{color:var(--accent-text);text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--accent-text) 40%,transparent)}
 .card .more a:hover{text-decoration-color:currentColor}
 .track{margin-top:2.25rem}
-section.strip{padding-top:2rem}
 @media (min-width:860px){.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .card.mini .body{padding:1rem 1.1rem 1.1rem}
-.card h2.h3{font-size:1.1rem;font-weight:600;letter-spacing:-.015em}
+.card h2.h3{font-size:1.2rem;font-weight:600}
 .card h2 a{text-decoration:none}
 .card h2 a::after{content:"";position:absolute;inset:0;z-index:1}
-.pill{display:inline-block;margin-left:.4rem;padding:.05rem .45rem;border-radius:999px;border:1px solid var(--border);background:var(--accent-soft);color:var(--accent-text);letter-spacing:.06em}
-.card .more a.btn{color:var(--accent-fg);text-decoration:none;min-height:40px;padding:.45rem 1rem;margin-top:.15rem}
-.card .more a.btn:hover{opacity:.92}
+.pill{display:inline-block;margin-left:.4rem;padding:.05rem .45rem;border:1px solid var(--rule);background:var(--accent);color:var(--accent-fg);letter-spacing:.06em}
+.card .more a.btn{color:var(--bg);text-decoration:none;min-height:44px;padding:.45rem 1rem;margin-top:.15rem}
 @media (min-width:760px){.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .hgrid{display:grid;gap:1rem;grid-template-columns:minmax(0,1fr)}
 @media (min-width:980px){.hgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (min-width:560px){.card.h{display:grid;grid-template-columns:minmax(0,38%) minmax(0,1fr)}
- .card.h .thumb{height:100%;aspect-ratio:auto;min-height:11rem;border-bottom:0;border-right:1px solid var(--border)}}
-.textlink{display:inline-flex;align-items:center;min-height:44px;color:var(--accent-text);font-size:.92rem;font-weight:550}
-.track-head{display:flex;align-items:center;gap:.65rem;margin-bottom:.9rem}
+ .card.h .thumb{height:100%;aspect-ratio:auto;min-height:11rem;border-bottom:0;border-right:1px solid var(--rule)}}
+.textlink{display:inline-flex;align-items:center;min-height:44px;color:var(--accent-text);font-weight:600}
+.track-head{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem .65rem;margin-bottom:.9rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
 .track-head svg{width:22px;height:22px;flex:none}
-.track-head p{color:var(--muted);font-size:.95rem}
-.checks4{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(min(100%,15rem),1fr))}
-.stat{border:1px solid var(--border);border-radius:.6rem;padding:1rem;background:var(--raised);display:flex;flex-direction:column;gap:.35rem}
-.stat .n{font-size:1.65rem;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.stat .k{font:500 .7rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
-.stat p{font-size:.88rem;color:var(--muted)}
-.stat a{font-size:.85rem;color:var(--accent-text);margin-top:auto}
-.list{border-top:1px solid var(--border)}
+.track-head h3{font-size:1.35rem;font-weight:700;text-transform:uppercase;letter-spacing:.01em}
+.track-head p{color:var(--muted);font-size:1rem}
+.checks4{display:grid;gap:0;grid-template-columns:repeat(auto-fill,minmax(min(100%,15rem),1fr));border-top:2px solid var(--rule);border-left:1px solid var(--rule)}
+.stat{border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:1rem;background:var(--raised);display:flex;flex-direction:column;gap:.35rem}
+.stat .n{font:600 1.65rem var(--mono);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat .k{font:600 .72rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.stat p{font-size:.97rem;color:var(--muted)}
+.stat a{font-size:.95rem;color:var(--accent-text);margin-top:auto;display:inline-flex;align-items:center;min-height:32px}
+.list{border-top:2px solid var(--rule)}
 .row{display:grid;grid-template-columns:minmax(0,12rem) minmax(0,1fr) auto;gap:.4rem 1.25rem;padding:.9rem 0;border-bottom:1px solid var(--border);align-items:baseline}
 .row h3 a{text-decoration:none}
 .row h3 a:hover{text-decoration:underline}
-.row p{color:var(--muted);font-size:.93rem}
-.row .count{font:500 .85rem var(--mono);color:var(--text);white-space:nowrap;text-align:right}
+.row p{color:var(--muted);font-size:1rem}
+.row .count{font:400 .88rem var(--mono);color:var(--text);white-space:nowrap;text-align:right}
 @media (max-width:700px){.row{grid-template-columns:minmax(0,1fr) auto}.row p{grid-column:1/-1;grid-row:2}}
-.note{font-size:.82rem;color:var(--faint);margin-top:.75rem}
-.built{border:1px solid var(--border);border-radius:.6rem;padding:1.25rem 1.25rem;background:var(--surface);max-width:48rem}
+.note{font-size:.9rem;color:var(--faint);margin-top:.75rem}
+.built{border:1px solid var(--rule);border-left:4px solid var(--accent);padding:1.25rem;background:var(--raised);max-width:50rem}
 .built p+p{margin-top:.75rem}
 .built p{color:var(--muted)}
-code{font:.88em var(--mono);background:var(--surface);border:1px solid var(--border);border-radius:.25rem;padding:.05rem .3rem;overflow-wrap:anywhere}
-footer.site{margin-top:4.5rem;border-top:1px solid var(--border);padding:1.5rem 0 2.5rem;font-size:.85rem;color:var(--faint)}
-footer.site .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.5rem 1.5rem}
-footer.site a{color:var(--muted)}
-.prose{max-width:46rem}
+code{font:.86em var(--mono);background:var(--surface);border:1px solid var(--border);padding:.05rem .3rem;overflow-wrap:anywhere}
+footer.site{margin-top:4.5rem}
+footer.site .fbar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:.5rem 1.5rem;border-top:3px solid var(--rule);padding:.9rem 0 2.5rem;font:400 .8rem/1.6 var(--mono);color:var(--muted)}
+footer.site .fbar>span:first-child{text-transform:uppercase;letter-spacing:.06em}
+footer.site a{color:var(--text)}
+.prose{max-width:48rem}
 .prose p{color:var(--muted);margin-top:.9rem}
 .big4{display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fill,minmax(min(100%,30rem),1fr));margin-top:1.25rem}
-.check{border:1px solid var(--border);border-radius:.6rem;background:var(--raised);padding:1.1rem 1.15rem;display:flex;flex-direction:column;gap:.6rem}
+.check{border:1px solid var(--rule);background:var(--raised);padding:1.1rem 1.15rem;display:flex;flex-direction:column;gap:.6rem}
 .check svg{width:100%;height:auto}
 .check svg.dv{display:none;max-width:19rem;margin:0 auto}
 @media (max-width:600px){.check svg.dh{display:none}.check svg.dv{display:block}}
-.check blockquote{margin:0;border-left:2px solid var(--accent-line);padding-left:.75rem;color:var(--text);font-size:.93rem}
-.check .src{font-size:.82rem;color:var(--faint)}
+.check blockquote{margin:0;border-left:3px solid var(--accent);padding-left:.75rem;color:var(--text);font-size:1rem}
+.check .src{font-size:.9rem;color:var(--faint)}
 .check .src a{color:var(--accent-text)}
-.check .k{font:500 .7rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
-.tbl{width:100%;border-collapse:collapse;font-size:.9rem}
+.check .k{font:600 .72rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.tbl{width:100%;border-collapse:collapse;font-size:1rem}
 .tbl th,.tbl td{text-align:left;vertical-align:top;padding:.7rem .6rem;border-bottom:1px solid var(--border)}
-.tbl th{font:500 .72rem var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.tbl thead tr{border-top:2px solid var(--rule)}
+.tbl thead th{border-bottom:2px solid var(--rule)}
+.tbl tbody tr:last-child td{border-bottom:2px solid var(--rule)}
+.tbl th{font:600 .74rem var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--text)}
 .tbl td:first-child{white-space:nowrap}
 .tbl td a{color:var(--accent-text)}
-.tbl .site{display:flex;align-items:center;gap:.5rem;font-weight:550}
+.tbl .site{display:flex;align-items:center;gap:.5rem;font-weight:600}
 .tbl .site img{width:18px;height:18px}
 @media (max-width:700px){.tbl thead{display:none}.tbl tr{display:block;padding:.7rem 0;border-bottom:1px solid var(--border)}
- .tbl td{display:block;border:0;padding:.15rem 0}.tbl td:first-child{white-space:normal}}
-.qt{border-collapse:collapse;font-size:.82rem;margin:.4rem 0;width:100%}
+ .tbl td{display:block;border:0;padding:.15rem 0}.tbl td:first-child{white-space:normal}.tbl tbody tr:last-child td{border-bottom:0}}
+.qt{border-collapse:collapse;font-size:.9rem;margin:.4rem 0;width:100%}
 .qt th,.qt td{border:1px solid var(--border);padding:.3rem .45rem;text-align:left;vertical-align:top}
-.qt th{font:500 .68rem var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--faint);background:var(--surface)}
-.miss{border:1px solid var(--border);border-radius:.6rem;padding:1rem 1.15rem;background:var(--raised)}
+.qt th{font:600 .68rem var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--text);background:var(--surface);border-bottom:2px solid var(--rule)}
+.miss{border:1px solid var(--rule);padding:1rem 1.15rem;background:var(--raised)}
 .miss ul{margin:.5rem 0 0;padding-left:1.1rem;color:var(--muted)}
 .miss li{margin:.45rem 0}
 .miss li a{color:var(--accent-text)}
@@ -195,33 +220,107 @@ svg text{font-family:var(--mono)}
 .o-link{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;margin-left:.6rem;vertical-align:middle;border:1px solid var(--border);border-radius:50%;font:600 .78rem var(--sans);color:var(--faint)!important;text-decoration:none;transition:color .2s,border-color .2s}
 .o-link:hover,.o-link:focus-visible{color:var(--hw2)!important;border-color:var(--hw2)}
 .hero.page{padding-bottom:0}
-.hero.page h1{font-size:clamp(2rem,5vw,3rem)}
-.hero.page .sub{max-width:44rem}
-.jump{display:flex;flex-wrap:wrap;gap:.25rem 1.1rem;margin-top:1.1rem;font:500 .85rem var(--mono)}
+.hero.page h1{font-size:clamp(2.4rem,6.5vw,4.4rem)}
+.hero.page .sub{max-width:46rem}
+.jump{display:flex;flex-wrap:wrap;gap:.25rem 1.3rem;margin-top:1.1rem;font:400 .85rem var(--mono);letter-spacing:.06em;text-transform:uppercase}
 .jump a{display:inline-flex;align-items:center;min-height:44px;color:var(--accent-text)}
-.doors{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(min(100%,13.5rem),1fr))}
-.door{position:relative;display:flex;flex-direction:column;gap:.4rem;padding:1.1rem 1.1rem 1rem;border:1px solid var(--border);border-radius:.6rem;background:var(--raised);text-decoration:none;color:var(--text);overflow:hidden;transition:border-color .2s,transform .2s,box-shadow .2s}
-.door::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--c)}
-.door::after{content:"";position:absolute;right:-2.5rem;top:-2.5rem;width:7rem;height:7rem;border-radius:50%;background:var(--c);opacity:.08;transition:opacity .2s,transform .3s}
-.door:hover,.door:focus-visible{border-color:var(--c);transform:translateY(-2px);box-shadow:0 8px 24px -12px var(--c)}
-.door:hover::after,.door:focus-visible::after{opacity:.16;transform:scale(1.25)}
-.door svg{width:28px;height:28px;color:var(--c)}
-.door .k{font:500 .68rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-top:.35rem}
-.door .t{font-size:1.1rem;font-weight:600;letter-spacing:-.015em;line-height:1.3}
-.door .b{font-size:.9rem;color:var(--muted)}
-.door .i{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem;margin-top:auto;padding-top:.5rem}
-.door .i img{width:20px;height:20px}
-.door .n{font:500 .78rem var(--mono);color:var(--muted);margin-left:.25rem}
-#portfolio .btns{margin-top:1.25rem}
-@media (min-width:1100px){.doors{grid-template-columns:repeat(5,minmax(0,1fr))}}
-@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}.card:hover{transform:none}}
+"""
+
+# the home page's datasheet parts: the pin diagram, the tables, the timing diagram and the application tiles
+HOME_CSS = r"""
+.ds-k{font:600 .85rem/1.4 var(--mono);letter-spacing:.1em;text-transform:uppercase;margin:0}
+.ds-sec{padding:2.5rem 0;border-bottom:1px solid var(--rule)}
+.ds-sec>.ds-k,.ds-sec h2.ds-k{margin-bottom:1rem}
+.ds-gd{display:flex;flex-wrap:wrap;gap:3rem;padding:3.5rem 0 2.5rem}
+.gd-text{flex:999 1 32rem;min-width:0}
+.gd-text .ds-k{margin-bottom:.6rem}
+.ds-name{font-size:clamp(3.5rem,9vw,7rem);line-height:.9;font-weight:700;letter-spacing:-.02em;text-transform:uppercase;margin:0}
+.gd-text .lede{font-size:clamp(1.3rem,2.6vw,1.65rem);margin-top:1.5rem;max-width:40rem}
+.gd-text .sub{font-size:1.12rem;max-width:40rem}
+.gd-text .btns{margin-top:1.75rem}
+.pins{flex:1 1 22rem;min-width:0}
+.pins .ds-k{margin-bottom:.9rem}
+.pkg{display:grid;grid-template-columns:minmax(0,1fr) 9.5rem minmax(0,1fr);font:400 .95rem/1 var(--mono)}
+.pkg ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;justify-content:space-around}
+.pkg li{display:flex}
+.pin{display:flex;align-items:center;gap:.5rem;min-height:44px;width:100%;text-decoration:none;letter-spacing:.04em}
+.pkg .l .pin{justify-content:flex-end;text-align:right}
+.pin .lead{flex:none;width:2.1rem;height:3px;background:var(--lead);transition:width .15s,background .15s}
+.pin .no{flex:none;width:1.2rem;color:var(--faint);font-size:.8rem}
+.pkg .l .pin .no{text-align:left;padding-left:.15rem}
+.pkg .r .pin .no{text-align:right;padding-right:.15rem}
+a.pin:hover,a.pin:focus-visible{color:var(--accent-text)}
+a.pin:hover .lead,a.pin:focus-visible .lead{background:var(--accent);width:2.6rem}
+.pin.gnd{color:var(--faint)}
+.pin.gnd .lead{background:var(--faint);opacity:.7}
+.chip{position:relative;border:3px solid var(--rule);background:var(--chip);color:var(--chip-fg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding:1.25rem .5rem;min-height:15rem;text-align:center}
+.chip::before{content:"";position:absolute;top:.6rem;left:.6rem;width:.75rem;height:.75rem;border-radius:50%;border:2px solid var(--chip-fg)}
+.chip b{font:600 1.55rem/1 var(--mono);letter-spacing:.04em}
+.chip span{font-size:.75rem;color:var(--chip-muted);letter-spacing:.06em}
+@media (max-width:520px){.pkg{grid-template-columns:minmax(0,1fr) 5.6rem minmax(0,1fr);font-size:.82rem}
+ .pin{gap:.3rem}.pin .lead{width:1rem}a.pin:hover .lead,a.pin:focus-visible .lead{width:1.2rem}.pin .no{width:.9rem;font-size:.7rem}
+ .chip{min-height:13rem;padding:1rem .2rem}.chip b{font-size:.95rem}.chip span{font-size:.56rem;white-space:nowrap;letter-spacing:0}}
+.ds-two{display:flex;flex-wrap:wrap;gap:2rem 3rem}
+.ds-two>.feat{flex:1 1 20rem;min-width:0}
+.ds-two>.elec{flex:2 1 34rem;min-width:0}
+.feat ul{margin:0;padding-left:1.25rem;font-size:1.15rem;line-height:1.6}
+.feat li::marker{color:var(--accent-text)}
+.box{overflow-x:auto;max-width:100%}
+.box:focus-visible{outline-offset:4px}
+.ec{width:100%;min-width:34rem;border-collapse:collapse;font-size:1.05rem;font-variant-numeric:tabular-nums}
+.ec thead tr{border-top:2px solid var(--rule);border-bottom:2px solid var(--rule)}
+.ec th{font:600 .78rem var(--mono);letter-spacing:.06em;text-align:left;padding:.5rem .4rem}
+.ec td{padding:.55rem .4rem;border-bottom:1px solid var(--border)}
+.ec tbody tr:last-child td{border-bottom:2px solid var(--rule)}
+.ec td.sym{font-family:var(--mono);font-size:.95rem}
+.ec td.n{font-family:var(--mono)}
+.ec .dash{color:var(--faint)}
+@media (max-width:600px){.ec{min-width:0;font-size:.92rem}.ec th,.ec td{padding-left:.25rem;padding-right:.25rem}.ec th{font-size:.66rem;letter-spacing:0}.ec td.sym{font-size:.82rem}}
+.ds-note{font-size:.95rem;color:var(--muted);margin-top:.7rem}
+.ds-note a{color:var(--accent-text)}
+.td-svg{display:block;width:100%;min-width:47.5rem}
+.td-svg .lbl{font:400 14px var(--mono);fill:var(--text)}
+.td-svg .yr{font:400 13px var(--mono);fill:var(--muted)}
+.td-svg .grid{stroke:var(--faint);stroke-dasharray:3 5;stroke-width:1}
+.td-svg .tr{fill:none;stroke:var(--text);stroke-width:2.5;stroke-linejoin:round}
+.td-svg .tr.ai{stroke:var(--accent);stroke-width:3.5}
+.td-svg .ann{font:400 12px var(--mono);fill:var(--muted)}
+.fig2{display:flex;flex-wrap:wrap;gap:2rem 3rem;align-items:flex-start}
+.fig2 .hero-fig{flex:1 1 30rem;min-width:0;max-width:40rem}
+.fig2 .fd{flex:1 1 20rem;min-width:0}
+.fig2 .fd p{color:var(--muted);font-size:1.08rem}
+.fig2 .fd p+p{margin-top:.8rem}
+.fig2 .fd b{color:var(--text)}
+.apps{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(min(100%,13rem),1fr))}
+@media (min-width:1100px){.apps{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.app{display:flex;flex-direction:column;gap:.5rem;border:2px solid var(--rule);padding:1.2rem;text-decoration:none;color:var(--text);transition:box-shadow .15s,transform .15s}
+.app:hover,.app:focus-visible{color:var(--text);box-shadow:5px 5px 0 var(--rule);transform:translate(-2px,-2px)}
+.app .k{font:400 .8rem/1.3 var(--mono);letter-spacing:.04em;text-transform:uppercase}
+.app .t{font-size:1.6rem;font-weight:700;line-height:1.05}
+.app .b{font-size:1rem;color:var(--muted)}
+.app .i{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:auto;padding-top:.4rem}
+.app .i img{width:20px;height:20px}
+.app.hot{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.app.hot .b{color:var(--accent-fg)}
+.app.hot:hover,.app.hot:focus-visible{color:var(--accent-fg);border-color:var(--rule)}
+.ord{width:100%;border-collapse:collapse;font-size:1.05rem}
+.ord thead tr{border-top:2px solid var(--rule);border-bottom:2px solid var(--rule)}
+.ord th{font:600 .78rem var(--mono);letter-spacing:.06em;text-align:left;padding:.5rem .4rem;white-space:nowrap}
+.ord td{padding:.6rem .4rem;border-bottom:1px solid var(--border);vertical-align:baseline}
+.ord tbody tr:last-child td{border-bottom:2px solid var(--rule)}
+.ord td:first-child{font:600 .9rem var(--mono);white-space:nowrap;letter-spacing:.04em}
+.ord td.part{font-family:var(--mono);font-size:.9rem;white-space:nowrap}
+.ord td a{display:inline-flex;align-items:center;min-height:44px;color:var(--accent-text);font-weight:600}
+.ord td.d{color:var(--muted)}
+@media (max-width:700px){.ord thead{display:none}.ord tr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 1rem;padding:.6rem 0;border-bottom:1px solid var(--border)}
+ .ord td{border:0;padding:.1rem 0}.ord td.d{grid-column:1/-1;grid-row:2}.ord tbody tr:last-child td{border-bottom:0}.ord tbody tr:last-child{border-bottom:2px solid var(--rule)}}
+@media (prefers-reduced-motion:reduce){.app:hover,.app:focus-visible{transform:none}}
 """
 
 # the home page used to hold the whole portfolio; old links to its sections now land on /sites/
 OLD_ANCHORS = """<script>if(/^#(hardware|sites|track-[a-z]+|showcases|checks|decks|built)$/.test(location.hash))location.replace("/sites/"+location.hash)</script>
 """
-
-HOME_SHAPE = '<path d="M1 16c3-9 6-9 9 0s6 9 9 0 6-9 9 0" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><path d="M1 27h30" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".5"/>'
 
 TRACK_SHAPE = {
     # the companion sites' favicon shapes, one per track
@@ -238,19 +337,19 @@ TRACK_SHAPE = {
 # /twin/?embed=1 (same-origin through vercel.json's rewrite), loaded on first open and kept while on the page.
 # Without the script, or on GitHub Pages (which has no /twin/), the launcher is a plain link to the twin.
 TWIN_CSS = r"""
-.tw-launch{position:fixed;right:1.25rem;bottom:1.25rem;z-index:40;display:inline-flex;align-items:center;gap:.6rem;min-height:48px;padding:.4rem 1.1rem .4rem .4rem;border-radius:999px;border:1px solid var(--border);background:color-mix(in srgb,var(--raised) 90%,transparent);backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);color:var(--text);font:600 .9rem/1 var(--sans);text-decoration:none;box-shadow:0 10px 30px -14px rgba(0,0,0,.4),0 10px 28px -18px var(--accent);transition:border-color .15s,box-shadow .2s,opacity .2s,transform .2s,visibility 0s}
-.tw-launch:hover{border-color:var(--accent-line);box-shadow:0 12px 32px -14px rgba(0,0,0,.45),0 12px 30px -16px var(--accent)}
+.tw-launch{position:fixed;right:1.25rem;bottom:1.25rem;z-index:40;display:inline-flex;align-items:center;gap:.6rem;min-height:48px;padding:.4rem 1.1rem .4rem .4rem;border:2px solid var(--rule);background:color-mix(in srgb,var(--raised) 90%,transparent);backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);color:var(--text);font:600 .9rem/1 var(--sans);text-decoration:none;box-shadow:4px 4px 0 var(--accent);transition:border-color .15s,box-shadow .2s,opacity .2s,transform .2s,visibility 0s}
+.tw-launch:hover{color:var(--text);box-shadow:6px 6px 0 var(--accent)}
 .tw-launch .tw-mark{position:relative;flex:none;width:36px;height:36px}
-.tw-launch .tw-mark img{width:36px;height:36px;border-radius:9px}
+.tw-launch .tw-mark img{width:36px;height:36px}
 .tw-launch .tw-mark::after{content:"";position:absolute;right:-2px;bottom:-2px;width:10px;height:10px;border-radius:50%;background:var(--ok);border:2px solid var(--raised)}
 .tw-launch .tw-sub{display:block;font:500 .62rem/1.2 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent-text);margin-bottom:.2rem}
 html.tw-open .tw-launch{opacity:0;visibility:hidden;transform:translateY(6px);transition:opacity .15s,transform .15s,visibility 0s linear .15s}
 body.tw-has footer.site{padding-bottom:6.5rem}
 .tw-scrim{display:none}
-.tw-panel{position:fixed;z-index:50;top:4.5rem;right:.75rem;bottom:.75rem;width:min(26.5rem,calc(100vw - 1.5rem));display:flex;flex-direction:column;background:var(--bg);border:1px solid var(--border);border-radius:.9rem;overflow:hidden;box-shadow:0 28px 70px -28px rgba(0,0,0,.45),0 18px 40px -26px var(--accent);visibility:hidden;transform:translateX(calc(100% + 1.5rem));transition:transform .28s cubic-bezier(.2,.8,.2,1),visibility 0s linear .28s}
+.tw-panel{position:fixed;z-index:50;top:4.5rem;right:.75rem;bottom:.75rem;width:min(26.5rem,calc(100vw - 1.5rem));display:flex;flex-direction:column;background:var(--bg);border:2px solid var(--rule);overflow:hidden;box-shadow:6px 6px 0 var(--accent);visibility:hidden;transform:translateX(calc(100% + 1.5rem));transition:transform .28s cubic-bezier(.2,.8,.2,1),visibility 0s linear .28s}
 html.tw-open .tw-panel{visibility:visible;transform:none;transition:transform .32s cubic-bezier(.2,.8,.2,1),visibility 0s}
 .tw-panel:focus{outline:none}
-.tw-head{flex:none;display:flex;align-items:center;gap:.5rem;min-height:2.75rem;padding:0 .4rem 0 1rem;border-bottom:1px solid var(--border);background:var(--surface)}
+.tw-head{flex:none;display:flex;align-items:center;gap:.5rem;min-height:2.75rem;padding:0 .4rem 0 1rem;border-bottom:2px solid var(--rule);background:var(--surface)}
 .tw-head-k{flex:1;font:500 .66rem/1.2 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
 .tw-full{display:inline-flex;align-items:center;gap:.35rem;min-height:36px;padding:0 .55rem;border-radius:.4rem;color:var(--muted);font-size:.8rem;text-decoration:none}
 .tw-full:hover{color:var(--text);background:var(--bg)}
@@ -298,7 +397,13 @@ def twin_panel():
 """
 
 
-def head(title, description, path, extra="", noindex=False, twin=False):
+def nav_html(path):
+    cur = ' aria-current="page"'
+    links = "".join(f'<a href="{e(u)}"{cur if u == path else ""}>{e(t)}</a>' for t, u in NAV)
+    return f'<nav class="top" aria-label="Main">{links}</nav>\n'
+
+
+def head(title, description, path, extra="", noindex=False, twin=False, nav=True):
     url = BASE + path
     canonical = (f'<link rel="canonical" href="{url}">' if path != "/404.html"
                  else '<meta name="robots" content="noindex">')
@@ -314,8 +419,8 @@ def head(title, description, path, extra="", noindex=False, twin=False):
 {canonical}
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f6f5f0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121211" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="{NAME}">
 <meta property="og:title" content="{e(title)}">
@@ -324,35 +429,35 @@ def head(title, description, path, extra="", noindex=False, twin=False):
 <meta property="og:image" content="{BASE}/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="{NAME}: hardware and agentic AI. Sixteen interactive sites, each checked against a reference.">
+<meta property="og:image:alt" content="{NAME}: hardware, software and agentic AI. Sixteen interactive sites, each checked against a reference.">
 <meta property="og:locale" content="en_GB">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{e(title)}">
 <meta name="twitter:description" content="{e(description)}">
 <meta name="twitter:image" content="{BASE}/og.png">
+<link rel="preload" href="/assets/fonts/ibm-plex-sans-condensed-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/ibm-plex-mono-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <style>{CSS.strip()}</style>
 {f"<style>{TWIN_CSS.strip()}</style>" + chr(10) if twin else ""}{extra}</head>
 <body{' class="tw-has"' if twin else ""}>
 <a class="skip" href="#main">Skip to content</a>
 <header class="site"><div class="wrap">
-<a class="brand" href="/"><img src="/favicon.svg" alt="" width="24" height="24">{NAME}</a>
-<nav class="top" aria-label="Main">
-<a href="/sites/">Portfolio</a>
-<a href="/sites/#sites" class="wide">Sites</a>
-<a href="/library/" class="wide">Library</a>
-<a href="/checks/" class="mid">Checks</a>
-<a href="/cv/">CV</a>
-<a href="{GH}">GitHub</a>
-</nav>
-</div></header>
+<div class="band">
+<a class="brand" href="/"><span class="sr">{NAME}, home page: </span>{PART} · Staff engineer</a>
+<span class="rev">Datasheet · Rev {REV} · {WHERE}</span>
+<span class="badge">Active</span>
+</div>
+{nav_html(path) if nav else ""}</div></header>
 """
 
 
-def foot(extra="", twin=False):
-    return f"""<footer class="site"><div class="wrap">
-<span>{NAME} · <a href="{GH}">GitHub</a> · <a href="/checks/">How I check the numbers</a>{extra}</span>
-<span>A static page, built {BUILT} from its <a href="{GH}/BrendanJamesLynskey.github.io">source</a>.</span>
-</div></footer>
+def foot(extra="", twin=False, path=None):
+    page = (f" · Page {PAGES.index(path) + 1} of {len(PAGES)}" if path in PAGES
+            else " · Page not found" if path == "/404.html" else "")
+    return f"""<footer class="site"><div class="wrap"><div class="fbar">
+<span>{PART} datasheet{page} · {NAME} · <a href="{GH}">GitHub</a>{extra}</span>
+<span>Information furnished is believed to be accurate: see <a href="/checks/">How I check the numbers</a>. A static page, built {BUILT} from its <a href="{GH}/BrendanJamesLynskey.github.io">source</a>.</span>
+</div></div></footer>
 {twin_panel() if twin else ""}</body>
 </html>
 """
@@ -438,88 +543,232 @@ def index_row(x):
 </div>"""
 
 
-def strip():
-    """CV · Contact near the top of the home page; while the twin is not live, a Digital Twin card between them."""
+# ---------------------------------------------------------------- the home page: a datasheet
+
+# the CV source's date; its profile's "for the last two years ... agentic AI systems" is counted back from it
+CV_DATE = re.search(r"Compiled (\d{4})-(\d{2})-(\d{2})", open(os.path.join(ROOT, "src", "cv_source.md")).read())
+AI_FROM = int(CV_DATE.group(1)) - 2 + (int(CV_DATE.group(2)) - 1) / 12
+# short trace names for the timing diagram (a layout choice); others are the company's name, upper-cased
+TRACE_NAME = {"Imagination Technologies / MIPS": "IMG / MIPS", "Red Embedded": "RED EMB.",
+              "Blaize (formerly Thinci)": "BLAIZE"}
+
+
+def pins():
+    """The pin configuration: the home page's navigation, drawn as an 8-pin package (pins 1-4 down the left,
+    5-8 up the right). Pin 5 is GND, a decoration and not a link."""
+    twin = DIGITAL_TWIN["url"] or DIGITAL_TWIN["interim_url"]
+    left = [(1, "CV", "/cv/", ""), (2, "Twin", twin, " data-twin" if DIGITAL_TWIN["url"] else ""),
+            (3, "Sites", "/sites/", ""), (4, "Library", "/library/", "")]
+    right = [(8, "Checks", "/checks/", ""), (7, "GitHub", GH, ""), (6, "LinkedIn", CV["linkedin"], "")]
+    lis = lambda side, items: "".join(
+        f'<li><a class="pin" href="{e(u)}"{x}>'
+        + (f'{e(t.upper())}<span class="lead" aria-hidden="true"></span><span class="no" aria-hidden="true">{n}</span>'
+           if side == "l" else
+           f'<span class="no" aria-hidden="true">{n}</span><span class="lead" aria-hidden="true"></span>{e(t.upper())}')
+        + "</a></li>" for n, t, u, x in items)
+    gnd = ('<li aria-hidden="true"><span class="pin gnd"><span class="no">5</span><span class="lead"></span>GND</span></li>')
+    return f"""<nav class="pkg" aria-label="Pin configuration: the site's pages">
+<ul class="l">{lis("l", left)}</ul>
+<div class="chip" aria-hidden="true"><b>{PART}</b><span>HW · SW · AI</span><span>{e(WHERE.split(",")[0])} {DATE_CODE}</span></div>
+<ul class="r">{lis("r", right)}{gnd}</ul>
+</nav>"""
+
+
+def features(n_sites):
+    edu = next(x for x in CV["education"] if "Low Power" in x["degree"])
+    items = ["RTL and FPGA design, SoC and ASIC work",
+             "DSP, signal and power integrity, power delivery",
+             "Agentic AI in Python: LangGraph, MCP, open-weights LLMs",
+             f"{n_sites} interactive sites, each model checked against a reference",
+             f"Low-power operation: {edu['degree']}"]
+    return "".join(f"<li>{e(x)}</li>" for x in items)
+
+
+def characteristics(n_sites):
+    """(parameter, symbol, subscript, min, typ, max, unit), every number from data/ or the CV source."""
+    llms, si, lib = COUNTS["LLMs"], COUNTS["Signal_Integrity"], COUNTS["library"]
+    rows = [("Hardware experience", "t", "HW", 25, None, None, "years"),
+            ("Interactive sites", "N", "SITE", None, n_sites, None, "sites"),
+            ("Deck series in the library", "N", "LIB", None, lib["series"], None, "series"),
+            ("LLM deck series", "N", "SER", None, llms["series"], None, "series"),
+            ("Decks in those series", "N", "DECK", None, llms["decks"], None, "decks"),
+            ("Signal-integrity decks", "N", "SI", None, si["decks"], None, "decks"),
+            (f"SI results against {si['published_checks']} published values", "δ", "SI", None, None,
+             f"{si['worst_pct']:.2f}", "%")]
+    cell = lambda v: f'<td class="n">{v}</td>' if v is not None else '<td class="dash" aria-label="none">—</td>'
+    body = "".join(f"<tr><td>{e(p)}</td><td class=\"sym\">{s}<sub>{sub}</sub></td>{cell(a)}{cell(t)}{cell(m)}<td>{u}</td></tr>"
+                   for p, s, sub, a, t, m, u in rows)
+    return f"""<div class="box" tabindex="0" role="region" aria-label="Electrical characteristics (scrolls sideways)">
+<table class="ec">
+<thead><tr><th scope="col">PARAMETER</th><th scope="col">SYMBOL</th><th scope="col">MIN</th><th scope="col">TYP</th><th scope="col">MAX</th><th scope="col">UNIT</th></tr></thead>
+<tbody>{body}</tbody>
+</table>
+</div>"""
+
+
+def timing_diagram():
+    """Figure 1: the career as a timing diagram, one trace per employer (newest at the top) plus agentic AI; a
+    trace is high while a role is held. Dates are the CV source's."""
+    t0, t1 = 1994.0, now_year()
+    X0, X1, PITCH = 180.0, 1196.0, 40
+    x = lambda t: X0 + (max(t, t0) - t0) / (t1 - t0) * (X1 - X0)
+    rows, said = [("AGENTIC AI", [(AI_FROM, None)], True)], []
+    for r in CV["roles"]:                                   # the source lists the newest role first
+        key = r["company"]
+        for k, iv, ai in rows:
+            if k == key:
+                iv.append((r["t0"], r["t1"]))
+                break
+        else:
+            rows.append((key, [(r["t0"], r["t1"])], False))
+    paths, labels = [], []
+    for i, (k, iv, ai) in enumerate(rows):
+        lo = 44 + PITCH * i
+        hi = lo - 20
+        d = f"M{X0:.0f},{lo}"
+        for a, b in sorted(iv):
+            xa = x(a)
+            d += f" H{max(X0, xa - 3):.1f} L{xa + 3:.1f},{hi}" if xa > X0 else f" M{X0:.0f},{hi}"
+            if b is None:
+                d += f" H{X1:.0f}"
+            else:
+                xb = x(b)
+                d += f" H{xb - 3:.1f} L{xb + 3:.1f},{lo}"
+        if not d.endswith(f"H{X1:.0f}"):
+            d += f" H{X1:.0f}"
+        paths.append(f'<path class="tr{" ai" if ai else ""}" d="{d}"/>')
+        name = k if ai else TRACE_NAME.get(k, k.upper())
+        labels.append(f'<text class="lbl" x="0" y="{lo - 4}">{e(name)}</text>')
+    H = 44 + PITCH * (len(rows) - 1) + 52
+    years = list(range(1994, int(t1) + 1, 6))
+    grid = "".join(f'<line class="grid" x1="{x(y):.1f}" y1="10" x2="{x(y):.1f}" y2="{H - 34}"/>' for y in years)
+    yrs = "".join(f'<text class="yr" x="{x(y):.1f}" y="{H - 10}" text-anchor="middle">{y}</text>' for y in years)
+    # the accessible description: every role, in the source's words
+    for r in CV["roles"]:
+        said.append(f"{r['company']}, {r['start']} to {r['end']}")
+    ai_year = int(AI_FROM)
+    label = (f"Career timing diagram, 1994 to now, newest at the top. Agentic AI from {ai_year} to now; "
+             + "; ".join(said) + ".")
+    return f"""<div class="box" tabindex="0" role="region" aria-label="Figure 1 (scrolls sideways)">
+<svg class="td-svg" viewBox="0 0 1210 {H}" role="img" aria-label="{e(label)}">
+{grid}{"".join(labels)}{"".join(paths)}{yrs}
+</svg>
+</div>""", ai_year
+
+
+def apps():
+    """Typical applications: the home-ground deck series, then one tile per track."""
+    tiles = [("/sites/#hardware", f"App 1 · {len(HARDWARE)} deck series", "Home ground",
+              "Hardware, DSP and signal integrity", [], False)]
+    for n, g in enumerate(DATA["groups"], 2):
+        ss = sites_in(g["key"])
+        tiles.append((f"/sites/#track-{g['key']}", f"App {n} · {len(ss)} sites", g["label"], g["blurb"], ss,
+                      n == len(DATA["groups"]) + 1))
+    out = []
+    for href, k, t, b, ss, hot in tiles:
+        icons = "".join(f'<img src="/assets/icons/{s["key"]}.svg" alt="" width="20" height="20">' for s in ss)
+        out.append(f"""<a class="app{" hot" if hot else ""}" href="{href}">
+<span class="k">{e(k)}</span>
+<span class="t">{e(t)}</span>
+<span class="b">{e(b)}</span>
+{f'<span class="i">{icons}</span>' if icons else ""}
+</a>""")
+    return "\n".join(out)
+
+
+def ordering():
+    """Ordering information: the CV, the Digital Twin and how to get in touch (what the home page's CV and contact
+    cards used to say)."""
     t = DIGITAL_TWIN
-    twin_card = ""
-    if not t["url"]:   # once live, the hero button and the side panel's launcher reach the twin instead
-        twin_card = f"""<article class="card mini">
-<div class="body">
-<p class="place">{e(t["label"])} <span class="pill">New version coming soon</span></p>
-<h2 class="h3"><a href="{e(t["interim_url"])}">Ask about my career</a></h2>
-<p class="blurb">{e(t["text"])}</p>
-<p class="more"><a href="{e(t["interim_url"])}">Try the earlier version →</a></p>
-</div>
-</article>
-"""
-    grid, label = ("two", "CV and contact") if t["url"] else ("three", "CV, Digital Twin and contact")
-    return f"""<section class="block strip" id="cv-twin" aria-label="{label}"><div class="wrap">
-<div class="grid {grid}">
-<article class="card mini">
-<div class="body">
-<p class="place">CV</p>
-<h2 class="h3"><a href="/cv/">Experience and education</a></h2>
-<p class="blurb">{e(CV["headline"])}</p>
-<p class="more"><a href="/cv/">Read the CV →</a><a href="{PDF}">Download the PDF</a></p>
-</div>
-</article>
-{twin_card}<article class="card mini">
-<div class="body">
-<p class="place">Contact</p>
-<h2 class="h3"><a href="{e(CV["linkedin"])}">LinkedIn</a></h2>
-<p class="blurb">The best way to reach me is a message on LinkedIn.</p>
-<p class="more"><a href="{e(CV["linkedin"])}">Message me on LinkedIn →</a></p>
-</div>
-</article>
-</div>
-</div></section>"""
+    twin = (f'<a href="{e(t["url"])}" data-twin>Ask my twin →</a>' if t["url"]
+            else f'<a href="{e(t["interim_url"])}">Try the earlier version →</a>')
+    rows = [("BL-CV", "Experience and education. " + CV["headline"], '<a href="/cv/">Read the CV →</a>'),
+            ("BL-CV-PDF", "The same CV as an A4 PDF.", f'<a href="{PDF}">Download the PDF</a>'),
+            ("BL-TWIN", t["text"], twin),
+            ("BL-MSG", "The best way to reach me is a message on LinkedIn.",
+             f'<a href="{e(CV["linkedin"])}">Message me on LinkedIn →</a>')]
+    body = "".join(f'<tr><td class="part">{c}</td><td class="d">{e(d)}</td><td>{a}</td></tr>' for c, d, a in rows)
+    return f"""<table class="ord">
+<thead><tr><th scope="col">ORDERING CODE</th><th scope="col">DESCRIPTION</th><th scope="col">ORDER</th></tr></thead>
+<tbody>{body}</tbody>
+</table>"""
+
 
 def home():
-    twin_btn = (f'<a class="btn" href="{e(DIGITAL_TWIN["url"])}" data-twin>Ask my Digital Twin →</a>\n'
+    twin_btn = (f'<a class="btn primary" href="{e(DIGITAL_TWIN["url"])}" data-twin>Ask my Digital Twin</a>\n'
                 if DIGITAL_TWIN["url"] else "")
     n_sites = sum(len(sites_in(g["key"])) for g in DATA["groups"])
     assert n_sites == 16, n_sites
-    llms = COUNTS["LLMs"]
-    desc = ("Brendan Lynskey: a staff-level engineer across hardware (RTL and FPGA, DSP, signal integrity) "
-            "and agentic AI. His CV, a chat agent about his career, and a portfolio of explainer sites and deck "
+    td, ai_year = timing_diagram()
+    desc = ("Brendan Lynskey: a staff-level engineer across hardware (RTL and FPGA, DSP, signal integrity), "
+            "software and agentic AI. His CV, a chat agent about his career, and a portfolio of explainer sites and deck "
             "series built for his own learning.")
-    return head(f"{NAME}: hardware and agentic AI", desc, "/", OLD_ANCHORS, twin=True) + f"""<main id="main">
-<section class="hero"><div class="wrap">
-<div class="hero-grid">
-<div class="intro">
-<p class="eyebrow">Hardware and agentic AI</p>
-<h1>{NAME}</h1>
+    return head(f"{NAME}: hardware, software and agentic AI", desc, "/",
+                OLD_ANCHORS + f"<style>{HOME_CSS.strip()}</style>\n", twin=True, nav=False) + f"""<main id="main"><div class="wrap">
+<section class="ds-gd ds-sec" aria-labelledby="name-h">
+<div class="gd-text">
+<p class="ds-k">General description</p>
+<h1 class="ds-name" id="name-h">Brendan<br>Lynskey</h1>
 <p class="lede">A staff-level engineer across hardware (RTL and FPGA, DSP, signal integrity), software and agentic AI.</p>
+<p class="sub">More than 25 years in hardware; for the last two years, almost entirely software (agentic AI in Python). Read my CV, ask a chat agent about my career, or look through the portfolio: explainer sites, deck series and simulators I built for my own learning.</p>
+<div class="btns">
+{twin_btn}<a class="btn{"" if twin_btn else " primary"}" href="/cv/">Read the CV</a>
 </div>
+</div>
+<div class="pins">
+<p class="ds-k" aria-hidden="true">Pin configuration · Top view</p>
+{pins()}
+</div>
+</section>
+
+<section class="ds-sec ds-two" aria-label="Features and electrical characteristics">
+<div class="feat">
+<h2 class="ds-k">Features</h2>
+<ul>{features(n_sites)}</ul>
+</div>
+<div class="elec">
+<h2 class="ds-k">Electrical characteristics · T = {BUILT[:4]}</h2>
+{characteristics(n_sites)}
+<p class="ds-note">The counts are taken from each index's README when this page is built; the SI deviation is the largest difference from {COUNTS["Signal_Integrity"]["published_checks"]} independently published results.</p>
+</div>
+</section>
+
+<section class="ds-sec" aria-labelledby="fig1-h">
+<h2 class="ds-k" id="fig1-h">Figure 1 · Timing diagram, 1994–{BUILT[:4]}</h2>
+<p class="ds-note" style="margin:0 0 1rem">Each trace is high while the role is held. Newest at the top. The roles, with their dates, are in the <a href="/cv/#experience">CV</a>.</p>
+{td}
+</section>
+
+<section class="ds-sec" aria-labelledby="fig2-h">
+<h2 class="ds-k" id="fig2-h">Figure 2 · Functional block diagram</h2>
+<div class="fig2">
 <figure class="hero-fig">
 <canvas id="hero-canvas" width="560" height="300" role="img" aria-label="Animation: an agent loop sends operands into a four-by-four systolic array; the operands move one cell per cycle and each cell fills as it accumulates; the results drain back to the loop, which checks them against a reference before planning the next step."></canvas>
 <figcaption>Illustration: an agent loop drives a 4×4 output-stationary systolic array and checks every result against a reference.</figcaption>
 <button type="button" id="hero-pause">Pause</button>
 </figure>
-<div class="rest">
-<p class="sub">More than 25 years in hardware, and I write the software too. Read my CV, ask a chat agent about my career, or look through the portfolio: explainer sites, deck series and simulators I built for my own learning.</p>
-<div class="btns">
-<a class="btn primary" href="/cv/">Read the CV →</a>
-{twin_btn}<a class="btn" href="/sites/">Open the portfolio →</a>
+<div class="fd">
+<p><b>I built these sites and decks for my own learning, and I am still working my way through them.</b></p>
+<p>They are where my interests are heading: the hardware I know, and the AI systems that run on it. Every number in them comes from tested code or a cited source.</p>
 </div>
 </div>
-</div>
-<p class="facts"><span><b>25+</b> years in hardware</span><span><b>16</b> interactive sites</span><span><b>{llms['series']}</b> LLM deck series, <b>{llms['decks']}</b> decks</span><span><b>{COUNTS['Signal_Integrity']['decks']}</b> signal-integrity decks</span></p>
-</div></section>
+</section>
 
-{strip()}
-
-<section class="block" id="portfolio" aria-labelledby="portfolio-h"><div class="wrap">
-<div class="block-head"><div><p class="eyebrow">Portfolio</p><h2 id="portfolio-h">Built to learn, shared as I go</h2></div>
-<p><b>I built these sites and decks for my own learning, and I am still working my way through them.</b> They are where my interests are heading: the hardware I know, and the AI systems that run on it. Every number in them comes from tested code or a cited source.</p></div>
-<div class="doors">
-{doors()}
+<section class="ds-sec" id="portfolio" aria-labelledby="apps-h">
+<h2 class="ds-k" id="apps-h">Typical applications · Home ground and four tracks</h2>
+<div class="apps">
+{apps()}
 </div>
 <div class="btns"><a class="btn primary" href="/sites/">Open the portfolio →</a><a class="btn" href="/checks/">How I check the numbers →</a></div>
-</div></section>
-</main>
+</section>
+
+<section class="ds-sec" id="cv-twin" aria-labelledby="ord-h" style="border-bottom:0">
+<h2 class="ds-k" id="ord-h">Ordering information · CV and contact</h2>
+{ordering()}
+</section>
+</div></main>
 <script src="/assets/hero.js" defer></script>
-""" + foot(' <a class="o-link" href="/optalysys/" title="Optalysys-related work"><span class="sr">Optalysys-related work</span><span aria-hidden="true">O</span></a>', twin=True)
+""" + foot(' <a class="o-link" href="/optalysys/" title="Optalysys-related work"><span class="sr">Optalysys-related work</span><span aria-hidden="true">O</span></a>', twin=True, path="/")
 
 
 def sites_page():
@@ -600,29 +849,7 @@ def sites_page():
 </div>
 </div></section>
 </main>
-""" + foot(twin=True)
-
-
-def doors():
-    """The landing page's way into the portfolio: the home-ground hubs, then one tile per track."""
-    tiles = [("hardware", "/sites/#hardware", "Home ground", "Hardware, DSP and signal integrity",
-              f"{len(HARDWARE)} deck series", "var(--hw)", HOME_SHAPE, [])]
-    for g in DATA["groups"]:
-        ss = sites_in(g["key"])
-        tiles.append((g["key"], f"/sites/#track-{g['key']}", "Interactive sites", g["label"], g["blurb"],
-                      f"var(--t-{g['key']})", TRACK_SHAPE[g["key"]], ss))
-    out = []
-    for key, href, kicker, title, blurb, colour, shape, ss in tiles:
-        icons = "".join(f'<img src="/assets/icons/{s["key"]}.svg" alt="" width="20" height="20">' for s in ss)
-        count = f'<span class="n">{len(ss)} sites</span>' if ss else ""
-        out.append(f"""<a class="door" href="{href}" style="--c:{colour}">
-<svg viewBox="0 0 32 32" aria-hidden="true">{shape}</svg>
-<span class="k">{e(kicker)}</span>
-<span class="t">{e(title)}</span>
-<span class="b">{e(blurb)}</span>
-<span class="i">{icons}{count}</span>
-</a>""")
-    return "\n".join(out)
+""" + foot(twin=True, path="/sites/")
 
 
 # ---------------------------------------------------------------- the checks page
@@ -798,7 +1025,7 @@ def checks_page():
 </tbody></table>
 </section>
 </div></main>
-""" + foot()
+""" + foot(path="/checks/")
 
 
 # ---------------------------------------------------------------- the /optalysys/ page
@@ -1008,7 +1235,7 @@ def not_found():
 <div class="btns"><a class="btn primary" href="/">Portfolio home</a><a class="btn" href="/sites/">The portfolio</a><a class="btn" href="/checks/">How I check the numbers</a></div>
 </section>
 </div></main>
-""" + foot()
+""" + foot(path="/404.html")
 
 
 # ---------------------------------------------------------------- the CV page
@@ -1096,8 +1323,8 @@ CV_CSS = r"""
 .purl{display:none}
 @page{size:A4;margin:11mm 12mm}
 @media print{
- :root{color-scheme:light;--bg:#fff;--surface:#f5f5f5;--raised:#fff;--border:#d4d4d4;--text:#111;--muted:#333;--faint:#555;
-  --accent:#4338ca;--accent-text:#3730a3;--accent-line:#4f46e5;--accent-soft:#eef2ff;
+ :root{color-scheme:light;--bg:#fff;--surface:#f5f5f5;--raised:#fff;--border:#d4d4d4;--rule:#111;--text:#111;--muted:#333;--faint:#555;
+  --accent:#f2a33a;--accent-text:#9a3d06;--accent-line:#b3410a;--accent-soft:#fbe7c6;
   --d-hardware:#9c4a26;--d-fpga:#1f3b5c;--d-dsp:#24756a;--d-crypto:#5f3a78;--d-sw:#4f6b1f;--d-ai:#8a6510;--d-hatch:rgba(255,255,255,.3);--d-fg:#fff;--d-edu:#8a8a8a}
  html{font-size:12px}
  body{font-size:8.6pt;line-height:1.36;-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -1375,7 +1602,7 @@ def cv_page():
 <p class="certs-note">{e(CV["certs_note"][0].upper() + CV["certs_note"][1:])}.</p></div>
 </section>
 </div></main>
-""" + foot(twin=True)
+""" + foot(twin=True, path="/cv/")
 
 
 # ---------------------------------------------------------------- the library page (brief 45)
@@ -1387,7 +1614,7 @@ LIB_CSS = (".lib{border-top:1px solid var(--border)}"
            ".lib-row p{color:var(--muted);font-size:.93rem;margin-top:.3rem}"
            ".lib-row ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;align-content:flex-start;gap:.35rem .5rem}"
            ".lib-row li a{display:inline-flex;align-items:center;min-height:36px;padding:.2rem .7rem;border:1px solid var(--border);"
-           "border-radius:999px;font-size:.88rem;color:var(--text);text-decoration:none;background:var(--surface,transparent)}"
+           "font-size:.95rem;color:var(--text);text-decoration:none;background:var(--raised)}"
            ".lib-row li a:hover,.lib-row li a:focus-visible{border-color:var(--accent-text);color:var(--accent-text)}"
            ".lib-row li.all a{border-style:dashed;color:var(--accent-text)}"
            "@media (max-width:700px){.lib-row{grid-template-columns:minmax(0,1fr)}}")
@@ -1422,7 +1649,7 @@ def library_page():
 <div class="btns"><a class="btn" href="/sites/">The interactive sites →</a><a class="btn" href="/checks/">How I check the numbers →</a></div>
 </div></section>
 </main>
-""" + foot()
+""" + foot(path="/library/")
 
 
 SR_CSS = ".sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}"

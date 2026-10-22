@@ -220,7 +220,7 @@ QUOTES = {
 # The twin is its own Vercel project (BrendanJamesLynskey/Digital_Twin, private), served at /twin/ through the
 # rewrite in vercel.json. The URL is absolute so the card also works on the GitHub Pages mirror.
 DIGITAL_TWIN = {
-    "url": "https://brendan-lynskey.vercel.app/twin/",
+    "url": "https://brendanlynskey.com/twin/",
     "label": "Digital Twin",
     "interim_url": "https://huggingface.co/spaces/BrendanLynskey/CareerConversation",
     "text": "An AI twin that answers in my voice from my CV and public work. Ask about my experience, or paste a "

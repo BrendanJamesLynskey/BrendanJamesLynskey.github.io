@@ -10,7 +10,7 @@ import os
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-HOME = "https://brendan-lynskey.vercel.app"  # the portfolio home, CV and Digital Twin card
+HOME = "https://brendanlynskey.com"  # the portfolio home, CV and Digital Twin card
 PG = "https://brendanjameslynskey.github.io"  # GitHub Pages: the deck hubs live here, one repo each
 GH = "https://github.com/BrendanJamesLynskey"
 DATA = json.load(open(os.path.join(ROOT, "data", "sites.json")))
@@ -58,8 +58,8 @@ def main(out):
     rows = "\n".join(f"| {a} | {b} | {c} |" for a, b, c in featured)
     md = f"""# Brendan Lynskey
 
-A staff-level engineer across hardware (RTL and FPGA, DSP, signal integrity) and agentic AI. More than 25 years in
-hardware, and I write the software too.
+A staff-level engineer across hardware (RTL and FPGA, DSP, signal integrity), software and agentic AI. More than 25
+years in hardware; for the last two years, almost entirely software (agentic AI in Python).
 
 **[Home →]({HOME}/)** · [Portfolio]({HOME}/sites/) · [CV]({HOME}/cv/) · [How I check the numbers]({HOME}/checks/) · [Hardware, DSP and signal integrity]({HOME}/sites/#hardware)
 

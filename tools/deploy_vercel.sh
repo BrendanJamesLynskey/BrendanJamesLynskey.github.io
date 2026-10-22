@@ -1,23 +1,28 @@
 #!/usr/bin/env bash
-# Deploy origin/main to https://brendan-lynskey.vercel.app (the owner runs this; nothing deploys from CI).
+# Deploy origin/main (or another ref) to https://brendanlynskey.com (the owner runs this; nothing deploys
+# from CI).
 #
-#   tools/deploy_vercel.sh
+#   tools/deploy_vercel.sh                    # origin/main
+#   tools/deploy_vercel.sh design-classic     # any branch, tag or commit, e.g. the pre-datasheet design
+#                                             # (tools/revert_design.sh does exactly this)
 #
-# Needs the Vercel CLI, logged in to the brendan-lynskeys-projects team. It deploys exactly what is on
-# origin/main (a git archive, so no local edits or untracked files go up), as a static site with no build step;
+# Needs the Vercel CLI, logged in to the brendan-lynskeys-projects team. It deploys exactly what is at the ref
+# (a git archive, so no local edits or untracked files go up), as a static site with no build step;
 # .vercelignore keeps tools/, docs/, src/ and data/ out. Then it checks the live pages answer 200.
 set -euo pipefail
 
 SCOPE=brendan-lynskeys-projects
 PROJECT=brendan-lynskey
-URL=https://brendan-lynskey.vercel.app
+URL=https://brendanlynskey.com
 
 repo=$(git rev-parse --show-toplevel)
-git -C "$repo" fetch -q origin main
+ref=${1:-origin/main}
+git -C "$repo" fetch -q --tags origin main
+git -C "$repo" rev-parse -q --verify "$ref^{commit}" >/dev/null || { echo "no such ref: $ref" >&2; exit 1; }
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
-git -C "$repo" archive origin/main | tar -x -C "$tmp"
-echo "deploying origin/main @ $(git -C "$repo" rev-parse --short origin/main) from $tmp"
+git -C "$repo" archive "$ref" | tar -x -C "$tmp"
+echo "deploying $ref @ $(git -C "$repo" rev-parse --short "$ref^{commit}") from $tmp"
 
 cd "$tmp"
 # link the temporary directory to the existing project, then deploy it to production
