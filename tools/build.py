@@ -324,7 +324,7 @@ def head(title, description, path, extra="", noindex=False, twin=False):
 <meta property="og:image" content="{BASE}/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="{NAME}: hardware and agentic AI. Sixteen interactive sites, each checked against a reference.">
+<meta property="og:image:alt" content="{NAME}: hardware, software and agentic AI. Sixteen interactive sites, each checked against a reference.">
 <meta property="og:locale" content="en_GB">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{e(title)}">
@@ -480,14 +480,14 @@ def home():
     n_sites = sum(len(sites_in(g["key"])) for g in DATA["groups"])
     assert n_sites == 16, n_sites
     llms = COUNTS["LLMs"]
-    desc = ("Brendan Lynskey: a staff-level engineer across hardware (RTL and FPGA, DSP, signal integrity) "
-            "and agentic AI. His CV, a chat agent about his career, and a portfolio of explainer sites and deck "
+    desc = ("Brendan Lynskey: a staff-level engineer across hardware (RTL and FPGA, DSP, signal integrity), "
+            "software and agentic AI. His CV, a chat agent about his career, and a portfolio of explainer sites and deck "
             "series built for his own learning.")
-    return head(f"{NAME}: hardware and agentic AI", desc, "/", OLD_ANCHORS, twin=True) + f"""<main id="main">
+    return head(f"{NAME}: hardware, software and agentic AI", desc, "/", OLD_ANCHORS, twin=True) + f"""<main id="main">
 <section class="hero"><div class="wrap">
 <div class="hero-grid">
 <div class="intro">
-<p class="eyebrow">Hardware and agentic AI</p>
+<p class="eyebrow">Hardware, software and agentic AI</p>
 <h1>{NAME}</h1>
 <p class="lede">A staff-level engineer across hardware (RTL and FPGA, DSP, signal integrity), software and agentic AI.</p>
 </div>

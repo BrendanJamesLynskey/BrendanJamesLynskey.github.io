@@ -58,8 +58,8 @@ def main(out):
     rows = "\n".join(f"| {a} | {b} | {c} |" for a, b, c in featured)
     md = f"""# Brendan Lynskey
 
-A staff-level engineer across hardware (RTL and FPGA, DSP, signal integrity) and agentic AI. More than 25 years in
-hardware, and I write the software too.
+A staff-level engineer across hardware (RTL and FPGA, DSP, signal integrity), software and agentic AI. More than 25
+years in hardware; for the last two years, almost entirely software (agentic AI in Python).
 
 **[Home →]({HOME}/)** · [Portfolio]({HOME}/sites/) · [CV]({HOME}/cv/) · [How I check the numbers]({HOME}/checks/) · [Hardware, DSP and signal integrity]({HOME}/sites/#hardware)
 

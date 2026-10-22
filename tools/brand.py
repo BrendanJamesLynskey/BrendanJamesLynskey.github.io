@@ -86,7 +86,7 @@ h1{{position:absolute;left:72px;top:140px;margin:0;font-size:80px;line-height:1.
 </style></head><body>
 <div class="k"><img src="file://{ROOT}/favicon.svg">PORTFOLIO</div>
 <h1>Brendan Lynskey</h1>
-<p class="l">Hardware (RTL and FPGA, DSP, signal integrity) and agentic AI</p>
+<p class="l">Hardware (RTL and FPGA, DSP, signal integrity), software and agentic AI</p>
 <div class="c"><b>HOW THIS IS CHECKED</b><span>Sixteen interactive sites, every model checked against a reference</span></div>
 <div class="g">{grid_svg()}</div>
 <div class="u">brendanjameslynskey.github.io</div>
