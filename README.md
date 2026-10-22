@@ -5,8 +5,10 @@ The portfolio home page, CV and Digital Twin card: **[brendan-lynskey.vercel.app
 [brendanjameslynskey.github.io](https://brendanjameslynskey.github.io/), so old links still work; their canonical
 tags point to Vercel.
 
-- [`index.html`](index.html): the landing page: who I am, the CV, Digital Twin and contact cards, and one tile per
-  part of the portfolio. Old links to its former sections (`/#sites`, `/#hardware`, …) are sent on to `/sites/`.
+- [`index.html`](index.html): the landing page, laid out as a component datasheet: the general description, a pin
+  diagram whose pins are the site's navigation (CV, Digital Twin, sites, library, checks, GitHub, LinkedIn), features,
+  an electrical-characteristics table of live counts, the career as a timing diagram, the animated systolic-array
+  figure, one tile per part of the portfolio, and the CV and contact links as ordering information. Old links to its former sections (`/#sites`, `/#hardware`, …) are sent on to `/sites/`.
 - [`sites/index.html`](sites/index.html): the **portfolio**, built for my own learning: hardware, DSP and signal
   integrity first, then the sixteen interactive sites in their four tracks, the showcases, the verification summary,
   the deck library and how the work is built.
@@ -29,8 +31,9 @@ tags point to Vercel.
   link-preview card), [`favicon.svg`](favicon.svg) and [`apple-touch-icon.png`](apple-touch-icon.png).
 
 It is a static site: plain HTML and CSS, two small scripts ([`assets/hero.js`](assets/hero.js), the hero animation,
-which honours `prefers-reduced-motion`, and [`assets/twin.js`](assets/twin.js), the Digital Twin side panel), system
-fonts and local images. It makes no external requests (the panel loads `/twin/`, same-origin through the rewrite).
+which honours `prefers-reduced-motion`, and [`assets/twin.js`](assets/twin.js), the Digital Twin side panel), local
+images and self-hosted fonts (IBM Plex Sans Condensed and IBM Plex Mono in [`assets/fonts/`](assets/fonts/), under the
+[SIL Open Font License](assets/fonts/OFL.txt)). It makes no external requests (the panel loads `/twin/`, same-origin through the rewrite).
 
 ## How it is built
 
@@ -51,7 +54,7 @@ Checks (run before publishing):
 | Every quote still appears, word for word, on its source page | `python3 tools/check_quotes.py` |
 | Every link returns 200 | `python3 tools/check_links.py` |
 | Every experience entry, date range, education item, award, certification and skill in `src/cv_source.md` is on `/cv/`, and nothing else in those categories | `python3 tools/check_cv.py` |
-| Each page at 1280 and 390 px, light and dark: no page errors, no horizontal overflow, axe clean, no external requests; the twin panel opens and closes as a dialog on the three pages that have it, and nowhere else | `node tools/check_pages.js` (with `python3 -m http.server 8740` running) |
+| Each page at 1280 and 390 px, light and dark: no page errors, no horizontal overflow, axe clean, no external requests; the twin panel opens and closes as a dialog on the three pages that have it, and nowhere else; the home page's pins link to their targets and the TWIN pin opens the panel | `node tools/check_pages.js` (with `python3 -m http.server 8740` running) |
 
 ## The Digital Twin card
 
@@ -86,6 +89,10 @@ trailing slashes; [`.vercelignore`](.vercelignore) keeps `tools/`, `docs/`, `src
 live pages answer, including the Digital Twin at `/twin/`. To deploy both projects, the twin first:
 [`tools/deploy_both.sh`](tools/deploy_both.sh) runs the twin's own `tools/deploy_twin.sh` (from a clone of the
 twin repository next to this one, or `TWIN_REPO=...`) and then `tools/deploy_vercel.sh`.
+
+`tools/deploy_vercel.sh <ref>` deploys any branch, tag or commit instead of `origin/main`. The design before the
+datasheet redesign is the tag `design-classic`; [`tools/revert_design.sh`](tools/revert_design.sh) puts it back live
+in one command (it runs `tools/deploy_vercel.sh design-classic` and changes nothing in git).
 
 The thumbnails in [`assets/shots/`](assets/shots/) are screenshots of each page's first screen
 ([`tools/thumbs.js`](tools/thumbs.js)), resized to 640×360 WebP.

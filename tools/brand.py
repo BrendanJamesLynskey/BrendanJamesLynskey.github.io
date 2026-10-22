@@ -5,8 +5,10 @@
 
 The sites' favicons are one shape per track with a letter; the home page's is a rounded square (the
 shape no track uses) with a "B" and a stripe in the four track colours. The letter is a Noto Sans Bold
-outline, so the icon needs no font. The card uses the same fonts as the sites' cards (Noto Sans).
+outline, so the icon needs no font. The card is a datasheet front page, like the site: IBM Plex Sans Condensed and
+IBM Plex Mono from assets/fonts/.
 """
+import datetime
 import os
 
 from fontTools.pens.boundsPen import BoundsPen
@@ -40,57 +42,47 @@ def favicon():
             f'<path d="{letter("B", 16, 13.5, 15)}" fill="#fff"/>{stripe}</svg>\n')
 
 
-def grid_svg():
-    """A still of the hero: the array mid-wavefront, the loop with its check."""
-    cells = []
-    for i in range(5):
-        for j in range(5):
-            k = 5 - i - j  # filled fraction along the anti-diagonal wavefront
-            fill = "#38bdf8" if k > 1 else ("#1d4e6b" if k == 1 else "#16213a")
-            ring = ' stroke="#fb923c" stroke-width="3"' if k == 1 else ' stroke="#2b3a55" stroke-width="1.5"'
-            cells.append(f'<rect x="{j * 62}" y="{60 + i * 62}" width="52" height="52" rx="8" fill="{fill}"{ring}/>')
-    a_in = "".join(f'<rect x="-34" y="{80 + i * 62}" width="22" height="12" rx="4" fill="#0284c7"/>' for i in range(5))
-    b_in = "".join(f'<rect x="{18 + j * 62}" y="18" width="16" height="22" rx="4" fill="#ea580c"/>' for j in range(5))
-    loop = ('<circle cx="430" cy="215" r="88" fill="none" stroke="#334155" stroke-width="3"/>'
-            '<circle cx="342" cy="215" r="11" fill="#0b1220" stroke="#818cf8" stroke-width="3"/>'
-            '<circle cx="430" cy="127" r="11" fill="#0b1220" stroke="#334155" stroke-width="3"/>'
-            '<circle cx="430" cy="303" r="11" fill="#0b1220" stroke="#334155" stroke-width="3"/>'
-            '<circle cx="518" cy="215" r="13" fill="#4ade80"/>'
-            '<path d="M511 215l5 5 9-11" stroke="#0b1220" stroke-width="3.5" fill="none" stroke-linecap="round"/>'
-            '<text x="430" y="221" text-anchor="middle" font-size="20" fill="#94a3b8" font-family="Noto Sans Mono">agent loop</text>'
-            '<text x="518" y="252" text-anchor="middle" font-size="17" fill="#4ade80" font-family="Noto Sans Mono">check</text>'
-            '<text x="342" y="252" text-anchor="middle" font-size="17" fill="#94a3b8" font-family="Noto Sans Mono">act</text>'
-            '<text x="430" y="104" text-anchor="middle" font-size="17" fill="#94a3b8" font-family="Noto Sans Mono">plan</text>'
-            '<text x="430" y="342" text-anchor="middle" font-size="17" fill="#94a3b8" font-family="Noto Sans Mono">observe</text>')
-    return f'<svg viewBox="-40 0 600 380" width="470" height="298">{a_in}{b_in}{"".join(cells)}{loop}</svg>'
-
-
 def og_html():
-    font = lambda name, w: (f"@font-face{{font-family:'NS';src:url('file://{FONT_DIR}/NotoSans-{name}.ttf');font-weight:{w}}}")
-    stripe = "".join(f'<i style="background:{c}"></i>' for c in TRACKS)
+    """The link-preview card in the site's datasheet style: the header band, the name, the pin package."""
+    rev = datetime.date.today().strftime("%Y.%m")
+    face = lambda fam, file, w: (f"@font-face{{font-family:'{fam}';src:url('file://{ROOT}/assets/fonts/{file}.woff2');"
+                                 f"font-weight:{w}}}")
+    fonts = (face("PSC", "ibm-plex-sans-condensed-latin-400-normal", 400)
+             + face("PSC", "ibm-plex-sans-condensed-latin-700-normal", 700)
+             + face("PM", "ibm-plex-mono-latin-400-normal", 400) + face("PM", "ibm-plex-mono-latin-600-normal", 600))
+    left = ["CV", "TWIN", "SITES", "LIBRARY"]
+    right = ["CHECKS", "GITHUB", "LINKEDIN", "GND"]
+    pin = lambda n, t, side: (f'<div class="p s{side}{" g" if t == "GND" else ""}">'
+                              + (f"{t}<i></i><em>{n}</em>" if side == "l" else f"<em>{n}</em><i></i>{t}") + "</div>")
+    lp = "".join(pin(n, t, "l") for n, t in enumerate(left, 1))
+    rp = "".join(pin(n, t, "r") for n, t in zip([8, 7, 6, 5], right))
     return f"""<!doctype html><html><head><meta charset="utf-8"><style>
-{font("Regular", 400)}{font("Bold", 700)}
-@font-face{{font-family:'NSM';src:url('file://{FONT_DIR}/NotoSansMono-Bold.ttf');font-weight:700}}
+{fonts}
 html,body{{margin:0;width:1200px;height:630px;overflow:hidden}}
-body{{background:radial-gradient(ellipse at 78% 40%,#13284a 0%,#0b1220 55%,#070b14 100%);color:#f1f5f9;font-family:'NS';position:relative}}
-.k{{position:absolute;left:72px;top:70px;font:700 26px 'NSM';letter-spacing:.12em;color:#c7d2fe;display:flex;align-items:center;gap:18px}}
-.k img{{width:44px;height:44px}}
-h1{{position:absolute;left:72px;top:140px;margin:0;font-size:80px;line-height:1.02;font-weight:700;letter-spacing:-1px;width:600px}}
-.l{{position:absolute;left:72px;top:330px;width:560px;font-size:31px;line-height:1.35;color:#cbd5e1}}
-.c{{position:absolute;left:72px;top:474px;width:540px;border-left:5px solid #4f46e5;padding-left:22px}}
-.c b{{display:block;font:700 20px 'NSM';letter-spacing:.14em;color:#94a3b8;margin-bottom:6px}}
-.c span{{font-size:25px;line-height:1.35;color:#e2e8f0}}
-.g{{position:absolute;right:60px;top:110px}}
-.u{{position:absolute;right:72px;bottom:44px;font-size:25px;color:#cbd5e1}}
-.s{{position:absolute;left:0;right:0;bottom:0;height:10px;display:flex}}.s i{{flex:1}}
+body{{background:#f6f5f0;color:#111;font-family:'PSC';position:relative}}
+.band{{position:absolute;left:64px;right:64px;top:40px;display:flex;justify-content:space-between;align-items:center;
+ border-bottom:4px solid #111;padding-bottom:16px;font:400 22px 'PM';letter-spacing:.06em}}
+.band b{{font-weight:600}}.badge{{background:#f2a33a;padding:5px 14px;font-weight:600}}
+.k{{position:absolute;left:64px;top:126px;font:600 21px 'PM';letter-spacing:.1em}}
+h1{{position:absolute;left:60px;top:160px;margin:0;font-size:132px;line-height:.88;font-weight:700;letter-spacing:-3px;text-transform:uppercase}}
+.hl{{position:absolute;left:64px;top:410px;width:600px;margin:0;font-size:31px;line-height:1.22}}
+.pkg{{position:absolute;right:64px;top:146px;height:290px;display:grid;grid-template-columns:150px 140px 150px;font:400 21px 'PM'}}
+.col{{display:flex;flex-direction:column;justify-content:space-around}}
+.p{{display:flex;align-items:center;gap:8px;height:56px}}.p.sl{{justify-content:flex-end}}
+.p i{{width:26px;height:4px;background:#111}}.p em{{font-style:normal;font-size:16px;color:#5c5a52;width:16px;text-align:center}}
+.p.g{{color:#5c5a52}}.p.g i{{background:#8a887f}}
+.chip{{position:relative;background:#1b1b1b;border:4px solid #111;color:#f6f5f0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}}
+.chip:before{{content:"";position:absolute;left:14px;top:14px;width:16px;height:16px;border:3px solid #f6f5f0;border-radius:50%}}
+.chip b{{font:600 26px 'PM';white-space:nowrap}}.chip span{{font-size:17px;color:#c9c9c2;font-family:'PM'}}
+.foot{{position:absolute;left:64px;right:64px;bottom:36px;display:flex;justify-content:space-between;border-top:4px solid #111;
+ padding-top:14px;font:400 19px 'PM';letter-spacing:.03em}}
 </style></head><body>
-<div class="k"><img src="file://{ROOT}/favicon.svg">PORTFOLIO</div>
-<h1>Brendan Lynskey</h1>
-<p class="l">Hardware (RTL and FPGA, DSP, signal integrity), software and agentic AI</p>
-<div class="c"><b>HOW THIS IS CHECKED</b><span>Sixteen interactive sites, every model checked against a reference</span></div>
-<div class="g">{grid_svg()}</div>
-<div class="u">brendanjameslynskey.github.io</div>
-<div class="s">{stripe}</div>
+<div class="band"><b>BL-1994 · STAFF ENGINEER</b><span>DATASHEET · REV {rev} · LEEDS, UK</span><span class="badge">ACTIVE</span></div>
+<div class="k">GENERAL DESCRIPTION</div>
+<h1>Brendan<br>Lynskey</h1>
+<p class="hl">Hardware (RTL and FPGA, DSP, signal integrity), software and agentic AI</p>
+<div class="pkg"><div class="col">{lp}</div><div class="chip"><b>BL-1994</b><span>HW · SW · AI</span></div><div class="col">{rp}</div></div>
+<div class="foot"><span>16 INTERACTIVE SITES · EACH CHECKED AGAINST A REFERENCE</span><span>brendanjameslynskey.github.io</span></div>
 </body></html>"""
 
 

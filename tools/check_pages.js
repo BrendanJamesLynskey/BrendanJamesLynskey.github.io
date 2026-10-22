@@ -52,13 +52,15 @@ const modes = [[1280, "light"], [1280, "dark"], [390, "light"], [390, "dark"]];
     for (const x of [...errors, ...axe, ...external]) console.log("     " + x);
     await page.close();
   }
-  // the hero animates normally, holds a still frame under prefers-reduced-motion, and its button pauses it
+  // the hero figure animates normally while on screen, holds a still frame under prefers-reduced-motion, and its button pauses it
   for (const reduce of ["no-preference", "reduce"]) {
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 800 });
     await page.emulateMediaFeatures([{ name: "prefers-reduced-motion", value: reduce }]);
     await page.goto(base + "/", { waitUntil: "load" });
     const grab = () => page.evaluate(() => document.getElementById("hero-canvas").toDataURL());
+    // the figure (Figure 2 on the datasheet) sits below the fold and only animates while on screen
+    await page.$eval("#hero-canvas", (c) => c.scrollIntoView({ block: "center" }));
     await new Promise((r) => setTimeout(r, 500));
     const a = await grab(); await new Promise((r) => setTimeout(r, 1200)); const b = await grab();
     const label = await page.$eval("#hero-pause", (x) => x.textContent);
@@ -102,6 +104,28 @@ const modes = [[1280, "light"], [1280, "dark"], [390, "light"], [390, "dark"]];
     }
     failures += !ok;
     console.log(`${ok ? "ok  " : "FAIL"} twin panel ${p}: ${detail}`);
+    await page.close();
+  }
+  // the home page's pin diagram is its navigation: seven pins link to real targets (GND is not a link), the TWIN
+  // pin opens the Digital Twin panel, and Figure 1 (the timing diagram) is an image with a text alternative
+  {
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1280, height: 800 });
+    await page.goto(base + "/", { waitUntil: "load" });
+    const pins = await page.$$eval(".pkg a.pin", (as) => as.map((a) => [a.textContent.replace(/\d/g, "").trim(), a.getAttribute("href"), a.hasAttribute("data-twin")]));
+    const gnd = await page.$$eval(".pkg .gnd", (xs) => xs.map((x) => x.tagName));
+    const want = { CV: "/cv/", SITES: "/sites/", LIBRARY: "/library/", CHECKS: "/checks/" };
+    const linksOk = pins.length === 7 && Object.entries(want).every(([t, h]) => pins.some(([pt, ph]) => pt === t && ph === h))
+      && pins.some(([t, h]) => t === "GITHUB" && /github\.com/.test(h)) && pins.some(([t, h]) => t === "LINKEDIN" && /linkedin\.com/.test(h))
+      && pins.some(([t, , tw]) => t === "TWIN" && tw) && gnd.length === 1 && gnd[0] === "SPAN";
+    const twinPin = await page.$(".pkg a.pin[data-twin]");
+    await twinPin.click();
+    await new Promise((r) => setTimeout(r, 600));
+    const opened = await page.evaluate(() => document.documentElement.classList.contains("tw-open") && !!document.querySelector("#tw-panel iframe"));
+    const fig = await page.$eval(".td-svg", (s) => [s.getAttribute("role"), (s.getAttribute("aria-label") || "").length]);
+    const ok = linksOk && opened && fig[0] === "img" && fig[1] > 40;
+    failures += !ok;
+    console.log(`${ok ? "ok  " : "FAIL"} home pins: ${pins.length} links ${JSON.stringify(pins.map((p) => p[0]))}, GND ${gnd.join()}, TWIN pin opens the panel: ${opened}, Figure 1 role ${fig[0]} with a ${fig[1]}-character label`);
     await page.close();
   }
   // the CV timeline: tabbing to a band shows its role, the hint hides, and the band links to the role's entry
