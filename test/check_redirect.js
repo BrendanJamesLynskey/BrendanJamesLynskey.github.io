@@ -3,8 +3,8 @@
 //
 //   NODE_PATH=<node_modules with puppeteer or puppeteer-core> node test/check_redirect.js
 //
-// With JavaScript, every path, query and anchor must land on the same place on https://brendanlynskey.com; without
-// it, the meta refresh must land on https://brendanlynskey.com/. Requests to brendanlynskey.com are answered
+// With JavaScript, every path, query and anchor must land on the same place on https://brendan-lynskey.vercel.app; without
+// it, the meta refresh must land on https://brendan-lynskey.vercel.app/. Requests to the target are answered
 // locally (nothing is fetched from the internet), and any other outside request fails the test. Each page must
 // also carry the canonical link, robots noindex and the one visible line. Exits non-zero on any failure.
 const http = require("http");
@@ -14,7 +14,7 @@ let puppeteer;
 try { puppeteer = require("puppeteer"); } catch { puppeteer = require("puppeteer-core"); }
 
 const ROOT = path.resolve(__dirname, "..");
-const TARGET = "https://brendanlynskey.com";
+const TARGET = "https://brendan-lynskey.vercel.app";
 // old addresses (path + query + hash) that other pages link to, and the 200/404 GitHub Pages gives each
 const CASES = ["/", "/#sites", "/#track-agents", "/?utm=x#hardware", "/sites/", "/sites/#showcases", "/cv/",
   "/cv/#experience", "/cv/Brendan_Lynskey_CV.pdf", "/checks/", "/library/", "/library/?q=dsp", "/index.html", "/404.html",
@@ -86,7 +86,7 @@ function serve() {
         bg: getComputedStyle(document.body).backgroundColor,
         overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
       }));
-      report(t.canonical === TARGET + "/" && t.robots === "noindex" && t.text === "This page has moved to brendanlynskey.com."
+      report(t.canonical === TARGET + "/" && t.robots === "noindex" && t.text === "This page has moved to brendan-lynskey.vercel.app."
         && t.link === TARGET + "/" && t.bg === "rgb(246, 245, 240)" && !t.overflow && !/optalysys/i.test(s) && !/<link[^>]+stylesheet|src=/i.test(s),
         `${f}: canonical ${t.canonical}, robots ${t.robots}, text "${t.text}", link ${t.link}, background ${t.bg}`);
       await page.close();
